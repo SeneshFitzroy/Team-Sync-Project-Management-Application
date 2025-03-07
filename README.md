@@ -1,1 +1,1 @@
-# team-sync-project-management-application
+# Team-Sync-Project-Management-Application
