@@ -9,7 +9,7 @@
 - [Problem Definition](#problem-definition)
 - [Scope of the Project](#scope-of-the-project)
 - [Features of the Application](#features-of-the-application)
-- [Wireframe Diagram](#wireframe-diagram)
+- [Wireframe Diagram](https://www.figma.com/design/yrlabB1ihtTMakZiVax8wX/TeamSync-ui-ux-design-v1?node-id=0-1&t=Arll7keClpJ1Q6Jh-1)
 - [Getting Started](#getting-started)
 - [Installation](#installation)
 - [Usage](#usage)
