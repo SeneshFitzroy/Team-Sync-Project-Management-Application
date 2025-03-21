@@ -10,28 +10,27 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Password Reset',
+      debugShowCheckedModeBanner: false,
+      title: 'Reset Password',
       theme: ThemeData(
         primarySwatch: Colors.blue,
-        scaffoldBackgroundColor: const Color(0xFFEDF1F5),
+        fontFamily: 'Inter',
       ),
-      home: const PasswordResetScreen(),
-      debugShowCheckedModeBanner: false,
+      home: const ResetPasswordScreen(),
     );
   }
 }
 
-class PasswordResetScreen extends StatefulWidget {
-  const PasswordResetScreen({Key? key}) : super(key: key);
+class ResetPasswordScreen extends StatefulWidget {
+  const ResetPasswordScreen({Key? key}) : super(key: key);
 
   @override
-  State<PasswordResetScreen> createState() => _PasswordResetScreenState();
+  State<ResetPasswordScreen> createState() => _ResetPasswordScreenState();
 }
 
-class _PasswordResetScreenState extends State<PasswordResetScreen> {
-  final _formKey = GlobalKey<FormState>();
-  final _passwordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
+class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
 
@@ -42,81 +41,95 @@ class _PasswordResetScreenState extends State<PasswordResetScreen> {
     super.dispose();
   }
 
-  void _resetPassword() {
-    if (_formKey.currentState!.validate()) {
-      // Implement your password reset logic here
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Password reset successful')),
-      );
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.auto_awesome, color: Colors.black),
-            onPressed: () {
-              // Add functionality for the star button if needed
-            },
-          ),
-        ],
-      ),
+      backgroundColor: const Color(0xFFEBF5FF), // Light blue background
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Reset password',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Top section with back button and star icon
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // Back button
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: IconButton(
+                      icon: const Icon(Icons.arrow_back_ios_new, size: 16),
+                      onPressed: () {
+                        // Navigate back
+                      },
+                    ),
                   ),
-                ),
-                const SizedBox(height: 8),
-                const Text(
-                  'Please type something you\'ll remember',
-                  style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: 16,
+                  // Star icon
+                  const Icon(
+                    Icons.auto_awesome,
+                    size: 28,
+                    color: Colors.black,
                   ),
+                ],
+              ),
+              const SizedBox(height: 32),
+
+              // Title
+              const Text(
+                'Reset password',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
                 ),
-                const SizedBox(height: 20),
-                const Text(
-                  'New password',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w500,
-                  ),
+              ),
+              const SizedBox(height: 8),
+
+              // Subtitle
+              const Text(
+                'Please type something you\'ll remember',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.black54,
                 ),
-                const SizedBox(height: 8),
-                TextFormField(
+              ),
+              const SizedBox(height: 24),
+
+              // New password label
+              const Text(
+                'New password',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.black87,
+                ),
+              ),
+              const SizedBox(height: 8),
+
+              // New password field
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: TextField(
                   controller: _passwordController,
                   obscureText: _obscurePassword,
                   decoration: InputDecoration(
-                    fillColor: Colors.white,
-                    filled: true,
                     hintText: 'must be 8 characters',
+                    hintStyle: const TextStyle(color: Colors.grey),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                       borderSide: BorderSide.none,
                     ),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                     suffixIcon: IconButton(
                       icon: Icon(
-                        _obscurePassword ? Icons.visibility : Icons.visibility_off,
+                        _obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
                         color: Colors.grey,
                       ),
                       onPressed: () {
@@ -126,38 +139,41 @@ class _PasswordResetScreenState extends State<PasswordResetScreen> {
                       },
                     ),
                   ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter a password';
-                    }
-                    if (value.length < 8) {
-                      return 'Password must be at least 8 characters';
-                    }
-                    return null;
-                  },
                 ),
-                const SizedBox(height: 16),
-                const Text(
-                  'Confirm new password',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w500,
-                  ),
+              ),
+              const SizedBox(height: 16),
+
+              // Confirm password label
+              const Text(
+                'Confirm new password',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.black87,
                 ),
-                const SizedBox(height: 8),
-                TextFormField(
+              ),
+              const SizedBox(height: 8),
+
+              // Confirm password field
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: TextField(
                   controller: _confirmPasswordController,
                   obscureText: _obscureConfirmPassword,
                   decoration: InputDecoration(
-                    fillColor: Colors.white,
-                    filled: true,
                     hintText: 'repeat password',
+                    hintStyle: const TextStyle(color: Colors.grey),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                       borderSide: BorderSide.none,
                     ),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                     suffixIcon: IconButton(
                       icon: Icon(
-                        _obscureConfirmPassword ? Icons.visibility : Icons.visibility_off,
+                        _obscureConfirmPassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
                         color: Colors.grey,
                       ),
                       onPressed: () {
@@ -167,57 +183,64 @@ class _PasswordResetScreenState extends State<PasswordResetScreen> {
                       },
                     ),
                   ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please confirm your password';
-                    }
-                    if (value != _passwordController.text) {
-                      return 'Passwords do not match';
-                    }
-                    return null;
-                  },
                 ),
-                const SizedBox(height: 24),
-                SizedBox(
-                  width: double.infinity,
-                  height: 50,
-                  child: ElevatedButton(
-                    onPressed: _resetPassword,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF172B4D),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
+              ),
+              const SizedBox(height: 32),
+
+              // Reset password button
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton(
+                  onPressed: () {
+                    // Reset password logic
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF172B4D),
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
                     ),
-                    child: const Text(
-                      'Reset password',
-                      style: TextStyle(fontSize: 16),
+                    elevation: 0,
+                  ),
+                  child: const Text(
+                    'Reset password',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                 ),
-                const Spacer(),
-                Center(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+              ),
+
+              const Spacer(),
+
+              // Login link at bottom
+              Center(
+                child: RichText(
+                  text: TextSpan(
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: Colors.black87,
+                    ),
                     children: [
-                      const Text('Already have an account?'),
-                      TextButton(
-                        onPressed: () {
-                          // Navigate to login screen
-                        },
-                        child: const Text(
-                          'Log in',
-                          style: TextStyle(
-                            color: Colors.blue,
-                            fontWeight: FontWeight.bold,
-                          ),
+                      const TextSpan(
+                        text: 'Already have an account? ',
+                      ),
+                      TextSpan(
+                        text: 'Log in',
+                        style: const TextStyle(
+                          color: Color(0xFF172B4D),
+                          fontWeight: FontWeight.bold,
                         ),
+                        recognizer: null, // Add GestureRecognizer in a real app
                       ),
                     ],
                   ),
                 ),
-              ],
-            ),
+              ),
+              const SizedBox(height: 16),
+            ],
           ),
         ),
       ),
