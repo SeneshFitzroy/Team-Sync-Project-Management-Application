@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:fluttercomponenets/main.dart';
+import 'welcome-page2.dart';
 
 void main() {
   runApp(const MyApp());
@@ -61,7 +63,11 @@ class OnboardingScreen extends StatelessWidget {
                   ),
                   child: ElevatedButton(
                     onPressed: () {
-                      // Add your navigation logic here
+                      // Navigate to welcome page 2 instead of main app
+                      Navigator.push(
+                        context, 
+                        MaterialPageRoute(builder: (context) => const WelcomePage2()),
+                      );
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF1A365D),

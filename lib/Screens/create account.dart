@@ -1,11 +1,6 @@
 import 'package:flutter/material.dart';
 
 // Import components from the provided code
-import 'Components/backbutton.dart';
-import 'Components/bluebutton.dart';
-import 'Components/custom_form_field.dart';
-import 'Components/email_form_box.dart';
-import 'Components/password_form_box.dart';
 
 void main() {
   runApp(const MyApp());
