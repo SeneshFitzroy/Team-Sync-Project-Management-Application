@@ -136,7 +136,7 @@ class _FigmaToCodeAppState extends State<FigmaToCodeApp> {
               },
             ),
             const SizedBox(height: 24),
-            
+
             // Form components section
             const Text(
               'Form Components',
@@ -158,7 +158,7 @@ class _FigmaToCodeAppState extends State<FigmaToCodeApp> {
               initialObscureText: true,  // Changed from obscureText to initialObscureText to match the component parameter
             ),
             const SizedBox(height: 16),
-            
+
             // Project Name Form Field
             CustomFormField(
               label: 'Project Name',
@@ -176,7 +176,7 @@ class _FigmaToCodeAppState extends State<FigmaToCodeApp> {
               },
             ),
             const SizedBox(height: 24),
-            
+
             // Button components section
             const Text(
               'Button Components',
@@ -191,7 +191,7 @@ class _FigmaToCodeAppState extends State<FigmaToCodeApp> {
             const SizedBox(height: 16), // Space between buttons
             const Center(child: BlueButton()),     // Added the Blue button component here
             const SizedBox(height: 24),
-            
+
             // Task components section
             const Text(
               'Task Components',
@@ -202,7 +202,7 @@ class _FigmaToCodeAppState extends State<FigmaToCodeApp> {
               ),
             ),
             const SizedBox(height: 16),
-            
+
             // Interactive TaskBox
             TaskBox(
               title: 'Marketing Campaign',
@@ -217,7 +217,7 @@ class _FigmaToCodeAppState extends State<FigmaToCodeApp> {
                 'https://randomuser.me/api/portraits/men/46.jpg',
               ],
             ),
-            
+
             const SizedBox(height: 24),
             Center(
               child: BlueButton(
