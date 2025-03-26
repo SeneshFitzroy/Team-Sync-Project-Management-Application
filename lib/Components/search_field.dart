@@ -6,11 +6,11 @@ class SearchField extends StatelessWidget {
   final VoidCallback? onTap;
 
   const SearchField({
-    Key? key,
+    super.key,
     this.controller,
     this.onChanged,
     this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -13,7 +13,7 @@ class TaskBox extends StatefulWidget {
   final Function(int)? onProgressChanged;
 
   const TaskBox({
-    Key? key,
+    super.key,
     required this.title,
     required this.memberCount,
     required this.status,
@@ -22,7 +22,7 @@ class TaskBox extends StatefulWidget {
     this.dueDate,
     this.memberAvatars,
     this.onProgressChanged,
-  }) : super(key: key);
+  });
 
   @override
   State<TaskBox> createState() => _TaskBoxState();

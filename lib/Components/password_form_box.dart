@@ -6,11 +6,11 @@ class PasswordFormBox extends StatefulWidget {
   final bool initialObscureText;
 
   const PasswordFormBox({
-    Key? key,
+    super.key,
     required this.label,
     required this.hint,
     this.initialObscureText = true,
-  }) : super(key: key);
+  });
 
   @override
   State<PasswordFormBox> createState() => _PasswordFormBoxState();

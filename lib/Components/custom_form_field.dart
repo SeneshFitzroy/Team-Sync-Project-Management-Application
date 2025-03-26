@@ -8,17 +8,17 @@ class CustomFormField extends StatelessWidget {
   final String? Function(String?)? validator;
 
   const CustomFormField({
-    Key? key,
+    super.key,
     required this.label,
     required this.hintText,
     this.controller,
     this.onChanged,
     this.validator,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: 426,
       height: 78,
       child: Stack(

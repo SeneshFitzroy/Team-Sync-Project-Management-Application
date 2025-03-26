@@ -7,12 +7,12 @@ class FilterButton extends StatelessWidget {
   final Color textColor;
 
   const FilterButton({
-    Key? key,
+    super.key,
     this.onPressed,
     this.text = 'Project Tasks',
     this.backgroundColor = const Color(0xFF192F5D),
     this.textColor = const Color(0xFFF7F8FB),
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

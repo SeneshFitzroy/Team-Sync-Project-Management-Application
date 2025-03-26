@@ -8,17 +8,17 @@ class AddButton extends StatelessWidget {
   final double width;
 
   const AddButton({
-    Key? key,
+    super.key,
     this.onPressed,
     this.text = 'Add New Task',
     this.backgroundColor = const Color(0xFF192F5D),
     this.textColor = Colors.white,
     this.width = 205,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: width,
       height: 56,
       child: Material(

@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:fluttercomponenets/main.dart';
-
-// Import components from the provided code
+import 'create account.dart'; // Import the CreateAccount screen
+import 'login-page.dart'; // Import the LoginPage screen
 
 void main() {
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'TaskSync',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF1989BD)),
         useMaterial3: true,
@@ -26,7 +25,7 @@ class MyApp extends StatelessWidget {
 }
 
 class LoginScreen extends StatelessWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+  const LoginScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -111,8 +110,11 @@ class LoginScreen extends StatelessWidget {
                 child: WhiteButton(
                   text: 'Create account',
                   onPressed: () {
-                    // Handle create account action
-                    print('Create account pressed');
+                    // Navigate to the CreateAccount screen
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => CreateAccount()),
+                    );
                   },
                 ),
               ),
@@ -134,10 +136,10 @@ class BlueButton extends StatelessWidget {
   final VoidCallback onPressed;
 
   const BlueButton({
-    Key? key,
+    super.key,
     this.text = 'Continue',
     required this.onPressed,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -167,10 +169,10 @@ class WhiteButton extends StatelessWidget {
   final VoidCallback? onPressed;
 
   const WhiteButton({
-    Key? key,
+    super.key,
     this.text = 'Skip',
     this.onPressed,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -196,103 +198,112 @@ class WhiteButton extends StatelessWidget {
 }
 
 class WelcomePage2 extends StatelessWidget {
-  const WelcomePage2({Key? key}) : super(key: key);
+  const WelcomePage2({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF2F4F7),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+      backgroundColor: const Color(0xFFF0F8FF),
+      body: SingleChildScrollView(
+        child: SizedBox(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          child: Stack(
             children: [
-              const SizedBox(height: 80),
-              const Text(
-                'Collaborate with your team members',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ),
-              const Spacer(),
-              const Text(
-                'Track progress in real-time',
-                style: TextStyle(
-                  fontSize: 36,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF333333),
-                  height: 1.5,
-                ),
-              ),
-              const Spacer(),
-              Row(
-                children: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: const Text(
-                      'Back',
-                      style: TextStyle(
-                        color: Color(0xFF1A365D),
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500,
-                      ),
+              // Logo Image
+              Positioned(
+                left: -65,
+                top: 97,
+                child: Container(
+                  width: 523,
+                  height: 523,
+                  decoration: const BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage('assets/images/Logo.png'),
+                      fit: BoxFit.contain,
                     ),
                   ),
-                  const Spacer(),
-                  Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(32),
+                ),
+              ),
+              
+              // Login Button
+              Positioned(
+                left: 20,
+                top: 620,
+                child: GestureDetector(
+                  onTap: () {
+                    // Navigate to the LoginPage screen
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const LoginPage()),
+                    );
+                  },
+                  child: Container(
+                    width: 353,
+                    height: 54,
+                    decoration: ShapeDecoration(
+                      color: const Color(0xFF192F5D),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                     ),
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(builder: (context) => const FigmaToCodeApp()),
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF1A365D),
-                        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(32),
+                    child: const Center(
+                      child: Text(
+                        'Log in',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontFamily: 'Inter',
+                          fontWeight: FontWeight.w600,
+                          height: 1.25,
                         ),
                       ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Text(
-                            'Get Started',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 18,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Container(
-                            padding: const EdgeInsets.all(4),
-                            decoration: const BoxDecoration(
-                              color: Colors.white,
-                              shape: BoxShape.circle,
-                            ),
-                            child: const Icon(
-                              Icons.arrow_forward,
-                              color: Color(0xFF1A365D),
-                              size: 18,
-                            ),
-                          ),
-                        ],
+                    ),
+                  ),
+                ),
+              ),
+              
+              // Create Account Button
+              Positioned(
+                left: 20,
+                top: 690,
+                child: GestureDetector(
+                  onTap: () {
+                    // Navigate to the CreateAccount screen
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => CreateAccount()),
+                    );
+                  },
+                  child: Container(
+                    width: 353,
+                    height: 56,
+                    decoration: ShapeDecoration(
+                      shape: RoundedRectangleBorder(
+                        side: const BorderSide(
+                          width: 1,
+                          color: Color(0xFF737373),
+                        ),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: const Center(
+                      child: Text(
+                        'Create account',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 16,
+                          fontFamily: 'Inter',
+                          fontWeight: FontWeight.w600,
+                          height: 1.25,
+                        ),
                       ),
                     ),
                   ),
-                ],
+                ),
               ),
-              const SizedBox(height: 32),
             ],
           ),
         ),

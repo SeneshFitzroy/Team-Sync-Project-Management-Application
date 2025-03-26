@@ -5,10 +5,10 @@ class FilterIcon extends StatelessWidget {
   final Color iconColor;
 
   const FilterIcon({
-    Key? key,
+    super.key,
     this.onPressed,
     this.iconColor = const Color(0xFF192F5D),
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -7,12 +7,12 @@ class SearchBarWidget extends StatelessWidget {
   final bool readOnly;
 
   const SearchBarWidget({
-    Key? key, 
+    super.key, 
     this.hintText = 'Search...',
     this.onChanged,
     this.onTap,
     this.readOnly = false,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -85,7 +85,7 @@ class SearchBarWidget extends StatelessWidget {
 class SearchIconButton extends StatelessWidget {
   final Function()? onPressed;
   
-  const SearchIconButton({Key? key, this.onPressed}) : super(key: key);
+  const SearchIconButton({super.key, this.onPressed});
 
   @override
   Widget build(BuildContext context) {

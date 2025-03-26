@@ -5,10 +5,10 @@ class EmailFormBox extends StatelessWidget {
   final String hint;
 
   const EmailFormBox({
-    Key? key,
+    super.key,
     required this.label,
     required this.hint,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

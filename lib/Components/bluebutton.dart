@@ -7,12 +7,12 @@ class BlueButton extends StatelessWidget {
   final double height;
 
   const BlueButton({
-    Key? key,
+    super.key,
     this.text = 'Sign up',
     this.onPressed,
     this.width = 328,
     this.height = 56,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

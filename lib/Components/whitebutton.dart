@@ -7,12 +7,12 @@ class WhiteButton extends StatelessWidget {
   final double height;
 
   const WhiteButton({
-    Key? key,
+    super.key,
     this.text = 'Log in',
     this.onPressed,
     this.width = 328,
     this.height = 56,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

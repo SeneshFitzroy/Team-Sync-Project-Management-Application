@@ -8,13 +8,13 @@ class ProfileIcon extends StatelessWidget {
   final Color iconColor;
   
   const ProfileIcon({
-    Key? key, 
+    super.key, 
     this.size = 36,
     this.onPressed,
     this.imageUrl,
     this.backgroundColor = Colors.black,
     this.iconColor = Colors.white,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
