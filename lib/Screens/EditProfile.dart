@@ -7,12 +7,12 @@ class EditProfile extends StatefulWidget {
   final String phoneNumber;
 
   const EditProfile({
-    Key? key, 
+    super.key, 
     required this.name,
     required this.username,
     required this.email,
     required this.phoneNumber,
-  }) : super(key: key);
+  });
 
   @override
   State<EditProfile> createState() => _EditProfileState();

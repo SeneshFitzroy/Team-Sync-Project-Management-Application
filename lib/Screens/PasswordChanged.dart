@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'login-page.dart'; // Add import for login page
 
 class PasswordChanged extends StatelessWidget {
-  const PasswordChanged({Key? key}) : super(key: key);
+  const PasswordChanged({super.key});
 
   @override
   Widget build(BuildContext context) {

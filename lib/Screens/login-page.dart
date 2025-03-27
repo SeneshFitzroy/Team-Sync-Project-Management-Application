@@ -5,7 +5,7 @@ import 'ForgetPassword.dart'; // Add import for forget password page
 import 'Dashboard.dart'; // Add import for dashboard page
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
+  const LoginPage({super.key});
 
   @override
   State<LoginPage> createState() => _LoginPageState();

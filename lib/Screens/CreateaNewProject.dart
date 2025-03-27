@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'AddTeamMembers.dart';
 
 class CreateANewProject extends StatefulWidget {
-  const CreateANewProject({Key? key}) : super(key: key);
+  const CreateANewProject({super.key});
 
   @override
   State<CreateANewProject> createState() => _CreateANewProjectState();
@@ -13,6 +13,16 @@ class _CreateANewProjectState extends State<CreateANewProject> {
   final TextEditingController _projectNameController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final List<TeamMember> _selectedTeamMembers = [];
+  
+  // Add color selection
+  Color _selectedColor = const Color(0xFF187E0F); // Default green
+  final List<Color> _colorOptions = [
+    const Color(0xFF187E0F), // Green
+    const Color(0xFFD14318), // Red/Orange
+    const Color(0xFF192F5D), // Blue (app primary)
+    const Color(0xFF9B870C), // Gold
+    const Color(0xFF8E44AD), // Purple
+  ];
 
   @override
   void dispose() {
@@ -23,7 +33,7 @@ class _CreateANewProjectState extends State<CreateANewProject> {
 
   void _addTeamMember() async {
     // Navigate to AddTeamMembers screen and wait for result
-    final selectedMembers = await Navigator.push<List<TeamMember>>(
+    final selectedMembersData = await Navigator.push<List<Map<String, dynamic>>>(
       context,
       MaterialPageRoute(
         builder: (context) => const AddTeamMembers(),
@@ -31,11 +41,19 @@ class _CreateANewProjectState extends State<CreateANewProject> {
     );
     
     // If members were selected, add them to the project
-    if (selectedMembers != null && selectedMembers.isNotEmpty) {
+    if (selectedMembersData != null && selectedMembersData.isNotEmpty) {
       setState(() {
-        for (var member in selectedMembers) {
+        for (var memberData in selectedMembersData) {
           // Check if we already have 5 team members
           if (_selectedTeamMembers.length >= 5) break;
+          
+          // Create a TeamMember from the returned data
+          final member = TeamMember(
+            id: memberData['id'],
+            name: memberData['name'],
+            role: memberData['role'],
+            avatarUrl: memberData['avatarUrl'],
+          );
           
           // Check if member is already added (avoid duplicates)
           if (!_selectedTeamMembers.any((m) => m.id == member.id)) {
@@ -46,7 +64,7 @@ class _CreateANewProjectState extends State<CreateANewProject> {
       
       // Show confirmation
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${selectedMembers.length} team members added')),
+        SnackBar(content: Text('${selectedMembersData.length} team members added')),
       );
     }
   }
@@ -59,16 +77,24 @@ class _CreateANewProjectState extends State<CreateANewProject> {
 
   void _createProject() {
     if (_formKey.currentState!.validate()) {
-      // Here you would typically save the project to a database
-      // and navigate back to the projects list
+      // Create a project data map to return to the Dashboard
+      final projectData = {
+        'title': _projectNameController.text,
+        'members': '${_selectedTeamMembers.length} Members',
+        'status': 'active', // New projects start as active
+        'progress': 0.0, // New projects start at 0% progress
+        'progressText': '0%',
+        'color': _selectedColor, // Use selected color
+        'description': _descriptionController.text, // Include description
+      };
       
-      // For now, just show a success message
+      // Show a success message
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Project created successfully!')),
       );
       
-      // Navigate back
-      Navigator.pop(context);
+      // Return the project data to the Dashboard
+      Navigator.pop(context, projectData);
     }
   }
 
@@ -185,6 +211,47 @@ class _CreateANewProjectState extends State<CreateANewProject> {
                   ),
                   contentPadding: const EdgeInsets.all(16),
                 ),
+              ),
+              const SizedBox(height: 24),
+              const Text(
+                'Project Color',
+                style: TextStyle(
+                  color: Color(0xFF192F5D),
+                  fontSize: 14,
+                  fontFamily: 'Inter',
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: _colorOptions.map((color) {
+                  return GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _selectedColor = color;
+                      });
+                    },
+                    child: Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: color,
+                        shape: BoxShape.circle,
+                        border: color == _selectedColor
+                            ? Border.all(color: Colors.black, width: 2)
+                            : null,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 4,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }).toList(),
               ),
               const SizedBox(height: 24),
               Row(
@@ -354,10 +421,10 @@ class TeamMemberAvatar extends StatelessWidget {
   final VoidCallback onRemove;
 
   const TeamMemberAvatar({
-    Key? key,
+    super.key,
     required this.member,
     required this.onRemove,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

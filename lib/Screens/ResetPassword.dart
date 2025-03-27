@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'PasswordChanged.dart';
 
 class ResetPassword extends StatefulWidget {
-  const ResetPassword({Key? key}) : super(key: key);
+  const ResetPassword({super.key});
 
   @override
   State<ResetPassword> createState() => _ResetPasswordState();
@@ -17,6 +17,9 @@ class _ResetPasswordState extends State<ResetPassword> {
   bool _obscureConfirmPassword = true;
   String? _passwordError;
   bool _isLoading = false;
+
+  String _passwordStrength = '';
+  Color _passwordStrengthColor = Colors.grey;
 
   @override
   void dispose() {
@@ -46,20 +49,44 @@ class _ResetPasswordState extends State<ResetPassword> {
     return true;
   }
 
-  void _resetPassword() {
+  void _checkPasswordStrength(String password) {
+    if (password.isEmpty) {
+      setState(() {
+        _passwordStrength = '';
+        _passwordStrengthColor = Colors.grey;
+      });
+    } else if (password.length < 8) {
+      setState(() {
+        _passwordStrength = 'Weak';
+        _passwordStrengthColor = Colors.red;
+      });
+    } else if (RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$').hasMatch(password)) {
+      setState(() {
+        _passwordStrength = 'Strong';
+        _passwordStrengthColor = Colors.green;
+      });
+    } else {
+      setState(() {
+        _passwordStrength = 'Medium';
+        _passwordStrengthColor = Colors.orange;
+      });
+    }
+  }
+
+  void _resetPassword() async {
     if (_formKey.currentState!.validate() && _validatePassword()) {
       setState(() {
         _isLoading = true;
       });
-      
-      // TODO: Implement API call to reset password
-      
-      // Simulate API call with delay
-      Future.delayed(const Duration(seconds: 2), () {
+
+      try {
+        // TODO: Replace with actual API call
+        await Future.delayed(const Duration(seconds: 2));
+
         setState(() {
           _isLoading = false;
         });
-        
+
         // Navigate to PasswordChanged screen
         Navigator.pushReplacement(
           context,
@@ -67,7 +94,17 @@ class _ResetPasswordState extends State<ResetPassword> {
             builder: (context) => const PasswordChanged(),
           ),
         );
-      });
+      } catch (e) {
+        setState(() {
+          _isLoading = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to reset password: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
@@ -135,7 +172,7 @@ class _ResetPasswordState extends State<ResetPassword> {
                   
                   const SizedBox(height: 42),
                   
-                  // New password field
+                  // New password field with strength indicator
                   const Text(
                     'New password',
                     style: TextStyle(
@@ -151,6 +188,7 @@ class _ResetPasswordState extends State<ResetPassword> {
                   TextFormField(
                     controller: _passwordController,
                     obscureText: _obscurePassword,
+                    onChanged: _checkPasswordStrength,
                     decoration: InputDecoration(
                       hintText: 'Must be at least 8 characters',
                       hintStyle: TextStyle(
@@ -189,6 +227,20 @@ class _ResetPasswordState extends State<ResetPassword> {
                       }
                       return null;
                     },
+                  ),
+                  
+                  const SizedBox(height: 6),
+                  
+                  Row(
+                    children: [
+                      Text(
+                        'Password strength: $_passwordStrength',
+                        style: TextStyle(
+                          color: _passwordStrengthColor,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
                   ),
                   
                   const SizedBox(height: 24),
@@ -263,7 +315,7 @@ class _ResetPasswordState extends State<ResetPassword> {
                   
                   const SizedBox(height: 42),
                   
-                  // Reset button
+                  // Reset button with loading spinner
                   SizedBox(
                     width: double.infinity,
                     height: 56,
@@ -278,13 +330,20 @@ class _ResetPasswordState extends State<ResetPassword> {
                         disabledBackgroundColor: const Color(0xFF192F5D).withOpacity(0.7),
                       ),
                       child: _isLoading
-                          ? const SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(
-                                color: Colors.white,
-                                strokeWidth: 2,
-                              ),
+                          ? Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: const [
+                                SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 2,
+                                  ),
+                                ),
+                                SizedBox(width: 10),
+                                Text('Processing...'),
+                              ],
                             )
                           : const Text(
                               'Reset password',

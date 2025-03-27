@@ -6,9 +6,9 @@ class ForgotPassword2 extends StatefulWidget {
   final String email;
   
   const ForgotPassword2({
-    Key? key,
+    super.key,
     this.email = 'helloworld@gmail.com',  // Default email or get it from previous screen
-  }) : super(key: key);
+  });
 
   @override
   _ForgotPassword2State createState() => _ForgotPassword2State();

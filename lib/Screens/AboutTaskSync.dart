@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class AboutTaskSync extends StatelessWidget {
-  const AboutTaskSync({Key? key}) : super(key: key);
+  const AboutTaskSync({super.key});
 
   @override
   Widget build(BuildContext context) {

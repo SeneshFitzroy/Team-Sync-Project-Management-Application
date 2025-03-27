@@ -27,7 +27,7 @@ class TeamMember {
 }
 
 class AddTeamMembers extends StatefulWidget {
-  const AddTeamMembers({Key? key}) : super(key: key);
+  const AddTeamMembers({super.key});
 
   @override
   _AddTeamMembersState createState() => _AddTeamMembersState();
@@ -88,23 +88,12 @@ class _AddTeamMembersState extends State<AddTeamMembers> {
     // Get all selected members
     final selectedMembers = _allTeamMembers
         .where((member) => member.isSelected)
-        .map((member) => TeamMember(
-              id: member.id.isEmpty ? member.name.toLowerCase().replaceAll(' ', '_') : member.id,
-              name: member.name,
-              role: member.role,
-              avatarUrl: member.avatarUrl,
-            ))
+        .map((member) => member.toMap())  // Use toMap to convert to consistent format
         .toList();
 
     if (selectedMembers.isNotEmpty) {
       // Return selected members to the previous screen
-      Navigator.pop(context, selectedMembers.map((m) => 
-        TeamMember(
-          id: m.id,
-          name: m.name,
-          role: m.role,
-          avatarUrl: m.avatarUrl,
-        )).toList());
+      Navigator.pop(context, selectedMembers);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please select at least one team member')),

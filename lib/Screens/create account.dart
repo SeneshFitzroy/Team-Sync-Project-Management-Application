@@ -25,6 +25,8 @@ class FigmaToCodeApp extends StatelessWidget {
 }
 
 class CreateAccount extends StatefulWidget {
+  const CreateAccount({super.key});
+
   @override
   _CreateAccountState createState() => _CreateAccountState();
 }
@@ -38,6 +40,7 @@ class _CreateAccountState extends State<CreateAccount> {
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
   final _formKey = GlobalKey<FormState>();
+  String _passwordStrength = '';
 
   @override
   void dispose() {
@@ -50,13 +53,26 @@ class _CreateAccountState extends State<CreateAccount> {
 
   void _createAccount() {
     if (_formKey.currentState!.validate()) {
-      // TODO: Implement actual account creation logic
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Processing Data...'))
+        const SnackBar(content: Text('Processing Data...')),
       );
       print('Account creation with: ${_nameController.text}, ${_emailController.text}');
-      // Navigate back or to next screen after successful creation
+      // Navigate to a success screen or dashboard
     }
+  }
+
+  void _checkPasswordStrength(String password) {
+    setState(() {
+      if (password.isEmpty) {
+        _passwordStrength = '';
+      } else if (password.length < 6) {
+        _passwordStrength = 'Weak';
+      } else if (password.length < 10) {
+        _passwordStrength = 'Moderate';
+      } else {
+        _passwordStrength = 'Strong';
+      }
+    });
   }
 
   @override
@@ -210,20 +226,21 @@ class _CreateAccountState extends State<CreateAccount> {
                         
                         SizedBox(height: 20),
                         
-                        // Password field
+                        // Password field with strength indicator
                         Text(
                           'Create a password',
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: Colors.black,
                             fontSize: 14,
                             fontFamily: 'Inter',
                             fontWeight: FontWeight.w400,
                           ),
                         ),
-                        SizedBox(height: 8),
+                        const SizedBox(height: 8),
                         TextFormField(
                           controller: _passwordController,
                           obscureText: _obscurePassword,
+                          onChanged: _checkPasswordStrength,
                           decoration: InputDecoration(
                             hintText: 'must be 8 characters',
                             hintStyle: TextStyle(
@@ -234,9 +251,9 @@ class _CreateAccountState extends State<CreateAccount> {
                             fillColor: Colors.white,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(color: const Color(0xFFD8DADC)),
+                              borderSide: const BorderSide(color: Color(0xFFD8DADC)),
                             ),
-                            contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
                             suffixIcon: IconButton(
                               icon: Icon(
                                 _obscurePassword ? Icons.visibility_off : Icons.visibility,
@@ -258,6 +275,18 @@ class _CreateAccountState extends State<CreateAccount> {
                             }
                             return null;
                           },
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Password Strength: $_passwordStrength',
+                          style: TextStyle(
+                            color: _passwordStrength == 'Strong'
+                                ? Colors.green
+                                : _passwordStrength == 'Moderate'
+                                    ? Colors.orange
+                                    : Colors.red,
+                            fontSize: 12,
+                          ),
                         ),
                         
                         SizedBox(height: 20),
@@ -314,10 +343,24 @@ class _CreateAccountState extends State<CreateAccount> {
                         
                         SizedBox(height: 40),
                         
-                        // Create Account button
+                        // Create Account button with loading indicator
                         Center(
                           child: GestureDetector(
-                            onTap: _createAccount,
+                            onTap: () {
+                              if (_formKey.currentState!.validate()) {
+                                showDialog(
+                                  context: context,
+                                  barrierDismissible: false,
+                                  builder: (context) => const Center(
+                                    child: CircularProgressIndicator(),
+                                  ),
+                                );
+                                Future.delayed(const Duration(seconds: 2), () {
+                                  Navigator.pop(context); // Close loading dialog
+                                  _createAccount();
+                                });
+                              }
+                            },
                             child: Container(
                               width: 353,
                               height: 56,
