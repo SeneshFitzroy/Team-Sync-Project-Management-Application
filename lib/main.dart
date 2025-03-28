@@ -1,3 +1,5 @@
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 // Import welcome screen
@@ -26,7 +28,24 @@ import 'Components/whitebutton.dart';
 // Profile Components
 import 'Components/profile_header.dart';
 
-void main() {
+void main() async {
+
+  WidgetsFlutterBinding.ensureInitialized();
+
+  if(kIsWeb){
+    await Firebase.initializeApp(options: FirebaseOptions(apiKey: "AIzaSyAAX-5-79LUpH764TW3cVm_ra7a_muB2qc",
+      authDomain: "team-sync-70fa7.firebaseapp.com",
+      projectId: "team-sync-70fa7",
+      storageBucket: "team-sync-70fa7.firebasestorage.app",
+      messagingSenderId: "881519675369",
+      appId: "1:881519675369:web:c6192f5fb599ca9b4b6d78",
+      measurementId: "G-HBC1B46NKG"));
+  }else{
+    await Firebase.initializeApp();
+  }
+
+
+
   runApp(const MyApp());
 }
 
