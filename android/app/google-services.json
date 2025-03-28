@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "881519675369",
+    "project_id": "team-sync-70fa7",
+    "storage_bucket": "team-sync-70fa7.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:881519675369:android:adef3ae7ec4ae4014b6d78",
+        "android_client_info": {
+          "package_name": "com.example.fluttercomponenets"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBWwEBRfmlsgFQ-KUSpkhT0tm5tuX6OQyg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
