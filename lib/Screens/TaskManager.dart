@@ -5,6 +5,8 @@ import './Dashboard.dart';
 import './Chat.dart';
 import './Calendar.dart';
 import './Profile.dart'; // Make sure this points to the right file
+//Firebase
+import '../services/firestore_services.dart'; // Import FirestoreService
 
 // Simplified Task model with essential properties
 class Task {
@@ -58,10 +60,14 @@ class _TaskManagerState extends State<TaskManager> {
   late List<Task> _projectTasks;
   late List<Task> _myTasks;
   late List<Task> _filteredTasks; // Filtered tasks based on search
+  late Stream<List<Task>> _taskStream; // Stream for Firestore tasks
 
   @override
   void initState() {
     super.initState();
+
+    //Fetch tasks from Firestore
+    _taskStream = FirestoreService().getTasks();
 
     // Initialize task lists
     _projectTasks = [
@@ -937,7 +943,7 @@ class _TaskManagerState extends State<TaskManager> {
           }
           
           // Function to add a new task
-          void addTask() {
+          void addTask() async{ //make function async
             // Validate inputs
             if (taskNameController.text.isEmpty) {
               ScaffoldMessenger.of(context).showSnackBar(
@@ -988,6 +994,12 @@ class _TaskManagerState extends State<TaskManager> {
               statusColor: statusColor,
             );
 
+            //Save task to Firestore
+            await FirestoreService().addTask(newTask);
+
+            //Close the dialog
+            // ignore: use_build_context_synchronously
+            Navigator.pop(context);
             // Add to the appropriate list and update state
             setState(() {
               if (_showProjectTasks) {

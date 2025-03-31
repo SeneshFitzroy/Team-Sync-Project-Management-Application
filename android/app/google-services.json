@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "20508462372",
+    "project_id": "teamsync-c5068",
+    "storage_bucket": "teamsync-c5068.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:20508462372:android:07bf4657ad47c84faff7b1",
+        "android_client_info": {
+          "package_name": "com.example.fluttercomponenets"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAYE7YoP36lw6YtAr7SuX2DcnY4nECNA_g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

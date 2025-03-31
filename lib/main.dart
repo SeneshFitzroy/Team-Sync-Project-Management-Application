@@ -26,7 +26,15 @@ import 'Components/whitebutton.dart';
 // Profile Components
 import 'Components/profile_header.dart';
 
-void main() {
+//Firebase
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart'; // Import the generated Firebase options// Import the generated Firebase options
+
+
+void main() async{
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+);
   runApp(const MyApp());
 }
 
