@@ -1,8 +1,9 @@
-// In lib/services/service_locator.dart
+import 'package:get_it/get_it.dart';
 import 'package:fluttercomponenets/services/storage_service.dart';
-
 import 'auth_service.dart';
+import 'firebase_service.dart';
 import 'firestore_service.dart';
+import 'storage_service.dart' show StorageService;
 
 class ServiceLocator {
   static final ServiceLocator instance = ServiceLocator._internal();
@@ -20,3 +21,12 @@ class ServiceLocator {
 
 // Then in your code
 final services = ServiceLocator();
+
+final GetIt locator = GetIt.instance;
+
+void setupServiceLocator() {
+  locator.registerSingleton<AuthService>(AuthService());
+  locator.registerSingleton<FirebaseService>(FirebaseService());
+  locator.registerSingleton<FirestoreService>(FirestoreService());
+  locator.registerSingleton<StorageService>(StorageService());
+}

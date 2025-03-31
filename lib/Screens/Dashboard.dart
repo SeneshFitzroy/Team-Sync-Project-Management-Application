@@ -84,7 +84,7 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
         case 1: // Tasks
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => const TaskManager()),
+            MaterialPageRoute(builder: (context) => TaskManager()),
           );
           break;
         case 2: // Chat

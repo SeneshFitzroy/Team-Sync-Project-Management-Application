@@ -3,6 +3,11 @@ import 'package:flutter/services.dart';
 import 'create account.dart'; // Add import for create account page
 import 'ForgetPassword.dart'; // Add import for forget password page
 import 'Dashboard.dart'; // Add import for dashboard page
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
+
+import '../services/service_locator.dart';
+import '../services/auth_service.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -12,6 +17,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final AuthService _authService = locator<AuthService>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _obscurePassword = true;
@@ -43,23 +49,25 @@ class _LoginPageState extends State<LoginPage> {
 
     // Dismiss keyboard
     FocusScope.of(context).unfocus();
-    
+
     if (_formKey.currentState!.validate()) {
       setState(() {
         _isLoading = true;
       });
-      
+
       try {
-        // Simulate network delay
-        await Future.delayed(const Duration(seconds: 2));
-        
-        // Remove authentication logic and allow direct login
+        // Use AuthService to sign in
+        await _authService.signIn(
+          _emailController.text,
+          _passwordController.text,
+        );
+
         if (mounted) {
           // Save credentials if remember me is checked
           if (_rememberMe) {
             // TODO: Implement secure credential storage
           }
-          
+
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('Login successful!'),
@@ -67,7 +75,7 @@ class _LoginPageState extends State<LoginPage> {
               duration: Duration(seconds: 1),
             ),
           );
-          
+
           // Navigate to Dashboard screen
           Navigator.pushReplacement(
             context,
@@ -231,12 +239,12 @@ class _LoginPageState extends State<LoginPage> {
               borderRadius: BorderRadius.circular(10),
               borderSide: const BorderSide(color: Color(0xFF192F5D), width: 1.5),
             ),
-            suffixIcon: _emailController.text.isNotEmpty 
-              ? IconButton(
-                  icon: const Icon(Icons.clear, color: Color(0xFF666666)),
-                  onPressed: () => setState(() => _emailController.clear()),
-                )
-              : null,
+            suffixIcon: _emailController.text.isNotEmpty
+                ? IconButton(
+              icon: const Icon(Icons.clear, color: Color(0xFF666666)),
+              onPressed: () => setState(() => _emailController.clear()),
+            )
+                : null,
           ),
           keyboardType: TextInputType.emailAddress,
           textInputAction: TextInputAction.next,
@@ -390,24 +398,24 @@ class _LoginPageState extends State<LoginPage> {
           ),
           elevation: 0,
         ),
-        child: _isLoading 
-          ? const SizedBox(
-              width: 24, 
-              height: 24, 
-              child: CircularProgressIndicator(
-                color: Colors.white,
-                strokeWidth: 2,
-              ),
-            )
-          : const Text(
-              'Log in',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontFamily: 'Inter',
-                fontWeight: FontWeight.w600,
-              ),
-            ),
+        child: _isLoading
+            ? const SizedBox(
+          width: 24,
+          height: 24,
+          child: CircularProgressIndicator(
+            color: Colors.white,
+            strokeWidth: 2,
+          ),
+        )
+            : const Text(
+          'Log in',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 16,
+            fontFamily: 'Inter',
+            fontWeight: FontWeight.w600,
+          ),
+        ),
       ),
     );
   }
@@ -455,10 +463,10 @@ class _LoginPageState extends State<LoginPage> {
 // This main function should be removed when integrating with your actual app
 // It's just here for testing the login page independently
 void main() {
-  runApp(const MaterialApp(
+  runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
     home: Scaffold(
       body: LoginPage(),
     ),
-    ));
+  ));
 }

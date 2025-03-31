@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttercomponenets/services/Notification_service.dart';
 
 // Import welcome screen
 import 'Screens/welcome-page1.dart';
@@ -42,6 +43,8 @@ void main() async {
       measurementId: "G-HBC1B46NKG"));
   }else{
     await Firebase.initializeApp();
+    await NotificationService().init();
+    await getFCMToken();
   }
 
   runApp(const MyApp());

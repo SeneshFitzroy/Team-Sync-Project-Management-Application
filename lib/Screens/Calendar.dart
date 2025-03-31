@@ -41,7 +41,7 @@ class _CalendarState extends State<Calendar> {
         case 1: // Tasks
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => const TaskManager()),
+            MaterialPageRoute(builder: (context) => TaskManager()),
           );
           break;
         case 2: // Chat

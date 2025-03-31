@@ -69,4 +69,6 @@ class AuthService {
       rethrow;
     }
   }
+
+  signIn(String text, String text2) {}
 }

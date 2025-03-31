@@ -133,4 +133,6 @@ class FirestoreService {
       rethrow;
     }
   }
+
+  Stream<QuerySnapshot<Object?>>? getUserProjects(String uid) {}
 }

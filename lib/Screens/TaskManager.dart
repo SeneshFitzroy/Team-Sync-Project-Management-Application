@@ -1,10 +1,14 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../Components/nav_bar.dart';
 // Import other screens that we'll navigate to
+import '../services/auth_service.dart';
 import './Dashboard.dart';
 import './Chat.dart';
 import './Calendar.dart';
 import './Profile.dart'; // Make sure this points to the right file
+import '../services/service_locator.dart';
+import '../services/firestore_service.dart';
 
 // Simplified Task model with essential properties
 class Task {
@@ -2339,6 +2343,53 @@ class _TaskManagerState extends State<TaskManager> {
             child: const Text('Delete', style: TextStyle(color: Colors.red)),
           ),
         ],
+      ),
+    );
+  }
+}
+class TaskManager extends StatefulWidget {
+  @override
+  _TaskManagerState createState() => _TaskManagerState();
+
+  final FirestoreService _firestoreService = locator<FirestoreService>();
+  final AuthService _authService = locator<AuthService>();
+
+  Stream<QuerySnapshot>? _tasksStream;
+
+  TaskManager({super.key});
+
+  @override
+  void initState() {
+    var initState = super.initState();
+    _tasksStream = _firestoreService.getUserProjects(_authService.currentUser!.uid);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('Task Manager')),
+      body: StreamBuilder<QuerySnapshot>(
+        stream: _tasksStream,
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return Text('Error: ${snapshot.error}');
+          }
+
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return CircularProgressIndicator();
+          }
+
+          return ListView(
+            children: snapshot.data!.docs.map((doc) {
+              final data = doc.data() as Map<String, dynamic>;
+              return ListTile(
+                title: Text(data['title']),
+                subtitle: Text(data['description']),
+                // More UI elements
+              );
+            }).toList(),
+          );
+        },
       ),
     );
   }

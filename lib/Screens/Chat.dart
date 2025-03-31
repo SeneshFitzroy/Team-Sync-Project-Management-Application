@@ -58,7 +58,7 @@ class _ChatScreenState extends State<ChatScreen> with SingleTickerProviderStateM
         case 1: // Tasks
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => const TaskManager()),
+            MaterialPageRoute(builder: (context) => TaskManager()),
           );
           break;
         case 3: // Calendar
