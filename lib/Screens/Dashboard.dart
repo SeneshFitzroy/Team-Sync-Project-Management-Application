@@ -5,6 +5,11 @@ import 'CreateaNewProject.dart'; // Import the CreateANewProject screen
 import './TaskManager.dart'; // Import TaskManager
 import './Chat.dart'; // Import Chat
 import './Calendar.dart'; // Import Calendar
+import 'welcome-page2.dart'; // Import WelcomePage2
+import 'package:firebase_auth/firebase_auth.dart'; // Add this import
+import 'package:cloud_firestore/cloud_firestore.dart'; // Correct Firestore import
+import 'login-page.dart'; // Import the login page
+import '../utils/firebase_helpers.dart'; // Add this import
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -27,35 +32,8 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
   String _selectedSortOption = 'Progress (High to Low)';
 
   // Project list with additional fields for editing
-  List<Map<String, dynamic>> projects = [
-    {
-      'title': 'Marketing Campaign',
-      'members': '8 Members',
-      'status': 'active',
-      'progress': 0.75,
-      'progressText': '75%',
-      'color': const Color(0xFF187E0F),
-      'description': 'Digital marketing campaign for Q3 2023.',
-    },
-    {
-      'title': 'Product Launch',
-      'members': '12 Members',
-      'status': 'at-risk',
-      'progress': 0.60,
-      'progressText': '60%',
-      'color': const Color(0xFFD14318),
-      'description': 'New product launch planning and execution.',
-    },
-    {
-      'title': 'Website Redesign',
-      'members': '6 Members',
-      'status': 'completed',
-      'progress': 0.90,
-      'progressText': '90%',
-      'color': const Color(0xFF187E0F),
-      'description': 'Redesign company website with new branding.',
-    },
-  ];
+  List<Map<String, dynamic>> projects = [];
+  bool _isLoading = true;
 
   @override
   void initState() {
@@ -64,6 +42,198 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
       vsync: this,
       duration: const Duration(milliseconds: 300),
     );
+    
+    // Check if user is logged in
+    final currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser == null) {
+      // Not logged in, redirect to login page
+      print("User not logged in, redirecting to login");
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const LoginPage()),
+        );
+      });
+      return;
+    }
+    
+    // Load user data safely without assuming PigeonUserDetails
+    _loadUserDataSafely(currentUser.uid);
+    
+    // Load projects from Firestore
+    _loadProjectsFromFirestore();
+  }
+
+  // Load projects from Firestore
+  Future<void> _loadProjectsFromFirestore() async {
+    setState(() {
+      _isLoading = true;
+    });
+    
+    try {
+      final projectsSnapshot = await FirebaseFirestore.instance.collection('projects').get();
+      
+      if (projectsSnapshot.docs.isEmpty) {
+        // If no projects exist yet, initialize with default projects
+        await _saveDefaultProjectsToFirestore();
+        // Then load them
+        final newSnapshot = await FirebaseFirestore.instance.collection('projects').get();
+        _processProjectsSnapshot(newSnapshot);
+      } else {
+        // Process existing projects
+        _processProjectsSnapshot(projectsSnapshot);
+      }
+    } catch (e) {
+      print("Error loading projects: $e");
+      // Fall back to default projects if Firestore fails
+      _loadDefaultProjects();
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+  
+  // Process projects snapshot into the projects list
+  void _processProjectsSnapshot(QuerySnapshot snapshot) {
+    setState(() {
+      projects = snapshot.docs.map((doc) {
+        final data = doc.data() as Map<String, dynamic>;
+        return {
+          'id': doc.id,
+          'title': data['name'] ?? 'Untitled Project',
+          'members': '${data['members_count'] ?? 0} Members',
+          'status': data['status'] ?? 'active',
+          'progress': (data['progress'] ?? 0) / 100, // Convert to 0-1 range
+          'progressText': '${data['progress'] ?? 0}%',
+          'color': _getColorForStatus(data['status'] ?? 'active'),
+          'description': data['description'] ?? 'No description provided.',
+          'created_at': data['created_at'] ?? Timestamp.now(),
+        };
+      }).toList();
+      
+      // Sort projects according to selected option
+      _applySorting();
+    });
+  }
+  
+  // Get color based on status
+  Color _getColorForStatus(String status) {
+    switch (status.toLowerCase()) {
+      case 'active':
+        return const Color(0xFF187E0F);
+      case 'at-risk':
+        return const Color(0xFFD14318);
+      case 'completed':
+        return const Color(0xFF187E0F);
+      default:
+        return const Color(0xFF192F5D);
+    }
+  }
+  
+  // Save default projects to Firestore
+  Future<void> _saveDefaultProjectsToFirestore() async {
+    final batch = FirebaseFirestore.instance.batch();
+    
+    // Website Redesign
+    final websiteDoc = FirebaseFirestore.instance.collection('projects').doc('website_redesign');
+    batch.set(websiteDoc, {
+      'name': 'Website Redesign',
+      'members_count': 6,
+      'status': 'completed',
+      'progress': 90,
+      'description': 'Redesign company website with new branding.',
+      'created_at': FieldValue.serverTimestamp(),
+    });
+    
+    // Marketing Campaign
+    final marketingDoc = FirebaseFirestore.instance.collection('projects').doc('marketing_campaign');
+    batch.set(marketingDoc, {
+      'name': 'Marketing Campaign',
+      'members_count': 8,
+      'status': 'active',
+      'progress': 75,
+      'description': 'Digital marketing campaign for Q3 2023.',
+      'created_at': FieldValue.serverTimestamp(),
+    });
+    
+    // Product Launch
+    final productDoc = FirebaseFirestore.instance.collection('projects').doc('product_launch');
+    batch.set(productDoc, {
+      'name': 'Product Launch',
+      'members_count': 12,
+      'status': 'at-risk',
+      'progress': 60,
+      'description': 'New product launch planning and execution.',
+      'created_at': FieldValue.serverTimestamp(),
+    });
+    
+    try {
+      await batch.commit();
+      print("Default projects saved to Firestore successfully");
+    } catch (e) {
+      print("Error saving default projects to Firestore: $e");
+      throw e; // Re-throw to be caught by the calling function
+    }
+  }
+  
+  // Fall back to default projects if Firestore fails
+  void _loadDefaultProjects() {
+    setState(() {
+      projects = [
+        {
+          'title': 'Marketing Campaign',
+          'members': '8 Members',
+          'status': 'active',
+          'progress': 0.75,
+          'progressText': '75%',
+          'color': const Color(0xFF187E0F),
+          'description': 'Digital marketing campaign for Q3 2023.',
+        },
+        {
+          'title': 'Product Launch',
+          'members': '12 Members',
+          'status': 'at-risk',
+          'progress': 0.60,
+          'progressText': '60%',
+          'color': const Color(0xFFD14318),
+          'description': 'New product launch planning and execution.',
+        },
+        {
+          'title': 'Website Redesign',
+          'members': '6 Members',
+          'status': 'completed',
+          'progress': 0.90,
+          'progressText': '90%',
+          'color': const Color(0xFF187E0F),
+          'description': 'Redesign company website with new branding.',
+        },
+      ];
+    });
+  }
+
+  // Safe method to load user data without type casting issues
+  Future<void> _loadUserDataSafely(String userId) async {
+    try {
+      final userData = await FirebaseHelpers.getUserDataSafely(userId);
+      
+      if (userData != null) {
+        final displayName = userData['displayName'] as String? ?? 'User';
+        final email = userData['email'] as String? ?? '';
+        
+        // Set state or update UI as needed
+        setState(() {
+          // Example: _userName = displayName;
+        });
+        
+        print("Successfully loaded user data for: $displayName ($email)");
+      } else {
+        print("User document doesn't exist in Firestore");
+      }
+    } catch (e) {
+      print("Error loading user data: $e");
+      // Handle gracefully - don't crash if data can't be loaded
+    }
   }
 
   @override
@@ -389,6 +559,75 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
     );
   }
 
+  Future<void> _handleLogout(BuildContext context) async {
+    try {
+      // Show confirmation dialog
+      bool confirm = await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Logout'),
+            content: const Text('Are you sure you want to log out?'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('CANCEL'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: const Text(
+                  'LOGOUT',
+                  style: TextStyle(color: Color(0xFF192F5D)),
+                ),
+              ),
+            ],
+          );
+        },
+      ) ?? false;
+
+      if (confirm) {
+        // Show a loading indicator
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Logging out...'),
+            duration: Duration(seconds: 1),
+          ),
+        );
+        
+        // Actually sign out the user from Firebase Auth
+        await FirebaseAuth.instance.signOut();
+        print("User logged out from Firebase");
+        
+        // For testing purposes, add a debug print to confirm navigation is triggered
+        print("Navigating to WelcomePage2...");
+        
+        // Use Future.delayed to ensure the auth state change has propagated
+        // and to make sure any SnackBar messages have time to be seen
+        Future.delayed(const Duration(milliseconds: 300), () {
+          // Check if the widget is still mounted before navigating
+          if (mounted) {
+            // Use pushAndRemoveUntil to clear the navigation stack
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (context) => const WelcomePage2()),
+              (Route<dynamic> route) => false, // This removes all previous routes
+            );
+          }
+        });
+      }
+    } catch (e) {
+      print("Error during logout: $e");
+      // Make sure the widget is still mounted before showing the SnackBar
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error signing out: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -486,10 +725,37 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
           const SizedBox(width: 16),
           GestureDetector(
             onTap: () {
-              // Navigate to Profile screen when profile icon is tapped
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const ProfileScreen()),
+              // Show a popup menu when profile icon is tapped
+              showModalBottomSheet(
+                context: context,
+                builder: (BuildContext context) {
+                  return SafeArea(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        ListTile(
+                          leading: const Icon(Icons.person),
+                          title: const Text('Profile'),
+                          onTap: () {
+                            Navigator.pop(context); // Close the bottom sheet
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => const ProfileScreen()),
+                            );
+                          },
+                        ),
+                        ListTile(
+                          leading: const Icon(Icons.logout),
+                          title: const Text('Logout'),
+                          onTap: () { // This should navigate to WelcomePage2 when confirmed
+                            Navigator.pop(context); // Close the bottom sheet
+                            _handleLogout(context);
+                          },
+                        ),
+                      ],
+                    ),
+                  );
+                },
               );
             },
             child: Container(
@@ -562,6 +828,16 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
   Widget _buildProjectsList() {
     // Use the projects list from the class field instead of creating a local variable
     var filteredProjects = List<Map<String, dynamic>>.from(projects);
+    
+    // Display loading indicator while fetching projects
+    if (_isLoading) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.all(40.0),
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
     
     // Filter projects by search query
     if (_searchQuery.isNotEmpty) {
@@ -658,22 +934,34 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
                       projects.removeWhere((p) => p['title'] == project['title']);
                     });
                     
-                    // Show a snackbar
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Project "${project['title']}" deleted'),
-                        action: SnackBarAction(
-                          label: 'UNDO',
-                          onPressed: () {
-                            setState(() {
-                              projects.add(project);
-                              // Re-sort the list to maintain order
-                              _applySorting();
-                            });
-                          },
+                    // Delete from Firestore
+                    _deleteProjectFromFirestore(project).then((_) {
+                      // Show a snackbar
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Project "${project['title']}" deleted'),
+                          action: SnackBarAction(
+                            label: 'UNDO',
+                            onPressed: () {
+                              setState(() {
+                                projects.add(project);
+                                // Re-sort the list to maintain order
+                                _applySorting();
+                              });
+                              // Restore in Firestore
+                              _updateProjectInFirestore(project);
+                            },
+                          ),
                         ),
-                      ),
-                    );
+                      );
+                    }).catchError((error) {
+                      // Error already handled in the method
+                      // Restore the project in the UI if Firestore delete fails
+                      setState(() {
+                        projects.add(project);
+                        _applySorting();
+                      });
+                    });
                   },
                   child: GestureDetector(
                     onTap: () {
@@ -707,7 +995,7 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
                 ),
                 const SizedBox(height: 24),
               ],
-            )).toList(),
+            )),
           _buildCreateProjectButton(),
           // Add more padding at the bottom to prevent overflow
           const SizedBox(height: 36),
@@ -806,19 +1094,156 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
       }
     });
     
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          project['status'] == 'completed'
-              ? 'Project "${project['title']}" marked as completed'
-              : 'Project "${project['title']}" reopened'
+    // Update in Firestore
+    _updateProjectInFirestore(project).then((_) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            project['status'] == 'completed'
+                ? 'Project "${project['title']}" marked as completed'
+                : 'Project "${project['title']}" reopened'
+          ),
+          duration: const Duration(seconds: 2),
         ),
-        duration: const Duration(seconds: 2),
-      ),
+      );
+    }).catchError((error) {
+      // Error is already handled in the method
+    });
+  }
+
+  // Method to update project in Firestore
+  Future<void> _updateProjectInFirestore(Map<String, dynamic> project) async {
+    try {
+      // Check if the project has an ID (exists in Firestore)
+      final String docId = project['id'] ?? 
+        project['title'].toString().toLowerCase().replaceAll(' ', '_');
+      
+      // Convert progress from 0-1 range to percentage
+      final int progressPercent = (project['progress'] * 100).round();
+      
+      // Extract member count from the members string
+      final String membersStr = project['members'] as String;
+      final int membersCount = int.tryParse(
+        membersStr.split(' ')[0]
+      ) ?? 0;
+      
+      await FirebaseFirestore.instance.collection('projects').doc(docId).set({
+        'name': project['title'],
+        'members_count': membersCount,
+        'status': project['status'],
+        'progress': progressPercent,
+        'description': project['description'] ?? '',
+        'updated_at': FieldValue.serverTimestamp(),
+        // Only set created_at if it's a new document
+        if (project['id'] == null) 'created_at': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
+      
+      print("Project updated in Firestore: ${project['title']}");
+      return;
+    } catch (e) {
+      print("Error updating project in Firestore: $e");
+      // Show error to user
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error updating project: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+      throw e;
+    }
+  }
+
+  // Method to delete project from Firestore
+  Future<void> _deleteProjectFromFirestore(Map<String, dynamic> project) async {
+    try {
+      final String docId = project['id'] ?? 
+        project['title'].toString().toLowerCase().replaceAll(' ', '_');
+      
+      await FirebaseFirestore.instance.collection('projects').doc(docId).delete();
+      print("Project deleted from Firestore: ${project['title']}");
+      return;
+    } catch (e) {
+      print("Error deleting project from Firestore: $e");
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error deleting project: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+      throw e;
+    }
+  }
+
+  // Method to handle project deletion with confirmation and Firebase sync
+  void _deleteProject(Map<String, dynamic> project) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Delete Project'),
+          content: Text('Are you sure you want to delete "${project['title']}"?\nThis action cannot be undone.'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('CANCEL'),
+            ),
+            TextButton(
+              onPressed: () {
+                // Store project temporarily for undo functionality
+                final tempProject = Map<String, dynamic>.from(project);
+                
+                // Remove project from the list
+                setState(() {
+                  projects.removeWhere((p) => p['title'] == project['title']);
+                });
+                
+                // Delete from Firestore
+                _deleteProjectFromFirestore(project).then((_) {
+                  // Show a snackbar with undo option
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Project "${project['title']}" deleted'),
+                      action: SnackBarAction(
+                        label: 'UNDO',
+                        onPressed: () {
+                          setState(() {
+                            projects.add(tempProject);
+                            // Re-sort the list to maintain order
+                            _applySorting();
+                          });
+                          // Restore in Firestore
+                          _updateProjectInFirestore(tempProject);
+                        },
+                      ),
+                    ),
+                  );
+                }).catchError((error) {
+                  // Error already handled in the method
+                  // Restore the project in the UI if Firestore delete fails
+                  setState(() {
+                    projects.add(tempProject);
+                    _applySorting();
+                  });
+                });
+                
+                Navigator.of(context).pop();
+              },
+              child: const Text(
+                'DELETE',
+                style: TextStyle(color: Colors.red),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 
-  // Method to handle editing a project
+  // Update _editProject method to sync with Firebase
   void _editProject(Map<String, dynamic> project) {
     // Make a copy of the project to edit
     final projectToEdit = Map<String, dynamic>.from(project);
@@ -1127,13 +1552,18 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
                                 }
                               });
                               
-                              // Show confirmation
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Project updated successfully'),
-                                  duration: Duration(seconds: 2),
-                                ),
-                              );
+                              // Update in Firestore
+                              _updateProjectInFirestore(projectToEdit).then((_) {
+                                // Show confirmation
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Project updated successfully'),
+                                    duration: Duration(seconds: 2),
+                                  ),
+                                );
+                              }).catchError((error) {
+                                // Error already handled in _updateProjectInFirestore
+                              });
                               
                               Navigator.pop(context);
                             },
@@ -1163,56 +1593,6 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
       nameController.dispose();
       descController.dispose();
     });
-  }
-
-  // Method to handle project deletion with confirmation
-  void _deleteProject(Map<String, dynamic> project) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Delete Project'),
-          content: Text('Are you sure you want to delete "${project['title']}"?\nThis action cannot be undone.'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('CANCEL'),
-            ),
-            TextButton(
-              onPressed: () {
-                // Remove project from the list
-                setState(() {
-                  projects.removeWhere((p) => p['title'] == project['title']);
-                });
-                
-                // Show a snackbar
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Project "${project['title']}" deleted'),
-                    action: SnackBarAction(
-                      label: 'UNDO',
-                      onPressed: () {
-                        setState(() {
-                          projects.add(project);
-                          // Re-sort the list to maintain order
-                          _applySorting();
-                        });
-                      },
-                    ),
-                  ),
-                );
-                
-                Navigator.of(context).pop();
-              },
-              child: const Text(
-                'DELETE',
-                style: TextStyle(color: Colors.red),
-              ),
-            ),
-          ],
-        );
-      },
-    );
   }
 
   // Enhanced Project card with animation
@@ -1434,22 +1814,27 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
             _applySorting();
           });
           
-          // Show confirmation message with animation
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Row(
-                children: [
-                  const Icon(Icons.check_circle, color: Colors.white),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text('New project "${newProjectData['title']}" added'),
-                  ),
-                ],
+          // Save to Firestore
+          _updateProjectInFirestore(newProjectData).then((_) {
+            // Show confirmation message with animation
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Row(
+                  children: [
+                    const Icon(Icons.check_circle, color: Colors.white),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text('New project "${newProjectData['title']}" added'),
+                    ),
+                  ],
+                ),
+                backgroundColor: const Color(0xFF187E0F),
+                duration: const Duration(seconds: 3),
               ),
-              backgroundColor: const Color(0xFF187E0F),
-              duration: const Duration(seconds: 3),
-            ),
-          );
+            );
+          }).catchError((error) {
+            // Error already handled in _updateProjectInFirestore
+          });
         }
       },
       child: Container(

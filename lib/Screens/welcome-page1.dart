@@ -1,27 +1,8 @@
 import 'package:flutter/material.dart';
 import 'welcome-page2.dart';
 
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const OnboardingScreen(),
-    );
-  }
-}
-
-class OnboardingScreen extends StatelessWidget {
-  const OnboardingScreen({super.key});
+class WelcomePage1 extends StatelessWidget {
+  const WelcomePage1({super.key});
 
   @override
   Widget build(BuildContext context) {

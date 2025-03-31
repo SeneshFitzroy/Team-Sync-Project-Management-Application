@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "1060334973492",
+    "firebase_url": "https://sync-a3e5a-default-rtdb.firebaseio.com",
+    "project_id": "sync-a3e5a",
+    "storage_bucket": "sync-a3e5a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1060334973492:android:fce0da567d8c6aa5171061",
+        "android_client_info": {
+          "package_name": "com.example.fluttercomponenets"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCUp5pz7U-BV8xVLiVBH7WJqAy0ybkfW2A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

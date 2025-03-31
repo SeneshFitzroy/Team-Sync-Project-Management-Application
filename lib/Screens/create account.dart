@@ -1,7 +1,52 @@
 import 'package:flutter/material.dart';
-import 'login-page.dart'; // Add import for login page
+import 'login-page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart'; // Add Firestore for user data
+import 'package:flutter/foundation.dart';
+import '../firebase_options.dart'; // Import Firebase options
 
-void main() {
+// Simple user model to replace PigeonUserDetails and avoid casting issues
+class UserData {
+  final String displayName;
+  final String email;
+  final String userId;
+  final DateTime createdAt;
+
+  UserData({
+    required this.displayName,
+    required this.email,
+    required this.userId,
+    required this.createdAt,
+  });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'displayName': displayName,
+      'email': email,
+      'userId': userId,
+      'createdAt': createdAt.toIso8601String(), // Store as string to avoid timestamp issues
+    };
+  }
+
+  factory UserData.fromMap(Map<String, dynamic> map) {
+    return UserData(
+      displayName: map['displayName'] ?? '',
+      email: map['email'] ?? '',
+      userId: map['userId'] ?? '',
+      createdAt: map['createdAt'] != null 
+          ? DateTime.parse(map['createdAt']) 
+          : DateTime.now(),
+    );
+  }
+}
+
+// Ensure Firebase is initialized before using it
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const FigmaToCodeApp());
 }
 
@@ -36,11 +81,18 @@ class _CreateAccountState extends State<CreateAccount> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
-  
+
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
   final _formKey = GlobalKey<FormState>();
   String _passwordStrength = '';
+  bool _isLoading = false;
+  String? _errorMessage;
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -51,16 +103,222 @@ class _CreateAccountState extends State<CreateAccount> {
     super.dispose();
   }
 
-  void _createAccount() {
-    if (_formKey.currentState!.validate()) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Processing Data...')),
+  // Simplified navigation method with forceful approach
+  void _navigateToLoginPage() {
+    final email = _emailController.text.trim();
+    
+    print("Navigating to login page with email: $email");
+    
+    // Use a more direct approach to navigation
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (context) => LoginPage(
+          initialEmail: email,
+          checkExistingLogin: false,
+        ),
+      ),
+    );
+  }
+
+  // Keep the emergency method as a fallback
+  void _emergencyNavigateToLogin() {
+    try {
+      print("Using emergency navigation method");
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => LoginPage()),
+        (route) => false,
       );
-      print('Account creation with: ${_nameController.text}, ${_emailController.text}');
-      // Navigate to a success screen or dashboard
+    } catch (e) {
+      print("Emergency navigation failed: $e");
+      // Try one more time with a delayed approach
+      Future.delayed(Duration(milliseconds: 500), () {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => LoginPage()),
+        );
+      });
     }
   }
 
+  Future<void> _createAccount() async {
+    if (_formKey.currentState!.validate()) {
+      setState(() {
+        _isLoading = true;
+        _errorMessage = null;
+      });
+
+      try {
+        final email = _emailController.text.trim();
+        final password = _passwordController.text;
+        final displayName = _nameController.text;
+        
+        print("Creating account with email: $email");
+        
+        // Create Firebase Auth user
+        await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: email,
+          password: password,
+        );
+        
+        // IMPORTANT: Instead of using the credential result, use currentUser directly
+        final user = FirebaseAuth.instance.currentUser;
+        
+        if (user != null) {
+          print("Account created with UID: ${user.uid}");
+           
+          try {
+            // Create a simple map of user data - avoid complex objects
+            final Map<String, dynamic> userMap = {
+              'displayName': displayName,
+              'email': email,
+              'userId': user.uid,
+              'createdAt': DateTime.now().toIso8601String(),
+              'isActive': true,
+              'lastLogin': null,
+            };
+            
+            // Store as a document, ensure it's a Map not a List
+            await FirebaseFirestore.instance
+                .collection('users')
+                .doc(user.uid)
+                .set(userMap);
+                
+            print("User data saved to Firestore: $userMap");
+            
+            // Sign out to clear any state
+            await FirebaseAuth.instance.signOut();
+            print("User signed out after account creation");
+            
+            // Don't setState loading here
+            
+            // Show success message first
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Account created successfully!'),
+                backgroundColor: Colors.green,
+                duration: Duration(seconds: 1),
+              ),
+            );
+            
+            // IMPORTANT: Use a much more direct approach with pushReplacement
+            print("Navigating directly to login page...");
+            
+            // Remove WidgetsBinding and any delay - go immediately to login
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(
+                builder: (context) => LoginPage(
+                  initialEmail: email,
+                  checkExistingLogin: false,
+                ),
+              ),
+              (route) => false, // Remove all previous routes
+            );
+            
+            // Don't return early - let the code continue to handle errors properly
+          } catch (firestoreError) {
+            print("Error saving data to Firestore: $firestoreError");
+            
+            // Check if error contains PigeonUserDetails - this is our specific issue
+            if (firestoreError.toString().contains("PigeonUserDetails")) {
+              print("DETECTED CRITICAL ERROR: PigeonUserDetails casting issue");
+              
+              // Try to recover - sign out if possible
+              try {
+                await FirebaseAuth.instance.signOut();
+              } catch (e) {
+                print("Could not sign out: $e");
+              }
+              
+              // Show success anyway - the account was created in Firebase Auth
+              if (mounted) {
+                setState(() {
+                  _isLoading = false;
+                });
+                
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Account created but profile setup failed. You can update it later.'),
+                    backgroundColor: Colors.orange,
+                    duration: Duration(seconds: 3),
+                  ),
+                );
+                
+                // Use emergency navigation
+                _emergencyNavigateToLogin();
+              }
+            } else {
+              _handleSuccessWithoutFirestore();
+            }
+          }
+        } else {
+          throw Exception("Failed to create user account");
+        }
+      } catch (e) {
+        if (e is FirebaseAuthException) {
+          _handleFirebaseAuthError(e);
+        } else {
+          setState(() {
+            _isLoading = false;
+            _errorMessage = 'Error: $e';
+          });
+        }
+        
+        print("Error creating account: $e");
+      }
+      
+      // Only set loading to false if still mounted and we haven't navigated
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  // Handle successful auth but failed Firestore
+  void _handleSuccessWithoutFirestore() {
+    if (mounted) {
+      setState(() {
+        _isLoading = false;
+      });
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Account created but profile data not saved. You can update it later.'),
+          backgroundColor: Colors.orange,
+          duration: Duration(seconds: 3),
+        ),
+      );
+      
+      _navigateToLoginPage();
+    }
+  }
+
+  // Helper method to handle FirebaseAuthException
+  void _handleFirebaseAuthError(FirebaseAuthException e) {
+    setState(() {
+      _isLoading = false;
+      switch (e.code) {
+        case 'weak-password':
+          _errorMessage = 'The password provided is too weak.';
+          break;
+        case 'email-already-in-use':
+          _errorMessage = 'An account already exists for that email.';
+          break;
+        case 'invalid-email':
+          _errorMessage = 'Please provide a valid email address.';
+          break;
+        case 'operation-not-allowed':
+          _errorMessage = 'Email/password accounts are not enabled.';
+          break;
+        default:
+          _errorMessage = 'Error: ${e.message}';
+      }
+    });
+  }
+  
   void _checkPasswordStrength(String password) {
     setState(() {
       if (password.isEmpty) {
@@ -75,23 +333,37 @@ class _CreateAccountState extends State<CreateAccount> {
     });
   }
 
+  // Add this method to debug any issues with Firestore
+  void _debugFirestoreData(String userId) async {
+    try {
+      final docRef = FirebaseFirestore.instance.collection('users').doc(userId);
+      final snapshot = await docRef.get();
+      
+      if (snapshot.exists) {
+        final data = snapshot.data();
+        print("USER DATA IN FIRESTORE: $data");
+        print("DATA TYPE: ${data.runtimeType}");
+      } else {
+        print("NO USER DATA FOUND IN FIRESTORE FOR ID: $userId");
+      }
+    } catch (e) {
+      print("ERROR DEBUGGING FIRESTORE: $e");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(  // Added Scaffold here which provides Material
+    return Scaffold(
       backgroundColor: const Color(0xFFF0F8FF),
       body: SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.only(bottom: 30),
           child: Stack(
             children: [
-              // Content container with padding
               Container(
                 width: MediaQuery.of(context).size.width,
-                height: 800, // Fixed height but with scrolling parent
-                padding: EdgeInsets.only(bottom: 20),
+                height: 800,
               ),
-              
-              // Back button
               Positioned(
                 left: 20,
                 top: 50,
@@ -104,19 +376,17 @@ class _CreateAccountState extends State<CreateAccount> {
                     height: 39,
                     decoration: ShapeDecoration(
                       shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
                         side: BorderSide(
                           width: 1,
                           color: const Color(0xFFD8DADC),
                         ),
-                        borderRadius: BorderRadius.circular(10),
                       ),
                     ),
                     child: Icon(Icons.arrow_back, color: Colors.black),
                   ),
                 ),
               ),
-              
-              // Title
               Positioned(
                 left: 20,
                 top: 137,
@@ -135,20 +405,17 @@ class _CreateAccountState extends State<CreateAccount> {
                   ),
                 ),
               ),
-              
-              // Form
               Positioned(
                 left: 20,
                 top: 200,
                 right: 20,
-                child: Material(  // Added Material widget here
+                child: Material(
                   color: Colors.transparent,
                   child: Form(
                     key: _formKey,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Full Name field
                         Text(
                           'Full Name',
                           style: TextStyle(
@@ -169,11 +436,11 @@ class _CreateAccountState extends State<CreateAccount> {
                             ),
                             filled: true,
                             fillColor: Colors.white,
+                            contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 18),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
                               borderSide: BorderSide(color: const Color(0xFFD8DADC)),
                             ),
-                            contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 18),
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
@@ -182,10 +449,7 @@ class _CreateAccountState extends State<CreateAccount> {
                             return null;
                           },
                         ),
-                        
                         SizedBox(height: 20),
-                        
-                        // Email field
                         Text(
                           'Email',
                           style: TextStyle(
@@ -207,11 +471,11 @@ class _CreateAccountState extends State<CreateAccount> {
                             ),
                             filled: true,
                             fillColor: Colors.white,
+                            contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 18),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
                               borderSide: BorderSide(color: const Color(0xFFD8DADC)),
                             ),
-                            contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 18),
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
@@ -223,10 +487,7 @@ class _CreateAccountState extends State<CreateAccount> {
                             return null;
                           },
                         ),
-                        
                         SizedBox(height: 20),
-                        
-                        // Password field with strength indicator
                         Text(
                           'Create a password',
                           style: const TextStyle(
@@ -249,11 +510,11 @@ class _CreateAccountState extends State<CreateAccount> {
                             ),
                             filled: true,
                             fillColor: Colors.white,
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
                               borderSide: const BorderSide(color: Color(0xFFD8DADC)),
                             ),
-                            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
                             suffixIcon: IconButton(
                               icon: Icon(
                                 _obscurePassword ? Icons.visibility_off : Icons.visibility,
@@ -288,10 +549,7 @@ class _CreateAccountState extends State<CreateAccount> {
                             fontSize: 12,
                           ),
                         ),
-                        
                         SizedBox(height: 20),
-                        
-                        // Confirm password field
                         Text(
                           'Confirm password',
                           style: TextStyle(
@@ -313,11 +571,11 @@ class _CreateAccountState extends State<CreateAccount> {
                             ),
                             filled: true,
                             fillColor: Colors.white,
+                            contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 18),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
                               borderSide: BorderSide(color: const Color(0xFFD8DADC)),
                             ),
-                            contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 18),
                             suffixIcon: IconButton(
                               icon: Icon(
                                 _obscureConfirmPassword ? Icons.visibility_off : Icons.visibility,
@@ -340,59 +598,52 @@ class _CreateAccountState extends State<CreateAccount> {
                             return null;
                           },
                         ),
-                        
                         SizedBox(height: 40),
-                        
-                        // Create Account button with loading indicator
                         Center(
-                          child: GestureDetector(
-                            onTap: () {
-                              if (_formKey.currentState!.validate()) {
-                                showDialog(
-                                  context: context,
-                                  barrierDismissible: false,
-                                  builder: (context) => const Center(
-                                    child: CircularProgressIndicator(),
-                                  ),
-                                );
-                                Future.delayed(const Duration(seconds: 2), () {
-                                  Navigator.pop(context); // Close loading dialog
-                                  _createAccount();
-                                });
-                              }
-                            },
-                            child: Container(
-                              width: 353,
-                              height: 56,
-                              decoration: ShapeDecoration(
-                                color: const Color(0xFF192F5D),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                              ),
-                              child: Center(
-                                child: Text(
-                                  'Create Account',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 16,
-                                    fontFamily: 'Inter',
-                                    fontWeight: FontWeight.w600,
+                          child: Column(
+                            children: [
+                              if (_errorMessage != null)
+                                Padding(
+                                  padding: const EdgeInsets.only(bottom: 10),
+                                  child: Text(
+                                    _errorMessage!,
+                                    style: const TextStyle(color: Colors.red, fontSize: 14),
                                   ),
                                 ),
+                              GestureDetector(
+                                onTap: _isLoading ? null : _createAccount,
+                                child: Container(
+                                  width: 353,
+                                  height: 56,
+                                  decoration: ShapeDecoration(
+                                    color: const Color(0xFF192F5D),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                  ),
+                                  child: Center(
+                                    child: _isLoading
+                                        ? const CircularProgressIndicator(color: Colors.white)
+                                        : const Text(
+                                            'Create Account',
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 16,
+                                              fontFamily: 'Inter',
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                  ),
+                                ),
                               ),
-                            ),
+                            ],
                           ),
                         ),
-                        
                         SizedBox(height: 20),
-                        
-                        // Login link
                         Center(
                           child: GestureDetector(
                             onTap: () {
-                              // Navigate to login page instead of just going back
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(builder: (context) => LoginPage()),

@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'ResetPassword.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'login-page.dart';
 
 class ForgotPassword2 extends StatefulWidget {
   final String email;
+  final String? verificationCode; // Keeping for backward compatibility
   
   const ForgotPassword2({
     super.key,
-    this.email = 'helloworld@gmail.com',  // Default email or get it from previous screen
+    this.email = 'helloworld@gmail.com',
+    this.verificationCode,
   });
 
   @override
@@ -15,127 +18,56 @@ class ForgotPassword2 extends StatefulWidget {
 }
 
 class _ForgotPassword2State extends State<ForgotPassword2> {
-  // Controllers for OTP input fields
-  final TextEditingController _firstDigitController = TextEditingController();
-  final TextEditingController _secondDigitController = TextEditingController();
-  final TextEditingController _thirdDigitController = TextEditingController();
-  final TextEditingController _fourthDigitController = TextEditingController();
-  
-  // Focus nodes for OTP fields
-  final FocusNode _firstDigitFocus = FocusNode();
-  final FocusNode _secondDigitFocus = FocusNode();
-  final FocusNode _thirdDigitFocus = FocusNode();
-  final FocusNode _fourthDigitFocus = FocusNode();
-  
-  // Timer for resend functionality
-  Timer? _timer;
-  int _secondsRemaining = 30;
-  bool _isTimerActive = true;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  bool _isResending = false;
 
-  @override
-  void initState() {
-    super.initState();
-    startTimer();
-  }
-
-  @override
-  void dispose() {
-    _timer?.cancel();
-    _firstDigitController.dispose();
-    _secondDigitController.dispose();
-    _thirdDigitController.dispose();
-    _fourthDigitController.dispose();
-    _firstDigitFocus.dispose();
-    _secondDigitFocus.dispose();
-    _thirdDigitFocus.dispose();
-    _fourthDigitFocus.dispose();
-    super.dispose();
-  }
-
-  void startTimer() {
-    const oneSec = Duration(seconds: 1);
-    _timer = Timer.periodic(oneSec, (Timer timer) {
-      setState(() {
-        if (_secondsRemaining < 1) {
-          _isTimerActive = false;
-          timer.cancel();
-        } else {
-          _secondsRemaining = _secondsRemaining - 1;
-        }
-      });
+  // Resend the password reset email
+  Future<void> _resendResetEmail() async {
+    if (_isResending) return;
+    
+    setState(() {
+      _isResending = true;
     });
-  }
-
-  void resendCode() {
-    if (!_isTimerActive) {
-      // Logic to resend code
-      setState(() {
-        _secondsRemaining = 30;
-        _isTimerActive = true;
-      });
-      startTimer();
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Verification code resent!')),
-      );
-    }
-  }
-
-  void verifyOTP() {
-    String otp = _firstDigitController.text + 
-                 _secondDigitController.text + 
-                 _thirdDigitController.text + 
-                 _fourthDigitController.text;
-                 
-    if (otp.length == 4) {
-      // Verification logic here
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Verification successful!')),
-      );
+    
+    try {
+      await _auth.sendPasswordResetEmail(email: widget.email);
       
-      // Navigate to ResetPassword screen
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const ResetPassword()),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter a valid 4-digit code')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Password reset link sent again! Please check your email.'),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 3),
+          ),
+        );
+      }
+    } catch (e) {
+      String errorMessage = 'Failed to resend link: ${e.toString()}';
+      
+      if (e is FirebaseAuthException) {
+        if (e.code == 'too-many-requests') {
+          errorMessage = 'Too many reset attempts. Please wait 15-30 minutes before trying again.';
+        } else if (e.message != null && e.message.toString().contains("unusual activity")) {
+          errorMessage = 'Request blocked due to unusual activity. Please try again later.';
+        }
+      }
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(errorMessage),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 5),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isResending = false;
+        });
+      }
     }
-  }
-
-  // OTP field widget builder
-  Widget _buildOtpField(TextEditingController controller, FocusNode focusNode, FocusNode? nextFocus) {
-    return Container(
-      width: 70,
-      height: 70,
-      decoration: BoxDecoration(
-        border: Border.all(color: const Color(0xFFD8DADC)),
-        borderRadius: BorderRadius.circular(15),
-      ),
-      child: TextField(
-        controller: controller,
-        focusNode: focusNode,
-        keyboardType: TextInputType.number,
-        textAlign: TextAlign.center,
-        maxLength: 1,
-        style: const TextStyle(
-          color: Colors.black,
-          fontSize: 28,
-          fontFamily: 'Inter',
-          fontWeight: FontWeight.w500,
-        ),
-        decoration: const InputDecoration(
-          counterText: '',
-          border: InputBorder.none,
-        ),
-        onChanged: (value) {
-          if (value.isNotEmpty && nextFocus != null) {
-            FocusScope.of(context).requestFocus(nextFocus);
-          }
-        },
-      ),
-    );
   }
 
   @override
@@ -146,29 +78,23 @@ class _ForgotPassword2State extends State<ForgotPassword2> {
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const SizedBox(height: 30),
               
-              // Back button
-              GestureDetector(
-                onTap: () => Navigator.pop(context),
-                child: Container(
-                  width: 39,
-                  height: 39,
-                  decoration: BoxDecoration(
-                    border: Border.all(color: const Color(0xFFD8DADC)),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: const Icon(Icons.arrow_back, color: Colors.black54),
-                ),
+              // App logo or icon
+              const Icon(
+                Icons.email_outlined,
+                size: 100,
+                color: Color(0xFF192F5D),
               ),
               
-              const SizedBox(height: 65),
+              const SizedBox(height: 40),
               
               // Header text
               const Text(
-                'Please check your email',
+                'Check your email',
+                textAlign: TextAlign.center,
                 style: TextStyle(
                   color: Colors.black,
                   fontSize: 30,
@@ -179,104 +105,104 @@ class _ForgotPassword2State extends State<ForgotPassword2> {
                 ),
               ),
               
-              const SizedBox(height: 41),
+              const SizedBox(height: 20),
               
-              // Email text
-              RichText(
-                text: TextSpan(
-                  children: [
-                    const TextSpan(
-                      text: 'A code has been sent to',
-                      style: TextStyle(
-                        color: Colors.black54,
-                        fontSize: 16,
-                        fontFamily: 'Inter',
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                    TextSpan(
-                      text: widget.email,
-                      style: const TextStyle(
-                        color: Colors.black,
-                        fontSize: 16,
-                        fontFamily: 'Inter',
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
+              // Message
+              Text(
+                'We\'ve sent a password reset link to ${widget.email}',
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  color: Colors.black87,
+                  fontSize: 16,
+                  fontFamily: 'Inter',
+                  fontWeight: FontWeight.w400,
+                  height: 1.5,
                 ),
               ),
               
-              const SizedBox(height: 37),
+              const SizedBox(height: 10),
               
-              // OTP fields
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  _buildOtpField(_firstDigitController, _firstDigitFocus, _secondDigitFocus),
-                  _buildOtpField(_secondDigitController, _secondDigitFocus, _thirdDigitFocus),
-                  _buildOtpField(_thirdDigitController, _thirdDigitFocus, _fourthDigitFocus),
-                  _buildOtpField(_fourthDigitController, _fourthDigitFocus, null),
-                ],
+              const Text(
+                'Click the link in the email to reset your password.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.black54,
+                  fontSize: 16,
+                  fontFamily: 'Inter',
+                  fontWeight: FontWeight.w400,
+                  height: 1.5,
+                ),
               ),
               
-              const SizedBox(height: 38),
+              const SizedBox(height: 20),
               
-              // Verify button
+              // Email client suggestions
+              const Text(
+                "Can't find the email? Check your spam folder.",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.black54,
+                  fontSize: 14,
+                  fontFamily: 'Inter',
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+              
+              const SizedBox(height: 50),
+              
+              // Resend button
               SizedBox(
                 width: double.infinity,
                 height: 56,
                 child: ElevatedButton(
-                  onPressed: verifyOTP,
+                  onPressed: _isResending ? null : _resendResetEmail,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF192F5D),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  child: const Text(
-                    'Verify',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontFamily: 'Inter',
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
+                  child: _isResending 
+                    ? const SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2,
+                        ),
+                      )
+                    : const Text(
+                        'Resend Email',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontFamily: 'Inter',
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                 ),
               ),
               
-              const SizedBox(height: 38),
+              const SizedBox(height: 20),
               
-              // Resend code and timer
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  GestureDetector(
-                    onTap: resendCode,
-                    child: Text(
-                      'Send code again',
-                      style: TextStyle(
-                        color: _isTimerActive ? Colors.black45 : Colors.black87,
-                        fontSize: 16,
-                        fontFamily: 'Inter',
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
+              // Back to login button
+              TextButton(
+                onPressed: () {
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => const LoginPage()),
+                    (route) => false,
+                  );
+                },
+                child: const Text(
+                  'Back to Login',
+                  style: TextStyle(
+                    color: Color(0xFF192F5D),
+                    fontSize: 16,
+                    fontFamily: 'Inter',
+                    fontWeight: FontWeight.w500,
                   ),
-                  const SizedBox(width: 10),
-                  Text(
-                    _isTimerActive 
-                      ? '${_secondsRemaining ~/ 60}:${(_secondsRemaining % 60).toString().padLeft(2, '0')}'
-                      : '',
-                    style: const TextStyle(
-                      color: Colors.black45,
-                      fontSize: 16,
-                      fontFamily: 'Inter',
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                ],
+                ),
               ),
             ],
           ),

@@ -7,7 +7,7 @@ import './Chat.dart';
 import './Profile.dart'; // Add this import
 
 class Calendar extends StatefulWidget {
-  const Calendar({Key? key}) : super(key: key);
+  const Calendar({super.key});
 
   @override
   State<Calendar> createState() => _CalendarState();

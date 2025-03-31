@@ -6,7 +6,7 @@ import './Calendar.dart';
 import './Profile.dart'; // Add this import
 
 class ChatScreen extends StatefulWidget {
-  const ChatScreen({Key? key}) : super(key: key);
+  const ChatScreen({super.key});
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
@@ -18,8 +18,8 @@ class _ChatScreenState extends State<ChatScreen> with SingleTickerProviderStateM
   final TextEditingController _searchController = TextEditingController();
   bool _isTeamsTab = true;
   int _currentIndex = 2; // Set to 2 for Chat tab
-  List<String> _teams = ['Product Launch Team', 'Marketing Team', 'Development Team'];
-  List<String> _members = ['Alice', 'Bob', 'Charlie', 'David', 'Eve'];
+  final List<String> _teams = ['Product Launch Team', 'Marketing Team', 'Development Team'];
+  final List<String> _members = ['Alice', 'Bob', 'Charlie', 'David', 'Eve'];
   String _searchQuery = '';
 
   @override
