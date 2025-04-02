@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'login-page.dart'; // Add import for login page
+import 'package:fluttercomponenets/services/auth_service.dart';
+import 'login-page.dart'; // Add import for login page  
 
 void main() {
   runApp(const FigmaToCodeApp());
@@ -51,7 +52,8 @@ class _CreateAccountState extends State<CreateAccount> {
     super.dispose();
   }
 
-  void _createAccount() {
+  void _createAccount() async{
+    await AuthService().signup(email: _emailController.text, password: _passwordController.text);
     if (_formKey.currentState!.validate()) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Processing Data...')),

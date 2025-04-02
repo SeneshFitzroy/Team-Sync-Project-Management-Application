@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttercomponenets/services/auth_service.dart';
 import 'create account.dart'; // Add import for create account page
 import 'ForgetPassword.dart'; // Add import for forget password page
 import 'Dashboard.dart'; // Add import for dashboard page
@@ -35,6 +36,10 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _login() async {
+    await AuthService().signin(
+      email: _emailController.text.trim(),
+      password: _passwordController.text.trim(),
+    );
     // Clear previous errors
     setState(() {
       _emailError = null;

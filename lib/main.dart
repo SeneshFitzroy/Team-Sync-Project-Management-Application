@@ -3,6 +3,10 @@ import 'package:flutter/material.dart';
 // Import welcome screen
 import 'Screens/welcome-page1.dart';
 
+// Import Firebase options
+import 'firebase_options.dart';
+import 'package:firebase_core/firebase_core.dart'; // Import Firebase core package
+
 // UI Components
 import 'Components/backbutton.dart';
 import 'Components/nav_bar.dart';
@@ -26,7 +30,11 @@ import 'Components/whitebutton.dart';
 // Profile Components
 import 'Components/profile_header.dart';
 
-void main() {
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const MyApp());
 }
 

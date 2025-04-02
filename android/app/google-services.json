@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "3261747080",
+    "project_id": "teamsynclogin",
+    "storage_bucket": "teamsynclogin.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:3261747080:android:7421d6ea90de34d09b743d",
+        "android_client_info": {
+          "package_name": "com.example.fluttercomponenets"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB8C5HKOuzchaF-cZC_kJiOu3UXhZofOXk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
