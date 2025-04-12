@@ -176,8 +176,3 @@ Please ensure your code adheres to our coding guidelines and includes proper doc
 ## License 📄
 
 This project is licensed under the **Apache 2.0 License**. See the [LICENSE](LICENSE) file for details. 🔓
-```
-
----
-
-I added emojis for better visual appeal and engagement, as well as for clarity in each section. You can now copy and paste the entire block into your `README.md` file on GitHub. Let me know if you need any further adjustments! 😊
