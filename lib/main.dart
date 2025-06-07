@@ -5,6 +5,22 @@ import 'firebase_options.dart';
 
 // Import welcome screen
 import 'Screens/welcome-page1.dart';
+import 'Screens/welcome-page2.dart';
+import 'Screens/login-page.dart';
+import 'Screens/create account.dart';
+import 'Screens/Dashboard.dart';
+import 'Screens/ForgetPassword.dart';
+import 'Screens/TaskManager.dart';
+import 'Screens/Profile.dart';
+import 'Screens/Calendar.dart';
+import 'Screens/Chat.dart';
+import 'Screens/CreateaNewProject.dart';
+import 'Screens/AddTeamMembers.dart';
+import 'Screens/Notifications.dart';
+import 'Screens/AboutTaskSync.dart';
+import 'Screens/ContactSupport.dart';
+import 'Screens/EditProfile.dart';
+import 'Screens/ChangePassword.dart';
 
 // UI Components
 // Add this import
@@ -64,12 +80,73 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Team Sync',
+      title: 'TaskSync',
       theme: ThemeData(
         primarySwatch: Colors.blue,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF1989BD),
+          primary: const Color(0xFF1989BD),
+          secondary: const Color(0xFF192F5D),
+        ),
+        useMaterial3: true,
         visualDensity: VisualDensity.adaptivePlatformDensity,
+        scaffoldBackgroundColor: Colors.white,
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Color(0xFF1989BD),
+          foregroundColor: Colors.white,
+          elevation: 0,
+        ),
       ),
-      home: WelcomePage1(),
+      debugShowCheckedModeBanner: false,
+      home: const AuthWrapper(),
+      routes: {
+        '/welcome1': (context) => const WelcomePage1(),
+        '/welcome2': (context) => const LoginScreen(),
+        '/login': (context) => const LoginPage(),
+        '/signup': (context) => const CreateAccount(),
+        '/dashboard': (context) => const Dashboard(),
+        '/forgot-password': (context) => const ForgetPassword(),
+        '/tasks': (context) => const TaskManager(),
+        '/profile': (context) => const Profile(),
+        '/calendar': (context) => const Calendar(),
+        '/chat': (context) => const Chat(),
+        '/create-project': (context) => const CreateaNewProject(),
+        '/add-members': (context) => const AddTeamMembers(),
+        '/notifications': (context) => const Notifications(),
+        '/about': (context) => const AboutTaskSync(),
+        '/contact': (context) => const ContactSupport(),
+        '/edit-profile': (context) => const EditProfile(),
+        '/change-password': (context) => const ChangePassword(),
+      },
+    );
+  }
+}
+
+class AuthWrapper extends StatelessWidget {
+  const AuthWrapper({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<User?>(
+      stream: FirebaseAuth.instance.authStateChanges(),
+      builder: (context, snapshot) {
+        // Show loading while checking auth state
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        }
+        
+        // If user is logged in, go to dashboard
+        if (snapshot.hasData && snapshot.data != null) {
+          return const Dashboard();
+        }
+        
+        // If no user, show welcome page
+        return const WelcomePage1();
+      },
     );
   }
 }

@@ -2,12 +2,12 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
 
 android {
-    compileSdkVersion 33
+    namespace "com.example.fluttercomponenets"
+    compileSdkVersion 34
 
     defaultConfig {
-        applicationId "com.example.fluttercomponenets"
-        minSdkVersion 23  // Update minimum SDK version to 23 for Firebase Auth compatibility
-        targetSdkVersion 33
+        applicationId "com.example.fluttercomponenets"        minSdkVersion 23  // Update minimum SDK version to 23 for Firebase Auth compatibility
+        targetSdkVersion 34
         versionCode 1
         versionName "1.0"
         multiDexEnabled true
