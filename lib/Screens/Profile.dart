@@ -4,7 +4,7 @@ import 'Notifications.dart';  // Import the Notifications screen
 import 'ChangePassword.dart';  // Import the ChangePassword screen
 import 'AboutTaskSync.dart';  // Import the AboutTaskSync screen
 import 'ContactSupport.dart';  // Import the ContactSupport screen
-import 'welcome-page2.dart';  // Import the Welcome Page
+import 'welcome-page1.dart';  // Import the Welcome Page
 import 'package:firebase_auth/firebase_auth.dart';  // Import Firebase Auth for logout
 
 class ProfileScreen extends StatefulWidget {  // Changed to StatefulWidget
@@ -237,23 +237,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       TextButton(
                         onPressed: () {
                           // Sign out from Firebase
-                          FirebaseAuth.instance.signOut().then((_) {
-                            // Close the dialog
+                          FirebaseAuth.instance.signOut().then((_) {                            // Close the dialog
                             Navigator.pop(context);
                             // Navigate to Welcome Page and remove all previous routes
                             Navigator.of(context).pushAndRemoveUntil(
                               MaterialPageRoute(
-                                builder: (context) => const WelcomePage2(),
+                                builder: (context) => const WelcomePage1(),
                               ),
                               (route) => false, // Remove all previous routes
                             );
-                          }).catchError((error) {
-                            print("Error signing out: $error");
+                          }).catchError((error) {                            print("Error signing out: $error");
                             // Still navigate to Welcome Page even if there's an error
                             Navigator.pop(context);
                             Navigator.of(context).pushAndRemoveUntil(
                               MaterialPageRoute(
-                                builder: (context) => const WelcomePage2(),
+                                builder: (context) => const WelcomePage1(),
                               ),
                               (route) => false,
                             );

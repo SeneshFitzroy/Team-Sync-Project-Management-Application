@@ -5,6 +5,7 @@ import 'CreateaNewProject.dart'; // Import the CreateANewProject screen
 import './TaskManager.dart'; // Import TaskManager
 import './Chat.dart'; // Import Chat
 import './Calendar.dart'; // Import Calendar
+import 'welcome-page1.dart'; // Import WelcomePage1
 import 'welcome-page2.dart'; // Import WelcomePage2
 import 'package:firebase_auth/firebase_auth.dart'; // Add this import
 import 'package:cloud_firestore/cloud_firestore.dart'; // Correct Firestore import
@@ -597,9 +598,8 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
         // Actually sign out the user from Firebase Auth
         await FirebaseAuth.instance.signOut();
         print("User logged out from Firebase");
-        
-        // For testing purposes, add a debug print to confirm navigation is triggered
-        print("Navigating to WelcomePage2...");
+          // For testing purposes, add a debug print to confirm navigation is triggered
+        print("Navigating to welcome page...");
         
         // Use Future.delayed to ensure the auth state change has propagated
         // and to make sure any SnackBar messages have time to be seen
@@ -608,7 +608,7 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
           if (mounted) {
             // Use pushAndRemoveUntil to clear the navigation stack
             Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(builder: (context) => const WelcomePage2()),
+              MaterialPageRoute(builder: (context) => const WelcomePage1()),
               (Route<dynamic> route) => false, // This removes all previous routes
             );
           }
