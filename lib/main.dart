@@ -36,13 +36,13 @@ import 'Screens/ChangePassword.dart';
 void main() async {
   // Ensure Flutter is initialized before calling Firebase
   WidgetsFlutterBinding.ensureInitialized();
-  
-  try {
+    try {
     // Firebase initialization with error handling
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     ).catchError((error) {
       print("Firebase initialization error caught and handled: $error");
+      throw error; // Re-throw to be caught by outer try-catch
     });
     
     print("Firebase initialized successfully");
@@ -98,24 +98,28 @@ class MyApp extends StatelessWidget {
         ),
       ),
       debugShowCheckedModeBanner: false,
-      home: const AuthWrapper(),
-      routes: {
+      home: const AuthWrapper(),      routes: {
         '/welcome1': (context) => const WelcomePage1(),
-        '/welcome2': (context) => const LoginScreen(),
+        '/welcome2': (context) => const WelcomePage2(),
         '/login': (context) => const LoginPage(),
         '/signup': (context) => const CreateAccount(),
         '/dashboard': (context) => const Dashboard(),
-        '/forgot-password': (context) => const ForgetPassword(),
+        '/forgot-password': (context) => const ForgetPasswordScreen(),
         '/tasks': (context) => const TaskManager(),
-        '/profile': (context) => const Profile(),
+        '/profile': (context) => const ProfileScreen(),
         '/calendar': (context) => const Calendar(),
-        '/chat': (context) => const Chat(),
-        '/create-project': (context) => const CreateaNewProject(),
+        '/chat': (context) => const ChatScreen(),
+        '/create-project': (context) => const CreateANewProject(),
         '/add-members': (context) => const AddTeamMembers(),
-        '/notifications': (context) => const Notifications(),
+        '/notifications': (context) => const NotificationsScreen(),
         '/about': (context) => const AboutTaskSync(),
         '/contact': (context) => const ContactSupport(),
-        '/edit-profile': (context) => const EditProfile(),
+        '/edit-profile': (context) => const EditProfile(
+          name: '',
+          username: '',
+          email: '',
+          phoneNumber: '',
+        ),
         '/change-password': (context) => const ChangePassword(),
       },
     );

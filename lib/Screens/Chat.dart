@@ -341,64 +341,10 @@ class _ChatScreenState extends State<ChatScreen> with SingleTickerProviderStateM
           ),
           */
         ],
-      ),
-      bottomNavigationBar: NavBar(
+      ),      bottomNavigationBar: NavBar(
         selectedIndex: _currentIndex,
         onTap: _onNavBarTap,
       ),
-    );
-  }
-
-  Widget _buildNavItem(IconData icon, String label, bool isSelected, {int? badgeCount}) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Stack(
-          clipBehavior: Clip.none,
-          children: [
-            Icon(
-              icon,
-              color: isSelected ? const Color(0xFF150303) : const Color(0xFF666666),
-            ),
-            if (badgeCount != null)
-              Positioned(
-                right: -10,
-                top: -5,
-                child: Container(
-                  padding: const EdgeInsets.all(4),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFFF1212),
-                    shape: BoxShape.circle,
-                  ),
-                  constraints: const BoxConstraints(
-                    minWidth: 16,
-                    minHeight: 16,
-                  ),
-                  child: Center(
-                    child: Text(
-                      badgeCount.toString(),
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-          ],
-        ),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: TextStyle(
-            color: isSelected ? const Color(0xFF150303) : const Color(0xFF666666),
-            fontSize: 12,
-            fontFamily: 'Inter',
-            fontWeight: FontWeight.w400,
-          ),
-        ),
-      ],
     );
   }
 }
