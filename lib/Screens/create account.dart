@@ -3,7 +3,6 @@ import 'login-page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; // Add Firestore for user data
-import 'package:flutter/foundation.dart';
 import '../firebase_options.dart'; // Import Firebase options
 
 // Simple user model to replace PigeonUserDetails and avoid casting issues
@@ -360,7 +359,7 @@ class _CreateAccountState extends State<CreateAccount> {
           padding: EdgeInsets.only(bottom: 30),
           child: Stack(
             children: [
-              Container(
+              SizedBox(
                 width: MediaQuery.of(context).size.width,
                 height: 800,
               ),

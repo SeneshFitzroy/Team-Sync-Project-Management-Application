@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart'; // Add Firebase Auth import
 import 'package:shared_preferences/shared_preferences.dart'; // Import SharedPreferences
-import 'package:cloud_firestore/cloud_firestore.dart'; // Import Firestore
-import '../utils/firebase_helpers.dart'; // Import the helper
+// Import Firestore
+// Import the helper
 import '../utils/auth_helper.dart'; // Import AuthHelper
 import 'create account.dart';
 import 'ForgetPassword.dart';
@@ -218,7 +218,7 @@ class _LoginPageState extends State<LoginPage> {
       }
     } catch (e) {
       print("Error in direct login approach: $e");
-      throw e; // Re-throw for proper handling
+      rethrow; // Re-throw for proper handling
     }
   }
 

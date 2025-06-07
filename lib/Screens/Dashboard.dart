@@ -173,7 +173,7 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
       print("Default projects saved to Firestore successfully");
     } catch (e) {
       print("Error saving default projects to Firestore: $e");
-      throw e; // Re-throw to be caught by the calling function
+      rethrow; // Re-throw to be caught by the calling function
     }
   }
   
@@ -1151,7 +1151,7 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
           ),
         );
       }
-      throw e;
+      rethrow;
     }
   }
 
@@ -1174,7 +1174,7 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
           ),
         );
       }
-      throw e;
+      rethrow;
     }
   }
 
