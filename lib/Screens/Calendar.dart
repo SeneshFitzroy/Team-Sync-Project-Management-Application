@@ -342,10 +342,9 @@ class _CalendarState extends State<Calendar> {
                   ),
                 ],
               ),
-              
-              const SizedBox(height: 12),
-                // Task items
-              Expanded(
+                const SizedBox(height: 12),
+              // Task items  
+              Flexible(
                 child: _isLoadingTasks
                     ? const Center(
                         child: CircularProgressIndicator(),

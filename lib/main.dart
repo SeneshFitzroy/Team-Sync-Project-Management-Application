@@ -4,9 +4,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'firebase_options.dart';
 
-// Import Firebase Service
-import 'Services/firebase_service.dart';
-
 // Import welcome screen
 import 'Screens/welcome-page1.dart';
 import 'Screens/login-page.dart';
