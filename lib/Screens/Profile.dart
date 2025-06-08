@@ -7,7 +7,6 @@ import 'ContactSupport.dart';  // Import the ContactSupport screen
 import 'welcome-page1.dart';  // Import the Welcome Page
 import 'package:firebase_auth/firebase_auth.dart';  // Import Firebase Auth for logout
 import 'package:shared_preferences/shared_preferences.dart';  // Import SharedPreferences
-import 'package:cloud_firestore/cloud_firestore.dart';  // Import Firestore
 import '../Services/firebase_service.dart';  // Import Firebase Service
 
 class ProfileScreen extends StatefulWidget {  // Changed to StatefulWidget
@@ -178,11 +177,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             
             const SizedBox(height: 30),
-            
-            // Edit Profile Button
+              // Edit Profile Button
             SizedBox(
               width: double.infinity,
-              child: ElevatedButton(                onPressed: () async {
+              child: ElevatedButton(
+                onPressed: () async {
                   // Navigate to EditProfile and wait for result
                   final result = await Navigator.push(
                     context,
@@ -199,14 +198,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   // Refresh profile data after edit
                   if (result != null) {
                     _loadUserProfile(); // Reload data from Firebase
-                  }
-                },
-                    setState(() {
-                      userName = result['name'] ?? userName;
-                      userHandle = result['username'] ?? userHandle;
-                      email = result['email'] ?? email;
-                      phoneNumber = result['phoneNumber'] ?? phoneNumber;
-                    });
                   }
                 },
                 style: ElevatedButton.styleFrom(
