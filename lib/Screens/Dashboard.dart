@@ -577,9 +577,23 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
         ),
       ),
     );
-  }
-  Future<void> _handleLogout(BuildContext context) async {
-    print("_handleLogout called");
+  }  Future<void> _handleLogout(BuildContext context) async {
+    print("=== LOGOUT DEBUG START ===");
+    print("_handleLogout called at ${DateTime.now()}");
+    
+    // Check current auth state before logout
+    final currentUser = FirebaseAuth.instance.currentUser;
+    print("Current Firebase Auth user: ${currentUser?.uid ?? 'null'}");
+    print("Current Firebase Auth email: ${currentUser?.email ?? 'null'}");
+    
+    // Check bypass mode before logout
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final bypassMode = prefs.getBool('bypass_mode') ?? false;
+      print("Current bypass mode: $bypassMode");
+    } catch (e) {
+      print("Error checking bypass mode: $e");
+    }
     
     try {
       // Show confirmation dialog with better styling
@@ -605,7 +619,7 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
             actions: <Widget>[
               TextButton(
                 onPressed: () {
-                  print("Logout cancelled");
+                  print("Logout cancelled by user");
                   Navigator.of(context).pop(false);
                 },
                 style: TextButton.styleFrom(
@@ -615,7 +629,7 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
               ),
               ElevatedButton(
                 onPressed: () {
-                  print("Logout confirmed");
+                  print("Logout confirmed by user");
                   Navigator.of(context).pop(true);
                 },
                 style: ElevatedButton.styleFrom(
@@ -635,9 +649,9 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
       print("Dialog result: $confirm");
 
       if (confirm == true) {
-        print("Starting logout process...");
+        print("=== STARTING LOGOUT PROCESS ===");
         
-        // Show a loading indicator with better styling
+        // Show a loading indicator
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Row(
@@ -654,87 +668,123 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
                 Text('Logging out...'),
               ],
             ),
-            duration: Duration(seconds: 2),
+            duration: Duration(seconds: 3),
             backgroundColor: Color(0xFF192F5D),
           ),
         );
         
-        // Clear bypass mode first
+        // Step 1: Clear SharedPreferences
+        print("Step 1: Clearing SharedPreferences...");
         try {
           final prefs = await SharedPreferences.getInstance();
-          await prefs.setBool('bypass_mode', false);
-          await prefs.clear(); // Clear all preferences for a clean logout
-          print("Bypass mode and preferences cleared");
+          
+          // Log all current preferences
+          final keys = prefs.getKeys();
+          print("Current SharedPreferences keys: $keys");
+          for (String key in keys) {
+            print("  $key: ${prefs.get(key)}");
+          }
+          
+          // Clear all preferences
+          await prefs.clear();
+          print("SharedPreferences cleared successfully");
+          
+          // Verify they're cleared
+          final keysAfter = prefs.getKeys();
+          print("SharedPreferences keys after clear: $keysAfter");
+          
         } catch (e) {
-          print("Error clearing preferences: $e");
+          print("ERROR clearing SharedPreferences: $e");
+          // Continue with logout even if clearing preferences fails
         }
         
-        // Actually sign out the user from Firebase Auth
+        // Step 2: Sign out from Firebase Auth
+        print("Step 2: Signing out from Firebase Auth...");
         try {
+          // Check auth state before signout
+          final userBeforeSignout = FirebaseAuth.instance.currentUser;
+          print("User before signout: ${userBeforeSignout?.uid ?? 'null'}");
+          
+          // Actually sign out
           await FirebaseAuth.instance.signOut();
-          print("User logged out from Firebase successfully");
+          print("Firebase signOut() completed");
+          
+          // Check auth state after signout
+          final userAfterSignout = FirebaseAuth.instance.currentUser;
+          print("User after signout: ${userAfterSignout?.uid ?? 'null'}");
+          
+          if (userAfterSignout == null) {
+            print("✓ Firebase logout successful - user is null");
+          } else {
+            print("⚠ WARNING: Firebase user still exists after signout");
+          }
+          
         } catch (e) {
-          print("Firebase logout error: $e");
+          print("ERROR during Firebase signout: $e");
           // Continue with navigation even if Firebase logout fails
         }
         
-        // Wait a moment for the SnackBar to be visible
-        await Future.delayed(const Duration(milliseconds: 800));
+        // Step 3: Wait a moment to ensure state changes are processed
+        print("Step 3: Waiting for state changes to process...");
+        await Future.delayed(const Duration(milliseconds: 1000));
         
-        // Navigate to welcome page with better error handling
+        // Step 4: Navigate to welcome page
+        print("Step 4: Navigating to welcome page...");
         if (mounted) {
-          print("Navigating to welcome page...");
-          
           try {
-            // Use pushNamedAndRemoveUntil if you have named routes, or pushAndRemoveUntil
-            Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(
-                builder: (context) => const WelcomePage1(),
-                settings: RouteSettings(name: '/welcome'),
-              ),
+            // Close any existing SnackBars
+            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+            
+            // Use pushNamedAndRemoveUntil to completely clear the navigation stack
+            Navigator.of(context).pushNamedAndRemoveUntil(
+              '/welcome1',
               (Route<dynamic> route) => false, // Remove all previous routes
             );
             
-            print("Navigation completed successfully");
+            print("✓ Navigation to welcome page completed successfully");
             
-            // Show success message after navigation
-            Future.delayed(Duration(milliseconds: 500), () {
+          } catch (navigationError) {
+            print("ERROR during navigation: $navigationError");
+            
+            // Try alternative navigation method
+            try {
+              Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(
+                  builder: (context) => const WelcomePage1(),
+                  settings: RouteSettings(name: '/welcome'),
+                ),
+                (Route<dynamic> route) => false,
+              );
+              print("✓ Alternative navigation successful");
+            } catch (altNavError) {
+              print("ERROR with alternative navigation: $altNavError");
+              
+              // Show error to user
               if (mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Row(
-                      children: [
-                        Icon(Icons.check_circle, color: Colors.white, size: 20),
-                        SizedBox(width: 12),
-                        Text('Logged out successfully'),
-                      ],
-                    ),
-                    backgroundColor: Colors.green,
-                    duration: Duration(seconds: 2),
+                    content: Text('Navigation error. Please restart the app.'),
+                    backgroundColor: Colors.red,
+                    duration: Duration(seconds: 5),
                   ),
                 );
               }
-            });
-            
-          } catch (navigationError) {
-            print("Navigation error: $navigationError");
-            if (mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('Navigation error: $navigationError'),
-                  backgroundColor: Colors.red,
-                ),
-              );
             }
           }
         } else {
-          print("Widget not mounted, skipping navigation");
+          print("WARNING: Widget not mounted, skipping navigation");
         }
+        
+        print("=== LOGOUT PROCESS COMPLETED ===");
+        
       } else {
         print("Logout cancelled by user");
       }
     } catch (e) {
-      print("Error during logout process: $e");
+      print("CRITICAL ERROR during logout process: $e");
+      print("Error type: ${e.runtimeType}");
+      print("Error stackTrace: ${StackTrace.current}");
+      
       // Make sure the widget is still mounted before showing the SnackBar
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -747,7 +797,7 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
               ],
             ),
             backgroundColor: Colors.red,
-            duration: Duration(seconds: 4),
+            duration: Duration(seconds: 5),
             action: SnackBarAction(
               label: 'RETRY',
               textColor: Colors.white,
@@ -757,6 +807,8 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
         );
       }
     }
+    
+    print("=== LOGOUT DEBUG END ===");
   }
 
   @override
