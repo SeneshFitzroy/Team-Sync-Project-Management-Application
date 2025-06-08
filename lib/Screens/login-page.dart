@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'create account.dart';
 import 'ForgetPassword2.dart';
+import 'Dashboard.dart';
 
 class LoginPage extends StatefulWidget {
   final String? initialEmail;
@@ -119,11 +120,14 @@ class _LoginPageState extends State<LoginPage> {
             duration: Duration(seconds: 1),
           ),
         );
-        
-        // Small delay to show success message
+          // Small delay to show success message
         await Future.delayed(const Duration(milliseconds: 500));
         
-        Navigator.pushReplacementNamed(context, '/dashboard');      }
+        // Navigate directly to Dashboard instead of using named route
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const Dashboard()),
+        );}
     } catch (e) {
       // In case of any unexpected error, still allow login for testing
       print('Login bypass - ignoring error: $e');
@@ -136,9 +140,11 @@ class _LoginPageState extends State<LoginPage> {
             duration: Duration(seconds: 1),
           ),
         );
-        
-        await Future.delayed(const Duration(milliseconds: 500));
-        Navigator.pushReplacementNamed(context, '/dashboard');
+          await Future.delayed(const Duration(milliseconds: 500));
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const Dashboard()),
+        );
       }
     } finally {
       if (mounted) {
