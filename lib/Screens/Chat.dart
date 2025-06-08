@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 import '../Components/nav_bar.dart';
-import './Dashboard.dart';
-import './TaskManager.dart';
-import './Calendar.dart';
 import './Profile.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -45,27 +42,17 @@ class _ChatScreenState extends State<ChatScreen> with SingleTickerProviderStateM
     setState(() {
       _currentIndex = index;
     });
-    
-    // Navigate to the appropriate screen based on index
+      // Navigate to the appropriate screen based on index
     if (index != 2) { // If not Chat tab (since we're already in Chat)
       switch (index) {
         case 0: // Dashboard
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const Dashboard()),
-          );
+          Navigator.pushReplacementNamed(context, '/dashboard');
           break;
         case 1: // Tasks
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const TaskManager()),
-          );
+          Navigator.pushReplacementNamed(context, '/tasks');
           break;
         case 3: // Calendar
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const Calendar()),
-          );
+          Navigator.pushReplacementNamed(context, '/calendar');
           break;
       }
     }
