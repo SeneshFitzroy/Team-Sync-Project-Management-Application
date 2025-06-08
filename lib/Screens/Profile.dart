@@ -182,8 +182,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             // Edit Profile Button
             SizedBox(
               width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () async {
+              child: ElevatedButton(                onPressed: () async {
                   // Navigate to EditProfile and wait for result
                   final result = await Navigator.push(
                     context,
@@ -197,8 +196,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                   );
                   
-                  // Update profile if result is returned
-                  if (result != null && result is Map<String, String>) {
+                  // Refresh profile data after edit
+                  if (result != null) {
+                    _loadUserProfile(); // Reload data from Firebase
+                  }
+                },
                     setState(() {
                       userName = result['name'] ?? userName;
                       userHandle = result['username'] ?? userHandle;
