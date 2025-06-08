@@ -1,9 +1,4 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
-import '../Screens/Dashboard.dart';
-
-class AuthHelper {
-  /// Safe sign-in wrapper to handle the PigeonUserDetails cast error
+// This file is marked for deletion
   static Future<User?> safeSignInWithEmailAndPassword({
     required String email,
     required String password,
