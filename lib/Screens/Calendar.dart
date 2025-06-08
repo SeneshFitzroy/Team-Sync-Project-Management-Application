@@ -4,9 +4,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:async';
 import '../Components/nav_bar.dart';
 import '../Services/firebase_service.dart';
-import './Dashboard.dart';
-import './TaskManager.dart';
-import './Chat.dart';
 import './Profile.dart' show ProfileScreen;
 
 class Calendar extends StatefulWidget {
@@ -120,26 +117,16 @@ class _CalendarState extends State<Calendar> {
       _currentIndex = index;
     });
     
-    // Navigate to the appropriate screen based on index
-    if (index != 3) { // If not Calendar tab (since we're already in Calendar)
+    // Navigate to the appropriate screen based on index    if (index != 3) { // If not Calendar tab (since we're already in Calendar)
       switch (index) {
         case 0: // Dashboard
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const Dashboard()),
-          );
+          Navigator.pushReplacementNamed(context, '/dashboard');
           break;
         case 1: // Tasks
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const TaskManager()),
-          );
+          Navigator.pushReplacementNamed(context, '/tasks');
           break;
         case 2: // Chat
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const ChatScreen()),
-          );
+          Navigator.pushReplacementNamed(context, '/chat');
           break;
       }
     }
