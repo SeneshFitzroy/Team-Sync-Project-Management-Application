@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'create account.dart';
 import 'ForgetPassword2.dart';
@@ -27,6 +28,7 @@ class _LoginPageState extends State<LoginPage> {
   bool _rememberMe = false;
   String? _emailError;
   String? _passwordError;
+
   @override
   void initState() {
     super.initState();
@@ -73,7 +75,7 @@ class _LoginPageState extends State<LoginPage> {
     try {
       final prefs = await SharedPreferences.getInstance();
       if (_rememberMe) {
-        await prefs.setString('saved_email', _emailController.text);
+        await prefs.setString('saved_email', _emailController.text.trim());
         await prefs.setBool('remember_me', true);
       } else {
         await prefs.remove('saved_email');
@@ -81,27 +83,29 @@ class _LoginPageState extends State<LoginPage> {
       }
     } catch (e) {
       print('Error saving user preferences: $e');
-    }  }
+    }
+  }
 
-  // Login function
+  // Login function - BYPASSED FOR TESTING
   Future<void> _login() async {
     // Dismiss keyboard
     FocusScope.of(context).unfocus();
     
-    // Skip validation for testing - allow any input
     setState(() {
       _isLoading = true;
       _emailError = null;
       _passwordError = null;
-    });    try {
-      // Get email (no validation needed for bypass)
+    });
+
+    try {
+      // Get email and password (no validation needed for bypass)
       final email = _emailController.text.trim();
       
       // BYPASS AUTHENTICATION - Go directly to dashboard
       // Simulate a short loading time
       await Future.delayed(const Duration(milliseconds: 800));
       
-      // Save preferences (using mock data)
+      // Save preferences (using actual input or mock data)
       await _saveUserPreferences();
       
       // Save mock login session
@@ -114,7 +118,7 @@ class _LoginPageState extends State<LoginPage> {
         // Show success message briefly before navigation
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Welcome! Redirecting to dashboard...'),
+            content: Text('Welcome! Login bypassed - going to dashboard...'),
             backgroundColor: Color(0xFF667EEA),
             duration: Duration(seconds: 1),
           ),
@@ -123,7 +127,8 @@ class _LoginPageState extends State<LoginPage> {
         // Small delay to show success message
         await Future.delayed(const Duration(milliseconds: 500));
         
-        Navigator.pushReplacementNamed(context, '/dashboard');      }
+        Navigator.pushReplacementNamed(context, '/dashboard');
+      }
     } catch (e) {
       // In case of any unexpected error, still allow login for testing
       print('Login bypass - ignoring error: $e');
@@ -146,7 +151,8 @@ class _LoginPageState extends State<LoginPage> {
           _isLoading = false;
         });
       }
-    }  }
+    }
+  }
 
   // Check if form can be submitted - Allow any input for testing
   bool get _canSubmit {
@@ -185,50 +191,24 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 const SizedBox(height: 8),
-                  Text(
-                  'Sign in to continue with TaskSync',
+                
+                Text(
+                  'Sign in to continue with TaskSync (Bypass Mode)',
                   style: TextStyle(
                     fontSize: 16,
                     color: Colors.grey[600],
                   ),
                 ),
-                const SizedBox(height: 20),
-                
-                // Bypass mode indicator
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.orange.shade50,
-                    border: Border.all(color: Colors.orange.shade300),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(Icons.info_outline, color: Colors.orange.shade700, size: 20),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          'Testing Mode: You can login with any credentials or leave fields empty',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.orange.shade700,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 20),// Email field
+                const SizedBox(height: 40),
+
+                // Email field
                 TextFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
                   textInputAction: TextInputAction.next,
-                  // validator: _validateEmail, // Removed for bypass
                   decoration: InputDecoration(
-                    labelText: 'Email Address',
-                    hintText: 'Enter your email',
+                    labelText: 'Email Address (Optional)',
+                    hintText: 'Enter any email or leave blank',
                     prefixIcon: const Icon(Icons.email_outlined),
                     errorText: _emailError,
                     border: OutlineInputBorder(
@@ -248,22 +228,24 @@ class _LoginPageState extends State<LoginPage> {
                             onPressed: () => setState(() => _emailController.clear()),
                           )
                         : null,
-                  ),                  onChanged: (_) => setState(() {
+                  ),
+                  onChanged: (_) => setState(() {
                     _emailError = null;
                   }),
                   onTap: () => setState(() {
                     _emailError = null;
                   }),
                 ),
-                const SizedBox(height: 16),                // Password field
+                const SizedBox(height: 16),
+
+                // Password field
                 TextFormField(
                   controller: _passwordController,
                   obscureText: _obscurePassword,
                   textInputAction: TextInputAction.done,
-                  // validator: _validatePassword, // Removed for bypass
                   decoration: InputDecoration(
-                    labelText: 'Password',
-                    hintText: 'Enter your password',
+                    labelText: 'Password (Optional)',
+                    hintText: 'Enter any password or leave blank',
                     prefixIcon: const Icon(Icons.lock_outlined),
                     errorText: _passwordError,
                     border: OutlineInputBorder(
@@ -284,12 +266,39 @@ class _LoginPageState extends State<LoginPage> {
                       onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
                     ),
                   ),
-                  onFieldSubmitted: (_) => _login(),                  onChanged: (_) => setState(() {
+                  onFieldSubmitted: (_) => _login(),
+                  onChanged: (_) => setState(() {
                     _passwordError = null;
                   }),
                   onTap: () => setState(() {
                     _passwordError = null;
                   }),
+                ),
+                const SizedBox(height: 16),
+
+                // Info text about bypass mode
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.blue[50],
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.blue[200]!),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.info_outline, color: Colors.blue[600], size: 20),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          'Bypass Mode: You can login with any credentials or leave fields empty',
+                          style: TextStyle(
+                            color: Colors.blue[700],
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
                 const SizedBox(height: 16),
 
@@ -306,7 +315,8 @@ class _LoginPageState extends State<LoginPage> {
                       activeColor: const Color(0xFF667EEA),
                     ),
                     const Text('Remember me'),
-                    const Spacer(),                    TextButton(
+                    const Spacer(),
+                    TextButton(
                       onPressed: () {
                         Navigator.push(
                           context,
@@ -350,8 +360,9 @@ class _LoginPageState extends State<LoginPage> {
                               strokeWidth: 2,
                               valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                             ),
-                          )                        : const Text(
-                            'Sign In (Bypass Mode)',
+                          )
+                        : const Text(
+                            'Sign In (Bypass)',
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
