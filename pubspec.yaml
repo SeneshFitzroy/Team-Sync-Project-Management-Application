@@ -18,7 +18,7 @@ dependencies:
   cloud_firestore: ^4.8.0  # Adjust version to match core/auth
   firebase_storage: ^11.7.0  # If you're using Firebase Storage
   google_sign_in: ^6.1.4  # If you're using Google Sign-In
-  
+  url_launcher: ^6.1.12  # For opening URLs in external browsers
   shared_preferences: ^2.2.0
   flutter_secure_storage: ^8.0.0  # Add this line
 

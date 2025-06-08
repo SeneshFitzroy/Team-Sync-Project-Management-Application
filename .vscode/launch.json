@@ -1,0 +1,25 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Flutter (Edge)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "debug",
+            "deviceId": "chrome",
+            "env": {
+                "CHROME_EXECUTABLE": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe"
+            }
+        },
+        {
+            "name": "Flutter (Web Server + Edge)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "debug",
+            "deviceId": "web-server",
+            "args": [
+                "--web-port=8080"
+            ]
+        }
+    ]
+}
