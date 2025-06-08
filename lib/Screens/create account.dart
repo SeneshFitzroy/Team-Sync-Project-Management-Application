@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; // Add Firestore for user data
 import '../firebase_options.dart'; // Import Firebase options
+import '../Services/firebase_service.dart'; // Import Firebase Service
 
 // Simple user model to replace PigeonUserDetails and avoid casting issues
 class UserData {
@@ -139,7 +140,6 @@ class _CreateAccountState extends State<CreateAccount> {
       });
     }
   }
-
   Future<void> _createAccount() async {
     if (_formKey.currentState!.validate()) {
       setState(() {
@@ -152,68 +152,84 @@ class _CreateAccountState extends State<CreateAccount> {
         final password = _passwordController.text;
         final displayName = _nameController.text;
         
-        print("Creating account with email: $email");
+        print("🔐 Creating account with email: $email");
         
         // Create Firebase Auth user
-        await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        final credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
           email: email,
           password: password,
         );
         
-        // IMPORTANT: Instead of using the credential result, use currentUser directly
-        final user = FirebaseAuth.instance.currentUser;
-        
-        if (user != null) {
-          print("Account created with UID: ${user.uid}");
+        if (credential.user != null) {
+          final user = credential.user!;
+          print("✅ Account created with UID: ${user.uid}");
            
           try {
-            // Create a simple map of user data - avoid complex objects
-            final Map<String, dynamic> userMap = {
+            // Use FirebaseService to save user data
+            await FirebaseService.saveUserData({
               'displayName': displayName,
               'email': email,
-              'userId': user.uid,
-              'createdAt': DateTime.now().toIso8601String(),
+              'fullName': displayName,
+              'phoneNumber': '', // Can be updated later in profile
               'isActive': true,
+              'accountCreatedAt': FieldValue.serverTimestamp(),
               'lastLogin': null,
-            };
-            
-            // Store as a document, ensure it's a Map not a List
-            await FirebaseFirestore.instance
-                .collection('users')
-                .doc(user.uid)
-                .set(userMap);
+              'profileImageUrl': null,
+              'preferences': {
+                'notifications': true,
+                'theme': 'light',
+              },
+            });
                 
-            print("User data saved to Firestore: $userMap");
+            print("✅ User data saved to Firestore via FirebaseService");
+            
+            // Log account creation activity
+            await FirebaseService.logActivity('account_created', {
+              'email': email,
+              'displayName': displayName,
+              'timestamp': DateTime.now().toIso8601String(),
+            });
             
             // Sign out to clear any state
             await FirebaseAuth.instance.signOut();
-            print("User signed out after account creation");
-            
-            // Don't setState loading here
+            print("🔓 User signed out after account creation");
             
             // Show success message first
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Account created successfully!'),
-                backgroundColor: Colors.green,
-                duration: Duration(seconds: 1),
-              ),
-            );
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('✅ Account created successfully!'),
+                  backgroundColor: Colors.green,
+                  duration: Duration(seconds: 2),
+                ),
+              );            
+            // Show success message first
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('✅ Account created successfully!'),
+                  backgroundColor: Colors.green,
+                  duration: Duration(seconds: 2),
+                ),
+              );
+            }
             
             // IMPORTANT: Use a much more direct approach with pushReplacement
-            print("Navigating directly to login page...");
+            print("🚀 Navigating directly to login page...");
             
             // Remove WidgetsBinding and any delay - go immediately to login
-            Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(
-                builder: (context) => LoginPage(
-                  initialEmail: email,
-                  checkExistingLogin: false,
+            if (mounted) {
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => LoginPage(
+                    initialEmail: email,
+                    checkExistingLogin: false,
+                  ),
                 ),
-              ),
-              (route) => false, // Remove all previous routes
-            );
+                (route) => false, // Remove all previous routes
+              );
+            }
             
             // Don't return early - let the code continue to handle errors properly
           } catch (firestoreError) {
@@ -329,26 +345,7 @@ class _CreateAccountState extends State<CreateAccount> {
       } else {
         _passwordStrength = 'Strong';
       }
-    });
-  }
-
-  // Add this method to debug any issues with Firestore
-  void _debugFirestoreData(String userId) async {
-    try {
-      final docRef = FirebaseFirestore.instance.collection('users').doc(userId);
-      final snapshot = await docRef.get();
-      
-      if (snapshot.exists) {
-        final data = snapshot.data();
-        print("USER DATA IN FIRESTORE: $data");
-        print("DATA TYPE: ${data.runtimeType}");
-      } else {
-        print("NO USER DATA FOUND IN FIRESTORE FOR ID: $userId");
-      }
-    } catch (e) {
-      print("ERROR DEBUGGING FIRESTORE: $e");
-    }
-  }
+    });  }
 
   @override
   Widget build(BuildContext context) {

@@ -1,0 +1,347 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+class FirebaseService {
+  static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  static final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  // Get current user ID
+  static String? getCurrentUserId() {
+    return _auth.currentUser?.uid;
+  }
+
+  // Get current user email
+  static String? getCurrentUserEmail() {
+    return _auth.currentUser?.email;
+  }
+
+  // User Management
+  static Future<void> saveUserData(Map<String, dynamic> userData) async {
+    try {
+      final userId = getCurrentUserId();
+      if (userId != null) {
+        await _firestore.collection('users').doc(userId).set({
+          ...userData,
+          'createdAt': FieldValue.serverTimestamp(),
+          'updatedAt': FieldValue.serverTimestamp(),
+        }, SetOptions(merge: true));
+        print('✓ User data saved successfully');
+      }
+    } catch (e) {
+      print('✗ Error saving user data: $e');
+      throw e;
+    }
+  }
+
+  static Future<Map<String, dynamic>?> getUserData() async {
+    try {
+      final userId = getCurrentUserId();
+      if (userId != null) {
+        final doc = await _firestore.collection('users').doc(userId).get();
+        if (doc.exists) {
+          return doc.data();
+        }
+      }
+      return null;
+    } catch (e) {
+      print('✗ Error getting user data: $e');
+      return null;
+    }
+  }
+
+  static Future<void> updateUserProfile(Map<String, dynamic> profileData) async {
+    try {
+      final userId = getCurrentUserId();
+      if (userId != null) {
+        await _firestore.collection('users').doc(userId).update({
+          ...profileData,
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
+        print('✓ Profile updated successfully');
+      }
+    } catch (e) {
+      print('✗ Error updating profile: $e');
+      throw e;
+    }
+  }
+
+  // Project Management
+  static Future<String> createProject(Map<String, dynamic> projectData) async {
+    try {
+      final userId = getCurrentUserId();
+      if (userId == null) throw Exception('User not authenticated');
+      
+      final docRef = await _firestore.collection('projects').add({
+        ...projectData,
+        'ownerId': userId,
+        'createdBy': getCurrentUserEmail(),
+        'createdAt': FieldValue.serverTimestamp(),
+        'updatedAt': FieldValue.serverTimestamp(),
+        'members': [userId], // Owner is always a member
+      });
+      
+      print('✓ Project created with ID: ${docRef.id}');
+      return docRef.id;
+    } catch (e) {
+      print('✗ Error creating project: $e');
+      throw e;
+    }
+  }
+
+  static Stream<QuerySnapshot> getUserProjects() {
+    final userId = getCurrentUserId();
+    if (userId == null) {
+      return const Stream.empty();
+    }
+    
+    return _firestore
+        .collection('projects')
+        .where('members', arrayContains: userId)
+        .orderBy('updatedAt', descending: true)
+        .snapshots();
+  }
+
+  static Future<void> updateProject(String projectId, Map<String, dynamic> updates) async {
+    try {
+      await _firestore.collection('projects').doc(projectId).update({
+        ...updates,
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+      print('✓ Project updated successfully');
+    } catch (e) {
+      print('✗ Error updating project: $e');
+      throw e;
+    }
+  }
+
+  static Future<void> deleteProject(String projectId) async {
+    try {
+      // Delete all tasks in the project first
+      final tasks = await _firestore
+          .collection('tasks')
+          .where('projectId', isEqualTo: projectId)
+          .get();
+      
+      for (var task in tasks.docs) {
+        await task.reference.delete();
+      }
+      
+      // Delete the project
+      await _firestore.collection('projects').doc(projectId).delete();
+      print('✓ Project deleted successfully');
+    } catch (e) {
+      print('✗ Error deleting project: $e');
+      throw e;
+    }
+  }
+
+  // Task Management
+  static Future<String> createTask(Map<String, dynamic> taskData) async {
+    try {
+      final userId = getCurrentUserId();
+      if (userId == null) throw Exception('User not authenticated');
+      
+      final docRef = await _firestore.collection('tasks').add({
+        ...taskData,
+        'createdBy': userId,
+        'createdAt': FieldValue.serverTimestamp(),
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+      
+      print('✓ Task created with ID: ${docRef.id}');
+      return docRef.id;
+    } catch (e) {
+      print('✗ Error creating task: $e');
+      throw e;
+    }
+  }
+
+  static Stream<QuerySnapshot> getProjectTasks(String projectId) {
+    return _firestore
+        .collection('tasks')
+        .where('projectId', isEqualTo: projectId)
+        .orderBy('createdAt', descending: true)
+        .snapshots();
+  }
+
+  static Stream<QuerySnapshot> getUserTasks() {
+    final userId = getCurrentUserId();
+    if (userId == null) {
+      return const Stream.empty();
+    }
+    
+    return _firestore
+        .collection('tasks')
+        .where('assignedTo', arrayContains: userId)
+        .orderBy('dueDate', descending: false)
+        .snapshots();
+  }
+
+  static Future<void> updateTask(String taskId, Map<String, dynamic> updates) async {
+    try {
+      await _firestore.collection('tasks').doc(taskId).update({
+        ...updates,
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+      print('✓ Task updated successfully');
+    } catch (e) {
+      print('✗ Error updating task: $e');
+      throw e;
+    }
+  }
+
+  static Future<void> deleteTask(String taskId) async {
+    try {
+      await _firestore.collection('tasks').doc(taskId).delete();
+      print('✓ Task deleted successfully');
+    } catch (e) {
+      print('✗ Error deleting task: $e');
+      throw e;
+    }
+  }
+
+  // Chat/Messages
+  static Future<void> sendMessage(String projectId, String message) async {
+    try {
+      final userId = getCurrentUserId();
+      final userEmail = getCurrentUserEmail();
+      if (userId == null) throw Exception('User not authenticated');
+      
+      await _firestore.collection('projects').doc(projectId).collection('messages').add({
+        'message': message,
+        'senderId': userId,
+        'senderEmail': userEmail,
+        'timestamp': FieldValue.serverTimestamp(),
+      });
+      
+      print('✓ Message sent successfully');
+    } catch (e) {
+      print('✗ Error sending message: $e');
+      throw e;
+    }
+  }
+
+  static Stream<QuerySnapshot> getProjectMessages(String projectId) {
+    return _firestore
+        .collection('projects')
+        .doc(projectId)
+        .collection('messages')
+        .orderBy('timestamp', descending: false)
+        .snapshots();
+  }
+
+  // Notifications
+  static Future<void> createNotification(String userId, Map<String, dynamic> notificationData) async {
+    try {
+      await _firestore.collection('users').doc(userId).collection('notifications').add({
+        ...notificationData,
+        'read': false,
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+      print('✓ Notification created successfully');
+    } catch (e) {
+      print('✗ Error creating notification: $e');
+      throw e;
+    }
+  }
+
+  static Stream<QuerySnapshot> getUserNotifications() {
+    final userId = getCurrentUserId();
+    if (userId == null) {
+      return const Stream.empty();
+    }
+    
+    return _firestore
+        .collection('users')
+        .doc(userId)
+        .collection('notifications')
+        .orderBy('createdAt', descending: true)
+        .snapshots();
+  }
+
+  static Future<void> markNotificationAsRead(String notificationId) async {
+    try {
+      final userId = getCurrentUserId();
+      if (userId != null) {
+        await _firestore
+            .collection('users')
+            .doc(userId)
+            .collection('notifications')
+            .doc(notificationId)
+            .update({'read': true});
+        print('✓ Notification marked as read');
+      }
+    } catch (e) {
+      print('✗ Error marking notification as read: $e');
+      throw e;
+    }
+  }
+
+  // Team Management
+  static Future<void> addTeamMember(String projectId, String memberEmail) async {
+    try {
+      // Find user by email
+      final userQuery = await _firestore
+          .collection('users')
+          .where('email', isEqualTo: memberEmail)
+          .get();
+      
+      if (userQuery.docs.isEmpty) {
+        throw Exception('User not found with email: $memberEmail');
+      }
+      
+      final memberId = userQuery.docs.first.id;
+      
+      // Add member to project
+      await _firestore.collection('projects').doc(projectId).update({
+        'members': FieldValue.arrayUnion([memberId]),
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+      
+      // Create notification for new member
+      await createNotification(memberId, {
+        'type': 'project_invitation',
+        'title': 'Added to Project',
+        'message': 'You have been added to a new project',
+        'projectId': projectId,
+      });
+      
+      print('✓ Team member added successfully');
+    } catch (e) {
+      print('✗ Error adding team member: $e');
+      throw e;
+    }
+  }
+
+  // Authentication state changes
+  static Stream<User?> get authStateChanges => _auth.authStateChanges();
+
+  // Password reset
+  static Future<void> resetPassword(String email) async {
+    try {
+      await _auth.sendPasswordResetEmail(email: email);
+      print('✓ Password reset email sent');
+    } catch (e) {
+      print('✗ Error sending password reset email: $e');
+      throw e;
+    }
+  }
+
+  // Analytics and logging
+  static Future<void> logActivity(String activity, Map<String, dynamic> data) async {
+    try {
+      final userId = getCurrentUserId();
+      if (userId != null) {
+        await _firestore.collection('activity_logs').add({
+          'userId': userId,
+          'activity': activity,
+          'data': data,
+          'timestamp': FieldValue.serverTimestamp(),
+        });
+      }
+    } catch (e) {
+      print('✗ Error logging activity: $e');
+      // Don't throw - logging shouldn't break the app
+    }
+  }
+}

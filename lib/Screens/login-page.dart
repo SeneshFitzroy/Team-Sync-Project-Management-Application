@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import '../Services/firebase_service.dart';
 import 'create account.dart';
 import 'ForgetPassword2.dart';
 import 'Dashboard.dart';
@@ -82,73 +85,126 @@ class _LoginPageState extends State<LoginPage> {
       }
     } catch (e) {
       print('Error saving user preferences: $e');
-    }  }
-  // Login function
+    }  }  // Login function with Firebase Authentication
   Future<void> _login() async {
     // Dismiss keyboard
     FocusScope.of(context).unfocus();
     
-    // Skip validation for testing - allow any input
     setState(() {
       _isLoading = true;
       _emailError = null;
       _passwordError = null;
     });
-    
-    try {
-      // Get email (no validation needed for bypass)
-      final email = _emailController.text.trim();
-      
-      // BYPASS AUTHENTICATION - Go directly to dashboard
-      // Simulate a short loading time
-      await Future.delayed(const Duration(milliseconds: 800));
-      
-      // Save preferences (using mock data)
-      await _saveUserPreferences();
-      
-      // Save mock login session
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('user_id', 'mock_user_${DateTime.now().millisecondsSinceEpoch}');
-      await prefs.setString('user_email', email.isNotEmpty ? email : 'test@example.com');
-      await prefs.setString('login_timestamp', DateTime.now().toIso8601String());
-      await prefs.setBool('bypass_mode', true); // Add bypass mode flag
 
+    try {
+      final email = _emailController.text.trim();
+      final password = _passwordController.text.trim();
+      
+      // Firebase Authentication
+      print('🔐 Attempting Firebase login for: $email');
+      
+      final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      
+      if (credential.user != null) {
+        print('✅ Firebase login successful for: ${credential.user!.email}');
+        
+        // Save user data to Firestore
+        await FirebaseService.saveUserData({
+          'email': email,
+          'lastLogin': FieldValue.serverTimestamp(),
+          'loginCount': FieldValue.increment(1),
+        });
+        
+        // Save local preferences
+        await _saveUserPreferences();
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('user_id', credential.user!.uid);
+        await prefs.setString('user_email', email);
+        await prefs.setString('login_timestamp', DateTime.now().toIso8601String());
+        await prefs.setBool('bypass_mode', false); // Disable bypass mode for real auth
+        
+        if (_rememberMe) {
+          await prefs.setBool('remember_me', true);
+          await prefs.setString('saved_email', email);
+        }
+        
+        // Log activity
+        await FirebaseService.logActivity('user_login', {
+          'email': email,
+          'timestamp': DateTime.now().toIso8601String(),
+        });
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('✅ Login successful! Welcome back!'),
+              backgroundColor: Color(0xFF4CAF50),
+              duration: Duration(seconds: 2),
+            ),
+          );
+          
+          await Future.delayed(const Duration(milliseconds: 500));
+          
+          // Navigate to Dashboard
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const Dashboard()),
+          );
+        }
+      }
+    } on FirebaseAuthException catch (e) {
+      print('❌ Firebase Auth Error: ${e.code} - ${e.message}');
+      
+      String errorMessage = 'Login failed. Please try again.';
+      
+      switch (e.code) {
+        case 'user-not-found':
+          errorMessage = 'No account found with this email address.';
+          setState(() => _emailError = errorMessage);
+          break;
+        case 'wrong-password':
+          errorMessage = 'Incorrect password. Please try again.';
+          setState(() => _passwordError = errorMessage);
+          break;
+        case 'invalid-email':
+          errorMessage = 'Please enter a valid email address.';
+          setState(() => _emailError = errorMessage);
+          break;
+        case 'user-disabled':
+          errorMessage = 'This account has been disabled.';
+          break;
+        case 'too-many-requests':
+          errorMessage = 'Too many failed attempts. Please try again later.';
+          break;
+        case 'invalid-credential':
+          errorMessage = 'Invalid email or password. Please check your credentials.';
+          break;
+        default:
+          errorMessage = 'Login failed: ${e.message}';
+      }
+      
       if (mounted) {
-        // Show success message briefly before navigation
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Welcome! Redirecting to dashboard...'),
-            backgroundColor: Color(0xFF667EEA),
-            duration: Duration(seconds: 1),
+          SnackBar(
+            content: Text('❌ $errorMessage'),
+            backgroundColor: Colors.red[600],
+            duration: const Duration(seconds: 4),
           ),
-        );
-        
-        // Small delay to show success message
-        await Future.delayed(const Duration(milliseconds: 500));
-        
-        // Navigate directly to Dashboard instead of using named route
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const Dashboard()),
         );
       }
     } catch (e) {
-      // In case of any unexpected error, still allow login for testing
-      print('Login bypass - ignoring error: $e');
+      print('❌ Unexpected error during login: $e');
       
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Login bypassed! Redirecting to dashboard...'),
-            backgroundColor: Color(0xFF667EEA),
-            duration: Duration(seconds: 1),
+          SnackBar(
+            content: Text('❌ Unexpected error: ${e.toString()}'),
+            backgroundColor: Colors.red[600],
+            duration: const Duration(seconds: 3),
           ),
-        );
-        
-        await Future.delayed(const Duration(milliseconds: 500));
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const Dashboard()),
         );
       }
     } finally {
