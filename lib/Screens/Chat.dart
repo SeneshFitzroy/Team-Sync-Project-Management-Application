@@ -47,9 +47,8 @@ class _ChatScreenState extends State<ChatScreen> with SingleTickerProviderStateM
       switch (index) {
         case 0: // Dashboard
           Navigator.pushReplacementNamed(context, '/dashboard');
-          break;
-        case 1: // Tasks
-          Navigator.pushReplacementNamed(context, '/tasks');
+          break;        case 1: // Tasks
+          Navigator.pushReplacementNamed(context, '/taskmanager');
           break;
         case 3: // Calendar
           Navigator.pushReplacementNamed(context, '/calendar');
