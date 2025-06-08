@@ -83,7 +83,6 @@ class _LoginPageState extends State<LoginPage> {
     } catch (e) {
       print('Error saving user preferences: $e');
     }  }
-
   // Login function
   Future<void> _login() async {
     // Dismiss keyboard
@@ -94,7 +93,9 @@ class _LoginPageState extends State<LoginPage> {
       _isLoading = true;
       _emailError = null;
       _passwordError = null;
-    });    try {
+    });
+    
+    try {
       // Get email (no validation needed for bypass)
       final email = _emailController.text.trim();
       
@@ -110,6 +111,7 @@ class _LoginPageState extends State<LoginPage> {
       await prefs.setString('user_id', 'mock_user_${DateTime.now().millisecondsSinceEpoch}');
       await prefs.setString('user_email', email.isNotEmpty ? email : 'test@example.com');
       await prefs.setString('login_timestamp', DateTime.now().toIso8601String());
+      await prefs.setBool('bypass_mode', true); // Add bypass mode flag
 
       if (mounted) {
         // Show success message briefly before navigation
@@ -120,14 +122,16 @@ class _LoginPageState extends State<LoginPage> {
             duration: Duration(seconds: 1),
           ),
         );
-          // Small delay to show success message
+        
+        // Small delay to show success message
         await Future.delayed(const Duration(milliseconds: 500));
         
         // Navigate directly to Dashboard instead of using named route
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const Dashboard()),
-        );}
+        );
+      }
     } catch (e) {
       // In case of any unexpected error, still allow login for testing
       print('Login bypass - ignoring error: $e');
@@ -140,7 +144,8 @@ class _LoginPageState extends State<LoginPage> {
             duration: Duration(seconds: 1),
           ),
         );
-          await Future.delayed(const Duration(milliseconds: 500));
+        
+        await Future.delayed(const Duration(milliseconds: 500));
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const Dashboard()),
@@ -152,7 +157,8 @@ class _LoginPageState extends State<LoginPage> {
           _isLoading = false;
         });
       }
-    }  }
+    }
+  }
 
   // Check if form can be submitted - Allow any input for testing
   bool get _canSubmit {

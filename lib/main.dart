@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'firebase_options.dart';
 
 // Import welcome screen
@@ -130,11 +131,11 @@ class AuthWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<User?>(
-      stream: FirebaseAuth.instance.authStateChanges(),
-      builder: (context, snapshot) {
-        // Show loading while checking auth state
-        if (snapshot.connectionState == ConnectionState.waiting) {
+    return FutureBuilder<bool>(
+      future: _checkBypassMode(),
+      builder: (context, bypassSnapshot) {
+        // If checking bypass mode, show loading
+        if (bypassSnapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
             body: Center(
               child: CircularProgressIndicator(),
@@ -142,14 +143,43 @@ class AuthWrapper extends StatelessWidget {
           );
         }
         
-        // If user is logged in, go to dashboard
-        if (snapshot.hasData && snapshot.data != null) {
+        // If bypass mode is enabled, go directly to dashboard
+        if (bypassSnapshot.hasData && bypassSnapshot.data == true) {
           return const Dashboard();
         }
         
-        // If no user, show welcome page
-        return const WelcomePage1();
+        // Otherwise, check Firebase auth state
+        return StreamBuilder<User?>(
+          stream: FirebaseAuth.instance.authStateChanges(),
+          builder: (context, snapshot) {
+            // Show loading while checking auth state
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Scaffold(
+                body: Center(
+                  child: CircularProgressIndicator(),
+                ),
+              );
+            }
+            
+            // If user is logged in, go to dashboard
+            if (snapshot.hasData && snapshot.data != null) {
+              return const Dashboard();
+            }
+            
+            // If no user, show welcome page
+            return const WelcomePage1();
+          },
+        );
       },
     );
+  }
+  
+  Future<bool> _checkBypassMode() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      return prefs.getBool('bypass_mode') ?? false;
+    } catch (e) {
+      return false;
+    }
   }
 }
