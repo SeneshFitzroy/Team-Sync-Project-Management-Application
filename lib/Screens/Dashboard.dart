@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart'; // Add this import
 import '../Components/nav_bar.dart';
 import 'Profile.dart'; // Import the Profile screen
 import 'CreateaNewProject.dart'; // Import the CreateANewProject screen
@@ -34,7 +35,6 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
   // Project list with additional fields for editing
   List<Map<String, dynamic>> projects = [];
   bool _isLoading = true;
-
   @override
   void initState() {
     super.initState();
@@ -43,10 +43,30 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
       duration: const Duration(milliseconds: 300),
     );
     
-    // Check if user is logged in
+    // Check bypass mode first, then Firebase auth
+    _initializeDashboard();
+  }
+  
+  Future<void> _initializeDashboard() async {
+    // Check if bypass mode is enabled
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final bypassMode = prefs.getBool('bypass_mode') ?? false;
+      
+      if (bypassMode) {
+        print("Bypass mode enabled, loading dashboard without Firebase auth");
+        // Load projects and continue with dashboard initialization
+        _loadProjectsFromFirestore();
+        return;
+      }
+    } catch (e) {
+      print("Error checking bypass mode: $e");
+    }
+    
+    // Check if user is logged in via Firebase
     final currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser == null) {
-      // Not logged in, redirect to login page
+      // Not logged in and not in bypass mode, redirect to login page
       print("User not logged in, redirecting to login");
       WidgetsBinding.instance.addPostFrameCallback((_) {
         Navigator.pushReplacement(
