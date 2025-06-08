@@ -2,18 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'Dashboard.dart';
 import 'create account.dart';
-import 'ForgetPassword2.dart';
+import 'ForgetPassword.dart';
 
 class LoginPage extends StatefulWidget {
-  final String? initialEmail;
-  final bool checkExistingLogin;
-  
-  const LoginPage({
-    super.key,
-    this.initialEmail,
-    this.checkExistingLogin = true,
-  });
+  const LoginPage({super.key});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -28,20 +22,11 @@ class _LoginPageState extends State<LoginPage> {
   bool _rememberMe = false;
   String? _emailError;
   String? _passwordError;
+
   @override
   void initState() {
     super.initState();
-    
-    // If an initial email is provided, use it
-    if (widget.initialEmail != null && widget.initialEmail!.isNotEmpty) {
-      _emailController.text = widget.initialEmail!;
-      _rememberMe = false; // Don't auto-remember when coming from account creation
-    }
-    
-    // Only check for remembered user if we should and no initial email was provided
-    if (widget.checkExistingLogin && (widget.initialEmail == null || widget.initialEmail!.isEmpty)) {
-      _checkRememberedUser();
-    }
+    _checkRememberedUser();
   }
 
   @override
@@ -324,12 +309,13 @@ class _LoginPageState extends State<LoginPage> {
                       activeColor: const Color(0xFF667EEA),
                     ),
                     const Text('Remember me'),
-                    const Spacer(),                    TextButton(
+                    const Spacer(),
+                    TextButton(
                       onPressed: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => ForgotPassword2(email: _emailController.text),
+                            builder: (context) => const ForgetPassword(),
                           ),
                         );
                       },

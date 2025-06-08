@@ -28,7 +28,9 @@ apply plugin: 'com.google.gms.google-services'
 
 android {
     namespace "com.example.fluttercomponenets"
-    compileSdkVersion 34    defaultConfig {
+    compileSdkVersion 34
+
+    defaultConfig {
         applicationId "com.example.fluttercomponenets"
         minSdkVersion 23  // Update minimum SDK version to 23 for Firebase Auth compatibility
         targetSdkVersion 34
