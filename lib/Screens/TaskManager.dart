@@ -1038,9 +1038,8 @@ class _TaskManagerState extends State<TaskManager> {
               selectedProject = widget.selectedProject ?? ''; // Reset to current project if any
             });
           }
-          
-          // Function to add a new task
-          void addTask() {
+            // Function to add a new task with Firebase integration
+          void addTask() async {
             // Validate inputs
             if (taskNameController.text.isEmpty) {
               ScaffoldMessenger.of(context).showSnackBar(
@@ -1062,53 +1061,110 @@ class _TaskManagerState extends State<TaskManager> {
               return;
             }
 
-            // Create the new task
-            Color statusColor;
-            if (status == 'In Progress') {
-              statusColor = const Color(0xFF187E0F);
-            } else if (status == 'Pending') {
-              statusColor = const Color(0xFFD14318);
-            } else if (status == 'Completed') {
-              statusColor = const Color(0xFF192F5D);
-            } else {
-              statusColor = const Color(0xFFCCCCCC);
-            }
+            try {
+              // Show loading indicator
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (context) => const Center(
+                  child: CircularProgressIndicator(),
+                ),
+              );
 
-            final newTask = Task(
-              projectName: selectedProject,
-              taskName: taskNameController.text,
-              status: status,
-              dueDate: dueDateController.text,
-              priority: priority,
-              priorityColor: priority == 'High'
-                  ? const Color(0xFFD14318)
-                  : priority == 'Medium'
-                      ? const Color(0xFF187E0F)
-                      : const Color(0xFF192F5D),
-              assignee: _showProjectTasks 
-                  ? (assigneeController.text.isEmpty ? 'Unassigned' : assigneeController.text)
-                  : 'Me',
-              statusColor: statusColor,
-            );
+              // Prepare task data for Firebase
+              final taskData = {
+                'title': taskNameController.text.trim(),
+                'taskName': taskNameController.text.trim(),
+                'projectName': selectedProject,
+                'status': status,
+                'priority': priority,
+                'dueDate': dueDateController.text,
+                'assigneeEmail': _showProjectTasks 
+                    ? (assigneeController.text.isEmpty ? 'Unassigned' : assigneeController.text)
+                    : FirebaseService.getCurrentUserEmail() ?? 'Me',
+                'assignedTo': [FirebaseService.getCurrentUserId()], // Assign to current user
+                'description': '',
+                'progress': 0,
+                'isPersonalTask': !_showProjectTasks,
+              };
 
-            // Add to the appropriate list and update state
-            setState(() {
-              if (_showProjectTasks) {
-                _projectTasks.add(newTask);
+              // Create task in Firebase
+              final taskId = await FirebaseService.createTask(taskData);
+
+              // Hide loading indicator
+              Navigator.pop(context);
+
+              // Create the new task locally for immediate UI update
+              Color statusColor;
+              if (status == 'In Progress') {
+                statusColor = const Color(0xFF187E0F);
+              } else if (status == 'Pending') {
+                statusColor = const Color(0xFFD14318);
+              } else if (status == 'Completed') {
+                statusColor = const Color(0xFF192F5D);
               } else {
-                _myTasks.add(newTask);
+                statusColor = const Color(0xFFCCCCCC);
               }
-              _filteredTasks = _showProjectTasks ? _projectTasks : _myTasks;
-              taskAdded = true;
-            });
-            
-            // Show a success message
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('Task "${taskNameController.text}" added successfully!'),
-                backgroundColor: Colors.green,
-                duration: const Duration(seconds: 1),
-              ),
+
+              final newTask = Task(
+                id: taskId, // Store Firebase document ID
+                projectName: selectedProject,
+                taskName: taskNameController.text,
+                status: status,
+                dueDate: dueDateController.text,
+                priority: priority,
+                priorityColor: priority == 'High'
+                    ? const Color(0xFFD14318)
+                    : priority == 'Medium'
+                        ? const Color(0xFF187E0F)
+                        : const Color(0xFF192F5D),
+                assignee: _showProjectTasks 
+                    ? (assigneeController.text.isEmpty ? 'Unassigned' : assigneeController.text)
+                    : 'Me',
+                statusColor: statusColor,
+              );
+
+              // Add to the appropriate list and update state
+              setState(() {
+                if (_showProjectTasks) {
+                  _projectTasks.add(newTask);
+                } else {
+                  _myTasks.add(newTask);
+                }
+                _filteredTasks = _showProjectTasks ? _projectTasks : _myTasks;
+                taskAdded = true;
+              });
+              
+              // Show a success message
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Task "${taskNameController.text}" created successfully!'),
+                  backgroundColor: Colors.green,
+                  duration: const Duration(seconds: 2),
+                ),
+              );
+              
+              // Clear the form for the next task
+              clearForm();
+
+            } catch (e) {
+              // Hide loading indicator if still showing
+              if (Navigator.canPop(context)) {
+                Navigator.pop(context);
+              }
+              
+              // Show error message
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Failed to create task: ${e.toString()}'),
+                  backgroundColor: Colors.red,
+                  duration: const Duration(seconds: 3),
+                ),
+              );
+              
+              print('Error creating task: $e');
+            }
+          }
             );
             
             // Clear the form for the next task
@@ -1872,33 +1928,102 @@ class _TaskManagerState extends State<TaskManager> {
                           onPressed: () => Navigator.pop(context),
                           child: const Text('Cancel'),
                         ),
-                        const SizedBox(width: 4),
-                        ElevatedButton(
-                          onPressed: () {
-                            setState(() {
-                              task.taskName = taskNameController.text;
-                              task.assignee = assigneeController.text;
-                              task.dueDate = dueDateController.text;
-                              task.priority = priority;
-                              task.status = status;
-                              
-                              // Update colors based on status and priority
-                              task.priorityColor = priority == 'High'
-                                  ? const Color(0xFFD14318)
-                                  : priority == 'Medium'
-                                      ? const Color(0xFF187E0F)
-                                      : const Color(0xFF192F5D);
-                                      
-                              // Update status color
-                              if (status == 'In Progress') {
-                                task.statusColor = const Color(0xFF187E0F);
-                              } else if (status == 'Pending') {
-                                task.statusColor = const Color(0xFFD14318);
-                              } else if (status == 'Not Started') {
-                                task.statusColor = const Color(0xFFCCCCCC);
+                        const SizedBox(width: 4),                        ElevatedButton(
+                          onPressed: () async {
+                            // Validate inputs
+                            if (taskNameController.text.isEmpty) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Task name cannot be empty'),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                              return;
+                            }
+
+                            try {
+                              // Show loading indicator
+                              showDialog(
+                                context: context,
+                                barrierDismissible: false,
+                                builder: (context) => const Center(
+                                  child: CircularProgressIndicator(),
+                                ),
+                              );
+
+                              // Prepare update data for Firebase
+                              final updateData = {
+                                'title': taskNameController.text.trim(),
+                                'taskName': taskNameController.text.trim(),
+                                'assigneeEmail': assigneeController.text.trim().isEmpty ? 'Unassigned' : assigneeController.text.trim(),
+                                'dueDate': dueDateController.text,
+                                'priority': priority,
+                                'status': status,
+                              };
+
+                              // Update task in Firebase
+                              if (task.id != null) {
+                                await FirebaseService.updateTask(task.id!, updateData);
                               }
-                            });
-                            Navigator.pop(context);
+
+                              // Hide loading indicator
+                              Navigator.pop(context);
+
+                              // Update local state for immediate UI feedback
+                              setState(() {
+                                task.taskName = taskNameController.text;
+                                task.assignee = assigneeController.text;
+                                task.dueDate = dueDateController.text;
+                                task.priority = priority;
+                                task.status = status;
+                                
+                                // Update colors based on status and priority
+                                task.priorityColor = priority == 'High'
+                                    ? const Color(0xFFD14318)
+                                    : priority == 'Medium'
+                                        ? const Color(0xFF187E0F)
+                                        : const Color(0xFF192F5D);
+                                        
+                                // Update status color
+                                if (status == 'In Progress') {
+                                  task.statusColor = const Color(0xFF187E0F);
+                                } else if (status == 'Pending') {
+                                  task.statusColor = const Color(0xFFD14318);
+                                } else if (status == 'Not Started') {
+                                  task.statusColor = const Color(0xFFCCCCCC);
+                                } else if (status == 'Completed') {
+                                  task.statusColor = const Color(0xFF192F5D);
+                                }
+                              });
+
+                              // Show success message
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Task "${taskNameController.text}" updated successfully!'),
+                                  backgroundColor: Colors.green,
+                                  duration: const Duration(seconds: 2),
+                                ),
+                              );
+
+                              Navigator.pop(context);
+
+                            } catch (e) {
+                              // Hide loading indicator if still showing
+                              if (Navigator.canPop(context)) {
+                                Navigator.pop(context);
+                              }
+                              
+                              // Show error message
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Failed to update task: ${e.toString()}'),
+                                  backgroundColor: Colors.red,
+                                  duration: const Duration(seconds: 3),
+                                ),
+                              );
+                              
+                              print('Error updating task: $e');
+                            }
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF192F5D),
@@ -2301,9 +2426,8 @@ class _TaskManagerState extends State<TaskManager> {
                               borderRadius: BorderRadius.circular(8),
                             ),
                           ),
-                        ),
-                        ElevatedButton.icon(
-                          onPressed: () {
+                        ),                        ElevatedButton.icon(
+                          onPressed: () async {
                             // Validate inputs
                             if (taskNameController.text.isEmpty) {
                               ScaffoldMessenger.of(context).showSnackBar(
@@ -2315,42 +2439,90 @@ class _TaskManagerState extends State<TaskManager> {
                               return;
                             }
                             
-                            // Update the task
-                            setState(() {
-                              task.taskName = taskNameController.text;
-                              task.projectName = categoryController.text;
-                              task.dueDate = dueDateController.text;
-                              task.priority = priority;
-                              task.status = status;
-                              
-                              // Update colors based on status and priority
-                              task.priorityColor = priority == 'High'
-                                  ? const Color(0xFFD14318)
-                                  : priority == 'Medium'
-                                      ? const Color(0xFF187E0F)
-                                      : const Color(0xFF192F5D);
-                                      
-                              // Update status color
-                              if (status == 'In Progress') {
-                                task.statusColor = const Color(0xFF187E0F);
-                              } else if (status == 'Pending') {
-                                task.statusColor = const Color(0xFFD14318);
-                              } else if (status == 'Not Started') {
-                                task.statusColor = const Color(0xFFCCCCCC);
-                              } else if (status == 'Completed') {
-                                task.statusColor = const Color(0xFF192F5D);
+                            try {
+                              // Show loading indicator
+                              showDialog(
+                                context: context,
+                                barrierDismissible: false,
+                                builder: (context) => const Center(
+                                  child: CircularProgressIndicator(),
+                                ),
+                              );
+
+                              // Prepare update data for Firebase
+                              final updateData = {
+                                'title': taskNameController.text.trim(),
+                                'taskName': taskNameController.text.trim(),
+                                'projectName': categoryController.text.trim(),
+                                'dueDate': dueDateController.text,
+                                'priority': priority,
+                                'status': status,
+                                'isPersonalTask': true,
+                              };
+
+                              // Update task in Firebase
+                              if (task.id != null) {
+                                await FirebaseService.updateTask(task.id!, updateData);
                               }
-                            });
-                            
-                            // Show success message
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Personal task updated successfully!'),
-                                backgroundColor: Colors.green,
-                              ),
-                            );
-                            
-                            Navigator.pop(context);
+
+                              // Hide loading indicator
+                              Navigator.pop(context);
+
+                              // Update local state for immediate UI feedback
+                              setState(() {
+                                task.taskName = taskNameController.text;
+                                task.projectName = categoryController.text;
+                                task.dueDate = dueDateController.text;
+                                task.priority = priority;
+                                task.status = status;
+                                
+                                // Update colors based on status and priority
+                                task.priorityColor = priority == 'High'
+                                    ? const Color(0xFFD14318)
+                                    : priority == 'Medium'
+                                        ? const Color(0xFF187E0F)
+                                        : const Color(0xFF192F5D);
+                                        
+                                // Update status color
+                                if (status == 'In Progress') {
+                                  task.statusColor = const Color(0xFF187E0F);
+                                } else if (status == 'Pending') {
+                                  task.statusColor = const Color(0xFFD14318);
+                                } else if (status == 'Not Started') {
+                                  task.statusColor = const Color(0xFFCCCCCC);
+                                } else if (status == 'Completed') {
+                                  task.statusColor = const Color(0xFF192F5D);
+                                }
+                              });
+                              
+                              // Show success message
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Personal task "${taskNameController.text}" updated successfully!'),
+                                  backgroundColor: Colors.green,
+                                  duration: const Duration(seconds: 2),
+                                ),
+                              );
+                              
+                              Navigator.pop(context);
+
+                            } catch (e) {
+                              // Hide loading indicator if still showing
+                              if (Navigator.canPop(context)) {
+                                Navigator.pop(context);
+                              }
+                              
+                              // Show error message
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Failed to update personal task: ${e.toString()}'),
+                                  backgroundColor: Colors.red,
+                                  duration: const Duration(seconds: 3),
+                                ),
+                              );
+                              
+                              print('Error updating personal task: $e');
+                            }
                           },
                           icon: const Icon(Icons.save, size: 18),
                           label: const Text('Save Changes'),
