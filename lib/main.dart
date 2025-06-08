@@ -5,7 +5,6 @@ import 'firebase_options.dart';
 
 // Import welcome screen
 import 'Screens/welcome-page1.dart';
-import 'Screens/welcome-page2.dart';
 import 'Screens/login-page.dart';
 import 'Screens/create account.dart';
 import 'Screens/Dashboard.dart';
@@ -100,7 +99,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       home: const AuthWrapper(),      routes: {
         '/welcome1': (context) => const WelcomePage1(),
-        '/welcome2': (context) => const WelcomePage2(),
+        '/welcome2': (context) => const LoginPage(),
         '/login': (context) => const LoginPage(),
         '/signup': (context) => const CreateAccount(),
         '/dashboard': (context) => const Dashboard(),

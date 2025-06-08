@@ -6,7 +6,6 @@ import './TaskManager.dart'; // Import TaskManager
 import './Chat.dart'; // Import Chat
 import './Calendar.dart'; // Import Calendar
 import 'welcome-page1.dart'; // Import WelcomePage1
-import 'welcome-page2.dart'; // Import WelcomePage2
 import 'package:firebase_auth/firebase_auth.dart'; // Add this import
 import 'package:cloud_firestore/cloud_firestore.dart'; // Correct Firestore import
 import 'login-page.dart'; // Import the login page
