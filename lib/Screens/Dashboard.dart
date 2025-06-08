@@ -811,6 +811,69 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
     print("=== LOGOUT DEBUG END ===");
   }
 
+  // Debug method to check authentication state
+  Future<void> _debugAuthState() async {
+    print("=== AUTH STATE DEBUG ===");
+    
+    // Check Firebase Auth
+    final currentUser = FirebaseAuth.instance.currentUser;
+    print("Firebase Auth currentUser: ${currentUser?.uid ?? 'null'}");
+    print("Firebase Auth email: ${currentUser?.email ?? 'null'}");
+    print("Firebase Auth isAnonymous: ${currentUser?.isAnonymous ?? 'null'}");
+    
+    // Check SharedPreferences
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final bypassMode = prefs.getBool('bypass_mode') ?? false;
+      print("Bypass mode: $bypassMode");
+      
+      final keys = prefs.getKeys();
+      print("All SharedPreferences keys: $keys");
+      for (String key in keys) {
+        print("  $key: ${prefs.get(key)}");
+      }
+    } catch (e) {
+      print("Error checking SharedPreferences: $e");
+    }
+    
+    print("=== END AUTH STATE DEBUG ===");
+  }
+  
+  // Manual logout test method (for debugging)
+  Future<void> _manualLogoutTest() async {
+    print("=== MANUAL LOGOUT TEST ===");
+    
+    try {
+      // Step 1: Clear SharedPreferences completely
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.clear();
+      print("✓ SharedPreferences cleared");
+      
+      // Step 2: Sign out from Firebase
+      await FirebaseAuth.instance.signOut();
+      print("✓ Firebase signOut called");
+      
+      // Step 3: Check auth state
+      await Future.delayed(Duration(milliseconds: 500));
+      final user = FirebaseAuth.instance.currentUser;
+      print("User after signout: ${user?.uid ?? 'null'}");
+      
+      // Step 4: Force navigation
+      if (mounted) {
+        Navigator.of(context).pushNamedAndRemoveUntil(
+          '/welcome1',
+          (route) => false,
+        );
+        print("✓ Navigation completed");
+      }
+      
+    } catch (e) {
+      print("Manual logout test error: $e");
+    }
+    
+    print("=== END MANUAL LOGOUT TEST ===");
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -947,8 +1010,7 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
                               ),
                             ],
                           ),
-                        ),
-                        ListTile(
+                        ),                        ListTile(
                           leading: const Icon(Icons.person_outline, color: Color(0xFF192F5D)),
                           title: const Text(
                             'View Profile',
@@ -962,6 +1024,68 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
                               context,
                               MaterialPageRoute(builder: (context) => const ProfileScreen()),
                             );
+                          },
+                        ),
+                        const Divider(height: 1),
+                        ListTile(
+                          leading: const Icon(Icons.bug_report, color: Colors.orange),
+                          title: const Text(
+                            'Debug Auth State',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.orange,
+                            ),
+                          ),
+                          onTap: () async {
+                            Navigator.pop(context); // Close modal first
+                            await _debugAuthState();
+                            
+                            // Show debug info in a dialog
+                            final currentUser = FirebaseAuth.instance.currentUser;
+                            final prefs = await SharedPreferences.getInstance();
+                            final bypassMode = prefs.getBool('bypass_mode') ?? false;
+                            
+                            if (mounted) {
+                              showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  title: Text('Debug Info'),
+                                  content: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text('Firebase User: ${currentUser?.uid ?? 'null'}'),
+                                      Text('Email: ${currentUser?.email ?? 'null'}'),
+                                      Text('Bypass Mode: $bypassMode'),
+                                      Text('SharedPrefs Keys: ${prefs.getKeys().length}'),
+                                    ],
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(context),
+                                      child: Text('Close'),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }
+                          },
+                        ),
+                        const Divider(height: 1),
+                        ListTile(
+                          leading: const Icon(Icons.exit_to_app, color: Colors.purple),
+                          title: const Text(
+                            'Manual Logout Test',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.purple,
+                            ),
+                          ),
+                          onTap: () async {
+                            Navigator.pop(context); // Close modal first
+                            await _manualLogoutTest();
                           },
                         ),
                         const Divider(height: 1),
