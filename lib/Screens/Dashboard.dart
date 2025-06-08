@@ -325,10 +325,7 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
                           child: ElevatedButton(
                             onPressed: () {
                               setState(() {
-                                _showActiveOnly = setModalState(() => _showActiveOnly);
-                                _showAtRiskOnly = setModalState(() => _showAtRiskOnly);
-                                _showCompletedOnly = setModalState(() => _showCompletedOnly);
-                                _selectedSortOption = _selectedSortOption;
+                                // Apply the current filter states
                                 _applySorting();
                               });
                               Navigator.pop(context);
