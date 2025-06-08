@@ -578,37 +578,84 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
       ),
     );
   }
-
   Future<void> _handleLogout(BuildContext context) async {
+    print("_handleLogout called");
+    
     try {
-      // Show confirmation dialog
-      bool confirm = await showDialog(
+      // Show confirmation dialog with better styling
+      bool? confirm = await showDialog<bool>(
         context: context,
+        barrierDismissible: false, // Force user to make a choice
         builder: (BuildContext context) {
           return AlertDialog(
-            title: const Text('Logout'),
-            content: const Text('Are you sure you want to log out?'),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            title: Row(
+              children: [
+                Icon(Icons.logout, color: Colors.red, size: 24),
+                SizedBox(width: 12),
+                Text('Logout'),
+              ],
+            ),
+            content: Text(
+              'Are you sure you want to log out?',
+              style: TextStyle(fontSize: 16),
+            ),
             actions: <Widget>[
               TextButton(
-                onPressed: () => Navigator.of(context).pop(false),
+                onPressed: () {
+                  print("Logout cancelled");
+                  Navigator.of(context).pop(false);
+                },
+                style: TextButton.styleFrom(
+                  foregroundColor: Colors.grey[600],
+                ),
                 child: const Text('CANCEL'),
               ),
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(true),
-                child: const Text(
-                  'LOGOUT',
-                  style: TextStyle(color: Color(0xFF192F5D)),
+              ElevatedButton(
+                onPressed: () {
+                  print("Logout confirmed");
+                  Navigator.of(context).pop(true);
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF192F5D),
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
                 ),
+                child: const Text('LOGOUT'),
               ),
             ],
           );
         },
-      ) ?? false;      if (confirm) {
-        // Show a loading indicator
+      );
+
+      print("Dialog result: $confirm");
+
+      if (confirm == true) {
+        print("Starting logout process...");
+        
+        // Show a loading indicator with better styling
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Logging out...'),
-            duration: Duration(seconds: 1),
+          SnackBar(
+            content: Row(
+              children: [
+                SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(
+                    color: Colors.white,
+                    strokeWidth: 2,
+                  ),
+                ),
+                SizedBox(width: 12),
+                Text('Logging out...'),
+              ],
+            ),
+            duration: Duration(seconds: 2),
+            backgroundColor: Color(0xFF192F5D),
           ),
         );
         
@@ -616,39 +663,96 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
         try {
           final prefs = await SharedPreferences.getInstance();
           await prefs.setBool('bypass_mode', false);
-          print("Bypass mode cleared");
+          await prefs.clear(); // Clear all preferences for a clean logout
+          print("Bypass mode and preferences cleared");
         } catch (e) {
-          print("Error clearing bypass mode: $e");
+          print("Error clearing preferences: $e");
         }
         
         // Actually sign out the user from Firebase Auth
-        await FirebaseAuth.instance.signOut();
-        print("User logged out from Firebase");
+        try {
+          await FirebaseAuth.instance.signOut();
+          print("User logged out from Firebase successfully");
+        } catch (e) {
+          print("Firebase logout error: $e");
+          // Continue with navigation even if Firebase logout fails
+        }
         
-        // For testing purposes, add a debug print to confirm navigation is triggered
-        print("Navigating to welcome page...");
+        // Wait a moment for the SnackBar to be visible
+        await Future.delayed(const Duration(milliseconds: 800));
         
-        // Use Future.delayed to ensure the auth state change has propagated
-        // and to make sure any SnackBar messages have time to be seen
-        Future.delayed(const Duration(milliseconds: 300), () {
-          // Check if the widget is still mounted before navigating
-          if (mounted) {
-            // Use pushAndRemoveUntil to clear the navigation stack
+        // Navigate to welcome page with better error handling
+        if (mounted) {
+          print("Navigating to welcome page...");
+          
+          try {
+            // Use pushNamedAndRemoveUntil if you have named routes, or pushAndRemoveUntil
             Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(builder: (context) => const WelcomePage1()),
-              (Route<dynamic> route) => false, // This removes all previous routes
+              MaterialPageRoute(
+                builder: (context) => const WelcomePage1(),
+                settings: RouteSettings(name: '/welcome'),
+              ),
+              (Route<dynamic> route) => false, // Remove all previous routes
             );
+            
+            print("Navigation completed successfully");
+            
+            // Show success message after navigation
+            Future.delayed(Duration(milliseconds: 500), () {
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Row(
+                      children: [
+                        Icon(Icons.check_circle, color: Colors.white, size: 20),
+                        SizedBox(width: 12),
+                        Text('Logged out successfully'),
+                      ],
+                    ),
+                    backgroundColor: Colors.green,
+                    duration: Duration(seconds: 2),
+                  ),
+                );
+              }
+            });
+            
+          } catch (navigationError) {
+            print("Navigation error: $navigationError");
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Navigation error: $navigationError'),
+                  backgroundColor: Colors.red,
+                ),
+              );
+            }
           }
-        });
+        } else {
+          print("Widget not mounted, skipping navigation");
+        }
+      } else {
+        print("Logout cancelled by user");
       }
     } catch (e) {
-      print("Error during logout: $e");
+      print("Error during logout process: $e");
       // Make sure the widget is still mounted before showing the SnackBar
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error signing out: $e'),
+            content: Row(
+              children: [
+                Icon(Icons.error, color: Colors.white, size: 20),
+                SizedBox(width: 12),
+                Expanded(child: Text('Logout error: $e')),
+              ],
+            ),
             backgroundColor: Colors.red,
+            duration: Duration(seconds: 4),
+            action: SnackBarAction(
+              label: 'RETRY',
+              textColor: Colors.white,
+              onPressed: () => _handleLogout(context),
+            ),
           ),
         );
       }
@@ -818,10 +922,26 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
                               fontWeight: FontWeight.w500,
                               color: Colors.red,
                             ),
-                          ),
-                          onTap: () {
+                          ),                          onTap: () async {
                             Navigator.pop(context); // Close modal first
-                            _handleLogout(context); // Then handle logout
+                            
+                            // Add debug print
+                            print("Logout tapped - starting logout process");
+                            
+                            // Call logout with better error handling
+                            try {
+                              await _handleLogout(context);
+                            } catch (e) {
+                              print("Error in logout tap handler: $e");
+                              if (mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text('Logout failed: $e'),
+                                    backgroundColor: Colors.red,
+                                  ),
+                                );
+                              }
+                            }
                           },
                         ),
                         const SizedBox(height: 16),
