@@ -9,8 +9,9 @@ import './Chat.dart';
 import './Calendar.dart';
 import './Profile.dart'; // Make sure this points to the right file
 
-// Simplified Task model with essential properties
+// Enhanced Task model with Firebase ID support
 class Task {
+  String? id; // Firebase document ID
   String projectName;
   String taskName;
   String status;
@@ -21,6 +22,7 @@ class Task {
   Color statusColor;
 
   Task({
+    this.id,
     required this.projectName,
     required this.taskName,
     required this.status,
@@ -86,10 +88,10 @@ class _TaskManagerState extends State<TaskManager> {
       _myTasksSubscription = FirebaseService.getUserTasks().listen(
         (snapshot) {
           if (mounted) {
-            setState(() {
-              _myTasks = snapshot.docs.map((doc) {
+            setState(() {              _myTasks = snapshot.docs.map((doc) {
                 final data = doc.data() as Map<String, dynamic>;
                 return Task(
+                  id: doc.id, // Store Firebase document ID
                   projectName: data['projectName'] ?? 'Unknown Project',
                   taskName: data['title'] ?? data['taskName'] ?? 'Untitled Task',
                   status: data['status'] ?? 'Not Started',
