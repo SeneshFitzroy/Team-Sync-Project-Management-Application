@@ -237,14 +237,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),                      TextButton(
                         onPressed: () async {
                           try {
-                            // Clear bypass mode from SharedPreferences
+                            // Clear SharedPreferences
                             final prefs = await SharedPreferences.getInstance();
-                            await prefs.remove('bypass_mode');
-                            print("DEBUG: Bypass mode cleared from SharedPreferences");
+                            await prefs.clear();
                             
                             // Sign out from Firebase
                             await FirebaseAuth.instance.signOut();
-                            print("DEBUG: Firebase signOut successful");
                             
                             // Close the dialog
                             Navigator.pop(context);
@@ -254,10 +252,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               MaterialPageRoute(
                                 builder: (context) => const WelcomePage1(),
                               ),
-                              (route) => false, // Remove all previous routes
+                              (route) => false,
                             );
                           } catch (error) {
-                            print("Error during logout: $error");
                             // Still navigate to Welcome Page even if there's an error
                             Navigator.pop(context);
                             Navigator.of(context).pushAndRemoveUntil(

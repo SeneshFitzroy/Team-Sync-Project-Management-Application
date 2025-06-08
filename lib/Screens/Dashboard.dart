@@ -6,7 +6,6 @@ import 'CreateaNewProject.dart'; // Import the CreateANewProject screen
 import './TaskManager.dart'; // Import TaskManager
 import './Chat.dart'; // Import Chat
 import './Calendar.dart'; // Import Calendar
-import 'welcome-page1.dart'; // Import WelcomePage1
 import 'package:firebase_auth/firebase_auth.dart'; // Add this import
 import 'package:cloud_firestore/cloud_firestore.dart'; // Correct Firestore import
 import 'login-page.dart'; // Import the login page
@@ -578,301 +577,47 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
       ),
     );
   }  Future<void> _handleLogout(BuildContext context) async {
-    print("=== LOGOUT DEBUG START ===");
-    print("_handleLogout called at ${DateTime.now()}");
-    
-    // Check current auth state before logout
-    final currentUser = FirebaseAuth.instance.currentUser;
-    print("Current Firebase Auth user: ${currentUser?.uid ?? 'null'}");
-    print("Current Firebase Auth email: ${currentUser?.email ?? 'null'}");
-    
-    // Check bypass mode before logout
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final bypassMode = prefs.getBool('bypass_mode') ?? false;
-      print("Current bypass mode: $bypassMode");
-    } catch (e) {
-      print("Error checking bypass mode: $e");
-    }
-    
-    try {
-      // Show confirmation dialog with better styling
+      // Show confirmation dialog
       bool? confirm = await showDialog<bool>(
         context: context,
-        barrierDismissible: false, // Force user to make a choice
         builder: (BuildContext context) {
           return AlertDialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            title: Row(
-              children: [
-                Icon(Icons.logout, color: Colors.red, size: 24),
-                SizedBox(width: 12),
-                Text('Logout'),
-              ],
-            ),
-            content: Text(
-              'Are you sure you want to log out?',
-              style: TextStyle(fontSize: 16),
-            ),
+            title: const Text('Logout'),
+            content: const Text('Are you sure you want to log out?'),
             actions: <Widget>[
               TextButton(
-                onPressed: () {
-                  print("Logout cancelled by user");
-                  Navigator.of(context).pop(false);
-                },
-                style: TextButton.styleFrom(
-                  foregroundColor: Colors.grey[600],
-                ),
-                child: const Text('CANCEL'),
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('Cancel'),
               ),
-              ElevatedButton(
-                onPressed: () {
-                  print("Logout confirmed by user");
-                  Navigator.of(context).pop(true);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF192F5D),
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                child: const Text('LOGOUT'),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: const Text('Logout'),
               ),
             ],
           );
         },
       );
 
-      print("Dialog result: $confirm");
-
       if (confirm == true) {
-        print("=== STARTING LOGOUT PROCESS ===");
+        // Clear SharedPreferences
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.clear();
         
-        // Show a loading indicator
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Row(
-              children: [
-                SizedBox(
-                  width: 16,
-                  height: 16,
-                  child: CircularProgressIndicator(
-                    color: Colors.white,
-                    strokeWidth: 2,
-                  ),
-                ),
-                SizedBox(width: 12),
-                Text('Logging out...'),
-              ],
-            ),
-            duration: Duration(seconds: 3),
-            backgroundColor: Color(0xFF192F5D),
-          ),
-        );
+        // Sign out from Firebase
+        await FirebaseAuth.instance.signOut();
         
-        // Step 1: Clear SharedPreferences
-        print("Step 1: Clearing SharedPreferences...");
-        try {
-          final prefs = await SharedPreferences.getInstance();
-          
-          // Log all current preferences
-          final keys = prefs.getKeys();
-          print("Current SharedPreferences keys: $keys");
-          for (String key in keys) {
-            print("  $key: ${prefs.get(key)}");
-          }
-          
-          // Clear all preferences
-          await prefs.clear();
-          print("SharedPreferences cleared successfully");
-          
-          // Verify they're cleared
-          final keysAfter = prefs.getKeys();
-          print("SharedPreferences keys after clear: $keysAfter");
-          
-        } catch (e) {
-          print("ERROR clearing SharedPreferences: $e");
-          // Continue with logout even if clearing preferences fails
-        }
-        
-        // Step 2: Sign out from Firebase Auth
-        print("Step 2: Signing out from Firebase Auth...");
-        try {
-          // Check auth state before signout
-          final userBeforeSignout = FirebaseAuth.instance.currentUser;
-          print("User before signout: ${userBeforeSignout?.uid ?? 'null'}");
-          
-          // Actually sign out
-          await FirebaseAuth.instance.signOut();
-          print("Firebase signOut() completed");
-          
-          // Check auth state after signout
-          final userAfterSignout = FirebaseAuth.instance.currentUser;
-          print("User after signout: ${userAfterSignout?.uid ?? 'null'}");
-          
-          if (userAfterSignout == null) {
-            print("✓ Firebase logout successful - user is null");
-          } else {
-            print("⚠ WARNING: Firebase user still exists after signout");
-          }
-          
-        } catch (e) {
-          print("ERROR during Firebase signout: $e");
-          // Continue with navigation even if Firebase logout fails
-        }
-        
-        // Step 3: Wait a moment to ensure state changes are processed
-        print("Step 3: Waiting for state changes to process...");
-        await Future.delayed(const Duration(milliseconds: 1000));
-        
-        // Step 4: Navigate to welcome page
-        print("Step 4: Navigating to welcome page...");
+        // Navigate to welcome page
         if (mounted) {
-          try {
-            // Close any existing SnackBars
-            ScaffoldMessenger.of(context).hideCurrentSnackBar();
-            
-            // Use pushNamedAndRemoveUntil to completely clear the navigation stack
-            Navigator.of(context).pushNamedAndRemoveUntil(
-              '/welcome1',
-              (Route<dynamic> route) => false, // Remove all previous routes
-            );
-            
-            print("✓ Navigation to welcome page completed successfully");
-            
-          } catch (navigationError) {
-            print("ERROR during navigation: $navigationError");
-            
-            // Try alternative navigation method
-            try {
-              Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(
-                  builder: (context) => const WelcomePage1(),
-                  settings: RouteSettings(name: '/welcome'),
-                ),
-                (Route<dynamic> route) => false,
-              );
-              print("✓ Alternative navigation successful");
-            } catch (altNavError) {
-              print("ERROR with alternative navigation: $altNavError");
-              
-              // Show error to user
-              if (mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Navigation error. Please restart the app.'),
-                    backgroundColor: Colors.red,
-                    duration: Duration(seconds: 5),
-                  ),
-                );
-              }
-            }
-          }
-        } else {
-          print("WARNING: Widget not mounted, skipping navigation");
+          Navigator.of(context).pushNamedAndRemoveUntil(
+            '/welcome1',
+            (route) => false,
+          );
         }
-        
-        print("=== LOGOUT PROCESS COMPLETED ===");
-        
-      } else {
-        print("Logout cancelled by user");
       }
     } catch (e) {
-      print("CRITICAL ERROR during logout process: $e");
-      print("Error type: ${e.runtimeType}");
-      print("Error stackTrace: ${StackTrace.current}");
-      
-      // Make sure the widget is still mounted before showing the SnackBar
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Row(
-              children: [
-                Icon(Icons.error, color: Colors.white, size: 20),
-                SizedBox(width: 12),
-                Expanded(child: Text('Logout error: $e')),
-              ],
-            ),
-            backgroundColor: Colors.red,
-            duration: Duration(seconds: 5),
-            action: SnackBarAction(
-              label: 'RETRY',
-              textColor: Colors.white,
-              onPressed: () => _handleLogout(context),
-            ),
-          ),
-        );
-      }
-    }
-    
-    print("=== LOGOUT DEBUG END ===");
-  }
-
-  // Debug method to check authentication state
-  Future<void> _debugAuthState() async {
-    print("=== AUTH STATE DEBUG ===");
-    
-    // Check Firebase Auth
-    final currentUser = FirebaseAuth.instance.currentUser;
-    print("Firebase Auth currentUser: ${currentUser?.uid ?? 'null'}");
-    print("Firebase Auth email: ${currentUser?.email ?? 'null'}");
-    print("Firebase Auth isAnonymous: ${currentUser?.isAnonymous ?? 'null'}");
-    
-    // Check SharedPreferences
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final bypassMode = prefs.getBool('bypass_mode') ?? false;
-      print("Bypass mode: $bypassMode");
-      
-      final keys = prefs.getKeys();
-      print("All SharedPreferences keys: $keys");
-      for (String key in keys) {
-        print("  $key: ${prefs.get(key)}");
-      }
-    } catch (e) {
-      print("Error checking SharedPreferences: $e");
-    }
-    
-    print("=== END AUTH STATE DEBUG ===");
-  }
-  
-  // Manual logout test method (for debugging)
-  Future<void> _manualLogoutTest() async {
-    print("=== MANUAL LOGOUT TEST ===");
-    
-    try {
-      // Step 1: Clear SharedPreferences completely
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.clear();
-      print("✓ SharedPreferences cleared");
-      
-      // Step 2: Sign out from Firebase
-      await FirebaseAuth.instance.signOut();
-      print("✓ Firebase signOut called");
-      
-      // Step 3: Check auth state
-      await Future.delayed(Duration(milliseconds: 500));
-      final user = FirebaseAuth.instance.currentUser;
-      print("User after signout: ${user?.uid ?? 'null'}");
-      
-      // Step 4: Force navigation
-      if (mounted) {
-        Navigator.of(context).pushNamedAndRemoveUntil(
-          '/welcome1',
-          (route) => false,
-        );
-        print("✓ Navigation completed");
-      }
-      
-    } catch (e) {
-      print("Manual logout test error: $e");
-    }
-    
-    print("=== END MANUAL LOGOUT TEST ===");
-  }
+      print("Logout error: $e");
+    }  }
 
   @override
   Widget build(BuildContext context) {
@@ -1024,70 +769,7 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
                               context,
                               MaterialPageRoute(builder: (context) => const ProfileScreen()),
                             );
-                          },
-                        ),
-                        const Divider(height: 1),
-                        ListTile(
-                          leading: const Icon(Icons.bug_report, color: Colors.orange),
-                          title: const Text(
-                            'Debug Auth State',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.orange,
-                            ),
-                          ),
-                          onTap: () async {
-                            Navigator.pop(context); // Close modal first
-                            await _debugAuthState();
-                            
-                            // Show debug info in a dialog
-                            final currentUser = FirebaseAuth.instance.currentUser;
-                            final prefs = await SharedPreferences.getInstance();
-                            final bypassMode = prefs.getBool('bypass_mode') ?? false;
-                            
-                            if (mounted) {
-                              showDialog(
-                                context: context,
-                                builder: (context) => AlertDialog(
-                                  title: Text('Debug Info'),
-                                  content: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text('Firebase User: ${currentUser?.uid ?? 'null'}'),
-                                      Text('Email: ${currentUser?.email ?? 'null'}'),
-                                      Text('Bypass Mode: $bypassMode'),
-                                      Text('SharedPrefs Keys: ${prefs.getKeys().length}'),
-                                    ],
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () => Navigator.pop(context),
-                                      child: Text('Close'),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            }
-                          },
-                        ),
-                        const Divider(height: 1),
-                        ListTile(
-                          leading: const Icon(Icons.exit_to_app, color: Colors.purple),
-                          title: const Text(
-                            'Manual Logout Test',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.purple,
-                            ),
-                          ),
-                          onTap: () async {
-                            Navigator.pop(context); // Close modal first
-                            await _manualLogoutTest();
-                          },
-                        ),
+                          },                        ),
                         const Divider(height: 1),
                         ListTile(
                           leading: const Icon(Icons.logout, color: Colors.red),
