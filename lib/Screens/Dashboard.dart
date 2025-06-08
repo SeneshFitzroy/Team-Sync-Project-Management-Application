@@ -749,36 +749,82 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
                     ),
             ),
           ),
-          const SizedBox(width: 16),
-          GestureDetector(
+          const SizedBox(width: 16),          GestureDetector(
             onTap: () {
               // Show a popup menu when profile icon is tapped
               showModalBottomSheet(
                 context: context,
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                ),
                 builder: (BuildContext context) {
                   return SafeArea(
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: <Widget>[
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: const BoxDecoration(
+                            border: Border(
+                              bottom: BorderSide(
+                                color: Color(0xFFEEEEEE),
+                                width: 1,
+                              ),
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.person, color: Color(0xFF192F5D), size: 24),
+                              const SizedBox(width: 12),
+                              const Text(
+                                'Profile Options',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF192F5D),
+                                ),
+                              ),
+                              const Spacer(),
+                              IconButton(
+                                icon: const Icon(Icons.close, color: Color(0xFF192F5D)),
+                                onPressed: () => Navigator.pop(context),
+                              ),
+                            ],
+                          ),
+                        ),
                         ListTile(
-                          leading: const Icon(Icons.person),
-                          title: const Text('Profile'),
-                          onTap: () {
-                            Navigator.pop(context); // Close the bottom sheet
+                          leading: const Icon(Icons.person_outline, color: Color(0xFF192F5D)),
+                          title: const Text(
+                            'View Profile',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          onTap: () {                            Navigator.pop(context); // Close modal
                             Navigator.push(
                               context,
                               MaterialPageRoute(builder: (context) => const ProfileScreen()),
                             );
                           },
                         ),
+                        const Divider(height: 1),
                         ListTile(
-                          leading: const Icon(Icons.logout),
-                          title: const Text('Logout'),
-                          onTap: () { // This should navigate to WelcomePage2 when confirmed
-                            Navigator.pop(context); // Close the bottom sheet
-                            _handleLogout(context);
+                          leading: const Icon(Icons.logout, color: Colors.red),
+                          title: const Text(
+                            'Logout',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.red,
+                            ),
+                          ),
+                          onTap: () {
+                            Navigator.pop(context); // Close modal first
+                            _handleLogout(context); // Then handle logout
                           },
                         ),
+                        const SizedBox(height: 16),
                       ],
                     ),
                   );
