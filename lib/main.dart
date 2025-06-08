@@ -7,10 +7,10 @@ import 'firebase_options.dart';
 // Import welcome screen
 import 'Screens/welcome-page1.dart';
 import 'Screens/login-page.dart';
-import 'Screens/create account.dart';
+import 'Screens/create account.dart' as create_account;
 import 'Screens/Dashboard.dart';
 import 'Screens/ForgetPassword.dart';
-import 'Screens/TaskManager.dart';
+import 'Screens/TaskManager.dart' as task_manager;
 import 'Screens/Profile.dart';
 import 'Screens/Calendar.dart';
 import 'Screens/Chat.dart';
