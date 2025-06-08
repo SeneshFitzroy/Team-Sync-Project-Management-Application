@@ -4,7 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../Services/firebase_service.dart';
-import 'create account.dart' as create_account;
+import 'create account.dart';
 import 'ForgetPassword2.dart';
 import 'Dashboard.dart';
 
@@ -445,7 +445,7 @@ class _LoginPageState extends State<LoginPage> {
                         onPressed: () {                          Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const create_account.CreateAccount(),
+                              builder: (context) => const CreateAccount(),
                             ),
                           );
                         },
