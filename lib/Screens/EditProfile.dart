@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import '../Services/firebase_service.dart';
 
 class EditProfile extends StatefulWidget {
   final String name;
@@ -24,6 +27,8 @@ class _EditProfileState extends State<EditProfile> {
   late final TextEditingController _phoneController;
   late final TextEditingController _emailController;
   late final TextEditingController _usernameController;
+  
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -33,6 +38,70 @@ class _EditProfileState extends State<EditProfile> {
     _phoneController = TextEditingController(text: widget.phoneNumber);
     _emailController = TextEditingController(text: widget.email);
     _usernameController = TextEditingController(text: widget.username);
+  }
+
+  Future<void> _saveProfile() async {
+    if (_isLoading) return;
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      // Validate input
+      if (_nameController.text.trim().isEmpty) {
+        throw Exception('Name cannot be empty');
+      }
+      if (_emailController.text.trim().isEmpty) {
+        throw Exception('Email cannot be empty');
+      }
+
+      // Prepare data for Firebase
+      final profileData = {
+        'displayName': _nameController.text.trim(),
+        'name': _nameController.text.trim(),
+        'email': _emailController.text.trim(),
+        'phoneNumber': _phoneController.text.trim(),
+        'username': _usernameController.text.trim(),
+      };
+
+      // Update profile in Firebase
+      await FirebaseService.updateUserProfile(profileData);
+
+      // Show success message
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Profile updated successfully!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+
+        // Return updated data to previous screen
+        Navigator.of(context).pop({
+          'name': _nameController.text.trim(),
+          'email': _emailController.text.trim(),
+          'phoneNumber': _phoneController.text.trim(),
+          'username': _usernameController.text.trim(),
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to update profile: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+      print('Error updating profile: $e');
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
   }
 
   @override
@@ -164,23 +233,9 @@ class _EditProfileState extends State<EditProfile> {
             buildTextField("Username", _usernameController),
             
             const SizedBox(height: 30),
-            
-            // Save button
+              // Save button
             ElevatedButton(
-              onPressed: () {
-                // Return updated data to ProfileScreen
-                Navigator.pop(context, {
-                  'name': _nameController.text,
-                  'username': _usernameController.text,
-                  'email': _emailController.text,
-                  'phoneNumber': _phoneController.text,
-                });
-                
-                // Show success message
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Profile updated successfully')),
-                );
-              },
+              onPressed: _isLoading ? null : _saveProfile,
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF192F5D),
                 minimumSize: const Size(double.infinity, 50),
@@ -188,15 +243,24 @@ class _EditProfileState extends State<EditProfile> {
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
-              child: const Text(
-                'Save',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontFamily: 'Poppins',
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
+              child: _isLoading
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                      ),
+                    )
+                  : const Text(
+                      'Save',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontFamily: 'Poppins',
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
             ),
           ],
         ),
