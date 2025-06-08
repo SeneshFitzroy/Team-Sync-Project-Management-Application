@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:async';
 import '../Components/nav_bar.dart';
+import '../Services/firebase_service.dart';
 import 'Profile.dart';
 import 'CreateaNewProject.dart';
 import './TaskManager.dart';
@@ -28,9 +31,10 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
   bool _showCompletedOnly = false;
   String _selectedSortOption = 'Progress (High to Low)';
 
-  // Project list - using local data for reliable loading
+  // Project list - using Firebase data with fallback to sample data
   List<Map<String, dynamic>> projects = [];
   bool _isLoading = false;
+  StreamSubscription<QuerySnapshot>? _projectsSubscription;
 
   @override
   void initState() {
@@ -40,59 +44,119 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
       duration: const Duration(milliseconds: 300),
     );
     
-    // Initialize with sample projects immediately
-    _loadSampleProjects();
+    // Initialize with Firebase projects or fallback to sample data
+    _loadFirebaseProjects();
   }
 
-  void _loadSampleProjects() {
+  void _loadFirebaseProjects() {
     setState(() {
       _isLoading = true;
     });
 
-    // Simulate a brief loading time for better UX
+    try {
+      // Listen to Firebase projects stream
+      _projectsSubscription = FirebaseService.getUserProjects().listen(
+        (snapshot) {
+          if (mounted) {
+            setState(() {
+              projects = snapshot.docs.map((doc) {
+                final data = doc.data() as Map<String, dynamic>;
+                return {
+                  'id': doc.id,
+                  'title': data['title'] ?? 'Untitled Project',
+                  'members': data['members'] is List 
+                      ? '${(data['members'] as List).length} Members'
+                      : data['members'] ?? '0 Members',
+                  'status': data['status'] ?? 'active',
+                  'progress': (data['progress'] ?? 0.0).toDouble(),
+                  'progressText': '${((data['progress'] ?? 0.0) * 100).round()}%',
+                  'color': _getProjectColor(data['status'] ?? 'active'),
+                  'description': data['description'] ?? '',
+                  'updatedAt': data['updatedAt'],
+                };
+              }).toList();
+              _isLoading = false;
+              _applySorting();
+            });
+          }
+        },
+        onError: (error) {
+          print('Error loading projects: $error');
+          // Fallback to sample data on error
+          _loadSampleProjects();
+        },
+      );
+    } catch (e) {
+      print('Error setting up projects listener: $e');
+      // Fallback to sample data on error
+      _loadSampleProjects();
+    }
+  }
+
+  Color _getProjectColor(String status) {
+    switch (status) {
+      case 'active':
+        return const Color(0xFF187E0F);
+      case 'at-risk':
+        return const Color(0xFFD14318);
+      case 'completed':
+        return const Color(0xFF192F5D);
+      default:
+        return const Color(0xFF9B870C);
+    }
+  }
+
+  void _loadSampleProjects() {
+    // Fallback sample projects if Firebase fails
+    setState(() {
+      _isLoading = true;
+    });
+
     Future.delayed(const Duration(milliseconds: 500), () {
-      setState(() {
-        projects = [
-          {
-            'title': 'Mobile App Design',
-            'members': '5 Members',
-            'status': 'active',
-            'progress': 0.75,
-            'progressText': '75%',
-            'color': const Color(0xFF187E0F),
-            'description': 'Designing the new mobile app interface',
-          },
-          {
-            'title': 'Website Redesign',
-            'members': '3 Members',
-            'status': 'at-risk',
-            'progress': 0.35,
-            'progressText': '35%',
-            'color': const Color(0xFFD14318),
-            'description': 'Complete website redesign project',
-          },
-          {
-            'title': 'Marketing Campaign',
-            'members': '4 Members',
-            'status': 'completed',
-            'progress': 1.0,
-            'progressText': '100%',
-            'color': const Color(0xFF192F5D),
-            'description': 'Q4 marketing campaign planning',
-          },
-          {
-            'title': 'Database Migration',
-            'members': '2 Members',
-            'status': 'active',
-            'progress': 0.6,
-            'progressText': '60%',
-            'color': const Color(0xFF9B870C),
-            'description': 'Migrating legacy database to cloud',
-          },
-        ];
-        _isLoading = false;
-        _applySorting();
-      });
+      if (mounted) {
+        setState(() {
+          projects = [
+            {
+              'title': 'Mobile App Design',
+              'members': '5 Members',
+              'status': 'active',
+              'progress': 0.75,
+              'progressText': '75%',
+              'color': const Color(0xFF187E0F),
+              'description': 'Designing the new mobile app interface',
+            },
+            {
+              'title': 'Website Redesign',
+              'members': '3 Members',
+              'status': 'at-risk',
+              'progress': 0.35,
+              'progressText': '35%',
+              'color': const Color(0xFFD14318),
+              'description': 'Complete website redesign project',
+            },
+            {
+              'title': 'Marketing Campaign',
+              'members': '4 Members',
+              'status': 'completed',
+              'progress': 1.0,
+              'progressText': '100%',
+              'color': const Color(0xFF192F5D),
+              'description': 'Q4 marketing campaign planning',
+            },
+            {
+              'title': 'Database Migration',
+              'members': '2 Members',
+              'status': 'active',
+              'progress': 0.6,
+              'progressText': '60%',
+              'color': const Color(0xFF9B870C),
+              'description': 'Migrating legacy database to cloud',
+            },
+          ];
+          _isLoading = false;
+          _applySorting();
+        });
+      }
     });
   }
 
@@ -100,6 +164,7 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
   void dispose() {
     _searchController.dispose();
     _filterAnimController.dispose();
+    _projectsSubscription?.cancel();
     super.dispose();
   }
 
