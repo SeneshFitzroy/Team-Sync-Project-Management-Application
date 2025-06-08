@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import '../Services/firebase_service.dart';
 
 class ContactSupport extends StatefulWidget {
   const ContactSupport({super.key});
@@ -13,6 +16,7 @@ class _ContactSupportState extends State<ContactSupport> {
   final TextEditingController _messageController = TextEditingController();
   String _priority = 'Normal';
   final List<String> _priorities = ['Low', 'Normal', 'High', 'Urgent'];
+  bool _isSubmitting = false;
 
   @override
   void dispose() {
@@ -20,13 +24,76 @@ class _ContactSupportState extends State<ContactSupport> {
     _messageController.dispose();
     super.dispose();
   }
-
-  void _submitRequest() {
+  void _submitRequest() async {
     if (_formKey.currentState!.validate()) {
-      // TODO: Implement API call or other action for form submission
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Request submitted successfully')),
-      );
+      setState(() {
+        _isSubmitting = true;
+      });
+
+      try {
+        final user = FirebaseAuth.instance.currentUser;
+        final userId = user?.uid;
+        final userEmail = user?.email ?? 'anonymous';
+
+        // Submit support ticket to Firebase
+        await FirebaseFirestore.instance.collection('support_tickets').add({
+          'userId': userId,
+          'userEmail': userEmail,
+          'subject': _subjectController.text.trim(),
+          'message': _messageController.text.trim(),
+          'priority': _priority,
+          'status': 'Open',
+          'createdAt': FieldValue.serverTimestamp(),
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
+
+        // Log activity
+        await FirebaseService.logActivity('support_ticket_created', {
+          'subject': _subjectController.text.trim(),
+          'priority': _priority,
+          'timestamp': DateTime.now().toIso8601String(),
+        });
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Support request submitted successfully! We\'ll get back to you soon.'),
+              backgroundColor: Colors.green,
+              duration: Duration(seconds: 3),
+            ),
+          );
+
+          // Clear form
+          _subjectController.clear();
+          _messageController.clear();
+          setState(() {
+            _priority = 'Normal';
+          });
+
+          // Navigate back after a short delay
+          Future.delayed(const Duration(seconds: 2), () {
+            if (mounted) {
+              Navigator.pop(context);
+            }
+          });
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error submitting request: ${e.toString()}'),
+              backgroundColor: Colors.red,
+              duration: const Duration(seconds: 3),
+            ),
+          );
+        }
+      } finally {
+        if (mounted) {
+          setState(() {
+            _isSubmitting = false;
+          });
+        }
+      }
     }
   }
 
@@ -256,25 +323,33 @@ class _ContactSupportState extends State<ContactSupport> {
                                 ),
                               ),
                             ),
-                            const SizedBox(width: 12),
-                            ElevatedButton(
-                              onPressed: _submitRequest,
+                            const SizedBox(width: 12),                            ElevatedButton(
+                              onPressed: _isSubmitting ? null : _submitRequest,
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF192F5D),
+                                backgroundColor: _isSubmitting ? Colors.grey : const Color(0xFF192F5D),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(6),
                                 ),
                                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                               ),
-                              child: const Text(
-                                'Submit Request',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 14,
-                                  fontFamily: 'Poppins',
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
+                              child: _isSubmitting
+                                  ? const SizedBox(
+                                      width: 16,
+                                      height: 16,
+                                      child: CircularProgressIndicator(
+                                        color: Colors.white,
+                                        strokeWidth: 2,
+                                      ),
+                                    )
+                                  : const Text(
+                                      'Submit Request',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 14,
+                                        fontFamily: 'Poppins',
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
                             ),
                           ],
                         ),

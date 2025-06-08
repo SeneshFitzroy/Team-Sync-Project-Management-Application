@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import '../Services/firebase_service.dart';
 
 class ChangePassword extends StatefulWidget {
   const ChangePassword({super.key});
@@ -11,9 +13,11 @@ class _ChangePasswordState extends State<ChangePassword> {
   final _formKey = GlobalKey<FormState>();
   final _currentPasswordController = TextEditingController();
   final _newPasswordController = TextEditingController();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
   bool _obscureCurrentPassword = true;
   bool _obscureNewPassword = true;
   bool _isButtonEnabled = false;
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -35,14 +39,85 @@ class _ChangePasswordState extends State<ChangePassword> {
           _newPasswordController.text.length >= 8;
     });
   }
-
-  void _changePassword() {
+  void _changePassword() async {
     if (_formKey.currentState!.validate()) {
-      // TODO: Implement password change functionality with API
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Password changed successfully')),
-      );
-      Navigator.pop(context);
+      setState(() {
+        _isLoading = true;
+      });
+
+      try {
+        final user = _auth.currentUser;
+        if (user == null) {
+          throw Exception('No user logged in');
+        }
+
+        // Re-authenticate the user with current password
+        final credential = EmailAuthProvider.credential(
+          email: user.email!,
+          password: _currentPasswordController.text,
+        );
+
+        await user.reauthenticateWithCredential(credential);
+
+        // Update the password
+        await user.updatePassword(_newPasswordController.text);
+
+        // Log activity using FirebaseService
+        await FirebaseService.logActivity('password_changed', {
+          'timestamp': DateTime.now().toIso8601String(),
+          'userId': user.uid,
+        });
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Password changed successfully'),
+              backgroundColor: Colors.green,
+            ),
+          );
+          Navigator.pop(context);
+        }
+      } on FirebaseAuthException catch (e) {
+        String errorMessage;
+        
+        switch (e.code) {
+          case 'wrong-password':
+            errorMessage = 'Current password is incorrect';
+            break;
+          case 'weak-password':
+            errorMessage = 'New password is too weak';
+            break;
+          case 'requires-recent-login':
+            errorMessage = 'Please log out and log in again before changing password';
+            break;
+          default:
+            errorMessage = 'Error changing password: ${e.message}';
+        }
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(errorMessage),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error: ${e.toString()}'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      } finally {
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+        }
+      }
     }
   }
 
@@ -214,13 +289,12 @@ class _ChangePasswordState extends State<ChangePassword> {
                 ),
                 
                 const SizedBox(height: 40),
-                
-                // Done Button
+                  // Done Button
                 Center(
                   child: ElevatedButton(
-                    onPressed: _isButtonEnabled ? _changePassword : null,
+                    onPressed: _isButtonEnabled && !_isLoading ? _changePassword : null,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: _isButtonEnabled 
+                      backgroundColor: _isButtonEnabled && !_isLoading
                           ? const Color(0xFF192F5D) 
                           : const Color(0x49192F5D),
                       minimumSize: const Size(200, 50),
@@ -228,15 +302,24 @@ class _ChangePasswordState extends State<ChangePassword> {
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
-                    child: Text(
-                      'Done',
-                      style: TextStyle(
-                        color: _isButtonEnabled ? Colors.white : const Color(0xFF757575),
-                        fontSize: 20,
-                        fontFamily: 'Poppins',
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
+                    child: _isLoading
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2,
+                            ),
+                          )
+                        : Text(
+                            'Done',
+                            style: TextStyle(
+                              color: _isButtonEnabled ? Colors.white : const Color(0xFF757575),
+                              fontSize: 20,
+                              fontFamily: 'Poppins',
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
                   ),
                 ),
                 
