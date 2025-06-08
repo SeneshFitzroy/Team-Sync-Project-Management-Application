@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:async';
 import '../Components/nav_bar.dart';
+import '../Services/firebase_service.dart';
 import './Dashboard.dart';
 import './TaskManager.dart';
 import './Chat.dart';
-import './Profile.dart'; // Add this import
+import './Profile.dart' show ProfileScreen;
 
 class Calendar extends StatefulWidget {
   const Calendar({super.key});
@@ -17,12 +20,100 @@ class _CalendarState extends State<Calendar> {
   DateTime _selectedMonth = DateTime.now();
   final List<String> _weekDays = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
   int _currentIndex = 3; // Set to 3 for Calendar tab
-  final List<Map<String, dynamic>> _tasks = [
-    {'title': 'Q4 Revenue Report', 'time': '10:00 AM', 'date': '2024-01-25', 'priority': 'urgent'},
-    {'title': 'Design Review Meeting', 'time': '02:30 PM', 'date': '2024-01-26', 'priority': 'pending'},
-    {'title': 'Product Launch Prep', 'time': '11:00 AM', 'date': '2024-01-28', 'priority': 'in-progress'},
-  ];
+  List<Map<String, dynamic>> _tasks = [];
   String _filterPriority = 'all';
+  bool _isLoadingTasks = true;
+  StreamSubscription<QuerySnapshot>? _tasksSubscription;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadTasks();
+  }
+
+  @override
+  void dispose() {
+    _tasksSubscription?.cancel();
+    super.dispose();
+  }
+
+  void _loadTasks() {
+    setState(() {
+      _isLoadingTasks = true;
+    });
+    
+    // Listen to Firebase tasks stream
+    _tasksSubscription = FirebaseService.getUserTasks().listen(
+      (snapshot) {
+        if (mounted) {
+          setState(() {
+            _tasks = snapshot.docs.map((doc) {
+              final data = doc.data() as Map<String, dynamic>;
+              return {
+                'title': data['taskName'] ?? 'Untitled Task',
+                'time': _formatTaskTime(data['dueDate']),
+                'date': _formatTaskDate(data['dueDate']),
+                'priority': _mapPriority(data['priority']),
+                'id': doc.id,
+              };
+            }).toList();
+            _isLoadingTasks = false;
+          });
+        }
+      },
+      onError: (e) {
+        if (mounted) {
+          setState(() {
+            _isLoadingTasks = false;
+            _tasks = [];
+          });
+        }
+        print('Error loading tasks: $e');
+      },
+    );
+  }
+
+  String _formatTaskTime(dynamic dueDate) {
+    if (dueDate == null) return 'No time set';
+    try {
+      DateTime date;
+      if (dueDate is Timestamp) {
+        date = dueDate.toDate();
+      } else if (dueDate is String) {
+        date = DateTime.parse(dueDate);
+      } else {
+        return 'No time set';
+      }
+      return DateFormat('h:mm a').format(date);
+    } catch (e) {
+      return 'No time set';
+    }
+  }
+
+  String _formatTaskDate(dynamic dueDate) {
+    if (dueDate == null) return DateFormat('yyyy-MM-dd').format(DateTime.now());
+    try {
+      DateTime date;
+      if (dueDate is Timestamp) {
+        date = dueDate.toDate();
+      } else if (dueDate is String) {
+        date = DateTime.parse(dueDate);
+      } else {
+        return DateFormat('yyyy-MM-dd').format(DateTime.now());
+      }
+      return DateFormat('yyyy-MM-dd').format(date);
+    } catch (e) {
+      return DateFormat('yyyy-MM-dd').format(DateTime.now());
+    }
+  }
+
+  String _mapPriority(dynamic priority) {
+    if (priority == null) return 'pending';
+    String priorityStr = priority.toString().toLowerCase();
+    if (priorityStr.contains('high') || priorityStr.contains('urgent')) return 'urgent';
+    if (priorityStr.contains('medium') || priorityStr.contains('progress')) return 'in-progress';
+    return 'pending';
+  }
 
   void _onNavBarTap(int index) {
     setState(() {
@@ -253,26 +344,39 @@ class _CalendarState extends State<Calendar> {
               ),
               
               const SizedBox(height: 12),
-              
-              // Task items
+                // Task items
               Expanded(
-                child: ListView.builder(
-                  itemCount: _getFilteredTasks().length,
-                  itemBuilder: (context, index) {
-                    final task = _getFilteredTasks()[index];
-                    return _buildTaskCard(
-                      task['title'],
-                      task['time'],
-                      task['date'],
-                      task['priority'],
-                      task['priority'] == 'urgent'
-                          ? const Color(0xFFFF1212)
-                          : task['priority'] == 'pending'
-                              ? const Color(0xFF4318D1)
-                              : const Color(0xFFF59E0B),
-                    );
-                  },
-                ),
+                child: _isLoadingTasks
+                    ? const Center(
+                        child: CircularProgressIndicator(),
+                      )
+                    : _getFilteredTasks().isEmpty
+                        ? const Center(
+                            child: Text(
+                              'No tasks found',
+                              style: TextStyle(
+                                color: Color(0xFF64748B),
+                                fontSize: 16,
+                              ),
+                            ),
+                          )
+                        : ListView.builder(
+                            itemCount: _getFilteredTasks().length,
+                            itemBuilder: (context, index) {
+                              final task = _getFilteredTasks()[index];
+                              return _buildTaskCard(
+                                task['title'],
+                                task['time'],
+                                task['date'],
+                                task['priority'],
+                                task['priority'] == 'urgent'
+                                    ? const Color(0xFFFF1212)
+                                    : task['priority'] == 'pending'
+                                        ? const Color(0xFF4318D1)
+                                        : const Color(0xFFF59E0B),
+                              );
+                            },
+                          ),
               ),
             ],
           ),
