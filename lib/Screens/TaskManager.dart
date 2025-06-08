@@ -61,75 +61,173 @@ class _TaskManagerState extends State<TaskManager> {
   late List<Task> _projectTasks;
   late List<Task> _myTasks;
   late List<Task> _filteredTasks; // Filtered tasks based on search
+  
+  StreamSubscription<QuerySnapshot>? _tasksSubscription;
+  StreamSubscription<QuerySnapshot>? _myTasksSubscription;
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
+    _initializeTasks();
+    _loadFirebaseTasks();
+  }
 
-    // Initialize task lists
-    _projectTasks = [
-      Task(
-        projectName: 'Website Redesign',
-        taskName: 'Design System Update',
-        status: 'In Progress',
-        dueDate: '2024-02-15',
-        priority: 'High',
-        priorityColor: const Color(0xFFD14318),
-        assignee: 'Sarah Chen',
-        statusColor: const Color(0xFF187E0F),
-      ),
-      Task(
-        projectName: 'Mobile App v2.0',
-        taskName: 'API Integration',
-        status: 'Pending',
-        dueDate: '2024-02-20',
-        priority: 'Medium',
-        priorityColor: const Color(0xFF187E0F),
-        assignee: 'Mike Ross',
-        statusColor: const Color(0xFFD14318),
-      ),
-      Task(
-        projectName: 'Data Analytics',
-        taskName: 'Dashboard Implementation',
-        status: 'Not Started',
-        dueDate: '2024-03-05',
-        priority: 'Low',
-        priorityColor: const Color(0xFF192F5D),
-        assignee: 'Team Lead',
-        statusColor: const Color(0xFFCCCCCC),
-      ),
-    ];
+  void _initializeTasks() {
+    // Initialize with empty lists
+    _projectTasks = [];
+    _myTasks = [];
+    _filteredTasks = [];
+  }
 
-    _myTasks = [
-      Task(
-        projectName: 'Personal Development',
-        taskName: 'Flutter Training',
-        status: 'In Progress',
-        dueDate: '2024-02-25',
-        priority: 'High',
-        priorityColor: const Color(0xFFD14318),
-        assignee: 'Me',
-        statusColor: const Color(0xFF187E0F),
-      ),
-      Task(
-        projectName: 'Documentation',
-        taskName: 'Update User Manual',
-        status: 'Completed',
-        dueDate: '2024-02-10',
-        priority: 'Medium',
-        priorityColor: const Color(0xFF187E0F),
-        assignee: 'Me',
-        statusColor: const Color(0xFF192F5D),
-      ),
-    ];
+  void _loadFirebaseTasks() {
+    try {
+      // Listen to user's tasks stream
+      _myTasksSubscription = FirebaseService.getUserTasks().listen(
+        (snapshot) {
+          if (mounted) {
+            setState(() {
+              _myTasks = snapshot.docs.map((doc) {
+                final data = doc.data() as Map<String, dynamic>;
+                return Task(
+                  projectName: data['projectName'] ?? 'Unknown Project',
+                  taskName: data['title'] ?? data['taskName'] ?? 'Untitled Task',
+                  status: data['status'] ?? 'Not Started',
+                  dueDate: _formatDate(data['dueDate']),
+                  priority: data['priority'] ?? 'Medium',
+                  priorityColor: _getPriorityColor(data['priority'] ?? 'Medium'),
+                  assignee: data['assigneeEmail'] ?? 'Unassigned',
+                  statusColor: _getStatusColor(data['status'] ?? 'Not Started'),
+                );
+              }).toList();
+              _isLoading = false;
+              _filterTasks();
+            });
+          }
+        },
+        onError: (error) {
+          print('Error loading tasks: $error');
+          _loadSampleTasks();
+        },
+      );
+    } catch (e) {
+      print('Error setting up tasks listener: $e');
+      _loadSampleTasks();
+    }
+  }
 
-    // If a project was selected, filter tasks and set to project tab
-    if (widget.selectedProject != null) {
-      setState(() {
+  String _formatDate(dynamic date) {
+    if (date == null) return DateTime.now().toString().split(' ')[0];
+    if (date is Timestamp) {
+      return date.toDate().toString().split(' ')[0];
+    }
+    return date.toString();
+  }
+
+  Color _getPriorityColor(String priority) {
+    switch (priority.toLowerCase()) {
+      case 'high':
+        return const Color(0xFFD14318);
+      case 'medium':
+        return const Color(0xFF187E0F);
+      case 'low':
+        return const Color(0xFF192F5D);
+      default:
+        return const Color(0xFF187E0F);
+    }
+  }
+
+  Color _getStatusColor(String status) {
+    switch (status.toLowerCase()) {
+      case 'completed':
+        return const Color(0xFF187E0F);
+      case 'in progress':
+        return const Color(0xFF187E0F);
+      case 'pending':
+        return const Color(0xFFD14318);
+      case 'not started':
+        return const Color(0xFFCCCCCC);
+      default:
+        return const Color(0xFF187E0F);
+    }
+  }
+
+  void _loadSampleTasks() {
+    setState(() {
+      // Initialize task lists with sample data as fallback
+      _projectTasks = [
+        Task(
+          projectName: 'Website Redesign',
+          taskName: 'Design System Update',
+          status: 'In Progress',
+          dueDate: '2024-02-15',
+          priority: 'High',
+          priorityColor: const Color(0xFFD14318),
+          assignee: 'Sarah Chen',
+          statusColor: const Color(0xFF187E0F),
+        ),
+        Task(
+          projectName: 'Mobile App v2.0',
+          taskName: 'API Integration',
+          status: 'Pending',
+          dueDate: '2024-02-20',
+          priority: 'Medium',
+          priorityColor: const Color(0xFF187E0F),
+          assignee: 'Mike Ross',
+          statusColor: const Color(0xFFD14318),
+        ),
+        Task(
+          projectName: 'Data Analytics',
+          taskName: 'Dashboard Implementation',
+          status: 'Not Started',
+          dueDate: '2024-03-05',
+          priority: 'Low',
+          priorityColor: const Color(0xFF192F5D),
+          assignee: 'Team Lead',
+          statusColor: const Color(0xFFCCCCCC),
+        ),      ];
+
+      _myTasks = [
+        Task(
+          projectName: 'Personal Development',
+          taskName: 'Flutter Training',
+          status: 'In Progress',
+          dueDate: '2024-02-25',
+          priority: 'High',
+          priorityColor: const Color(0xFFD14318),
+          assignee: 'Me',
+          statusColor: const Color(0xFF187E0F),
+        ),
+        Task(
+          projectName: 'Documentation',
+          taskName: 'Update User Manual',
+          status: 'Completed',
+          dueDate: '2024-02-10',
+          priority: 'Medium',
+          priorityColor: const Color(0xFF187E0F),
+          assignee: 'Me',
+          statusColor: const Color(0xFF192F5D),
+        ),
+      ];
+      
+      _isLoading = false;
+      _filterTasks();
+    });
+  }
+
+  @override
+  void dispose() {
+    _tasksSubscription?.cancel();
+    _myTasksSubscription?.cancel();
+    super.dispose();
+  }
+
+  void _filterTasks() {
+    setState(() {
+      // If a project was selected, filter tasks and set to project tab
+      if (widget.selectedProject != null) {
         _showProjectTasks = true;
-
         // Filter project tasks to show only tasks for the selected project
-        // Only if we have a selected project
         _projectTasks = _projectTasks
             .where((task) => task.projectName == widget.selectedProject)
             .toList();
