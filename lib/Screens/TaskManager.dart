@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:async';
 import '../Components/nav_bar.dart';
+import '../Services/firebase_service.dart';
 // Import other screens that we'll navigate to
 import './Dashboard.dart';
 import './Chat.dart';

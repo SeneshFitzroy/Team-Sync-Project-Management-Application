@@ -1037,26 +1037,47 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
         );
         
         if (newProjectData != null) {
-          setState(() {
-            projects.add(newProjectData);
-            _applySorting();
-          });
-          
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Row(
-                children: [
-                  const Icon(Icons.check_circle, color: Colors.white),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text('New project "${newProjectData['title']}" added'),
-                  ),
-                ],
+          try {
+            // Save project to Firebase
+            final projectId = await FirebaseService.createProject({
+              'title': newProjectData['title'],
+              'description': newProjectData['description'],
+              'status': 'active',
+              'progress': 0.0,
+              'members': [], // Will be updated when team members are added
+            });
+            
+            // Log activity
+            await FirebaseService.logActivity('project_created', {
+              'projectId': projectId,
+              'projectTitle': newProjectData['title'],
+              'timestamp': DateTime.now().toIso8601String(),
+            });
+            
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Row(
+                  children: [
+                    const Icon(Icons.check_circle, color: Colors.white),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text('New project "${newProjectData['title']}" created'),
+                    ),
+                  ],
+                ),
+                backgroundColor: const Color(0xFF187E0F),
+                duration: const Duration(seconds: 3),
               ),
-              backgroundColor: const Color(0xFF187E0F),
-              duration: const Duration(seconds: 3),
-            ),
-          );
+            );
+          } catch (e) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Error creating project: $e'),
+                backgroundColor: Colors.red,
+                duration: const Duration(seconds: 3),
+              ),
+            );
+          }
         }
       },
       child: Container(
