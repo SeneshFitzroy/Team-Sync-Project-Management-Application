@@ -173,22 +173,13 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
     if (index != 0) {
       switch (index) {
         case 1: // Tasks
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const TaskManager()),
-          );
+          Navigator.pushReplacementNamed(context, '/taskmanager');
           break;
         case 2: // Chat
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const ChatScreen()),
-          );
+          Navigator.pushReplacementNamed(context, '/chat');
           break;
         case 3: // Calendar
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const Calendar()),
-          );
+          Navigator.pushReplacementNamed(context, '/calendar');
           break;
       }
     }
