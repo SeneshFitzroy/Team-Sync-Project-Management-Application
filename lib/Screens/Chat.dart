@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import '../Components/nav_bar.dart';
+import '../Services/firebase_service.dart';
 import './Dashboard.dart';
 import './TaskManager.dart';
 import './Calendar.dart';
-import './Profile.dart'; // Add this import
+import './Profile.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
