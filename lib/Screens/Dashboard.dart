@@ -782,17 +782,16 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
               child: GestureDetector(
                 onTap: () {
-                  Navigator.push(
+                  Navigator.pushNamed(
                     context,
-                    MaterialPageRoute(
-                      builder: (context) => TaskManager(
-                        selectedProject: project['title'] as String,
-                        projectColor: project['color'] as Color,
-                        projectProgress: project['progress'] as double,
-                        projectMembers: project['members'] as String,
-                        projectStatus: project['status'] as String,
-                      ),
-                    ),
+                    '/taskmanager',
+                    arguments: {
+                      'selectedProject': project['title'] as String,
+                      'projectColor': project['color'] as Color,
+                      'projectProgress': project['progress'] as double,
+                      'projectMembers': project['members'] as String,
+                      'projectStatus': project['status'] as String,
+                    },
                   );
                 },
                 child: _buildProjectCard(
