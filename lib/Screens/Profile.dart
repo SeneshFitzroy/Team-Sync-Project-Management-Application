@@ -6,6 +6,7 @@ import 'AboutTaskSync.dart';  // Import the AboutTaskSync screen
 import 'ContactSupport.dart';  // Import the ContactSupport screen
 import 'welcome-page1.dart';  // Import the Welcome Page
 import 'package:firebase_auth/firebase_auth.dart';  // Import Firebase Auth for logout
+import 'package:shared_preferences/shared_preferences.dart';  // Import SharedPreferences
 
 class ProfileScreen extends StatefulWidget {  // Changed to StatefulWidget
   const ProfileScreen({super.key});
@@ -233,12 +234,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       TextButton(
                         onPressed: () => Navigator.pop(context),
                         child: const Text('Cancel'),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          // Sign out from Firebase
-                          FirebaseAuth.instance.signOut().then((_) {                            // Close the dialog
+                      ),                      TextButton(
+                        onPressed: () async {
+                          try {
+                            // Clear bypass mode from SharedPreferences
+                            final prefs = await SharedPreferences.getInstance();
+                            await prefs.remove('bypass_mode');
+                            print("DEBUG: Bypass mode cleared from SharedPreferences");
+                            
+                            // Sign out from Firebase
+                            await FirebaseAuth.instance.signOut();
+                            print("DEBUG: Firebase signOut successful");
+                            
+                            // Close the dialog
                             Navigator.pop(context);
+                            
                             // Navigate to Welcome Page and remove all previous routes
                             Navigator.of(context).pushAndRemoveUntil(
                               MaterialPageRoute(
@@ -246,7 +256,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ),
                               (route) => false, // Remove all previous routes
                             );
-                          }).catchError((error) {                            print("Error signing out: $error");
+                          } catch (error) {
+                            print("Error during logout: $error");
                             // Still navigate to Welcome Page even if there's an error
                             Navigator.pop(context);
                             Navigator.of(context).pushAndRemoveUntil(
@@ -255,7 +266,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ),
                               (route) => false,
                             );
-                          });
+                          }
                         },
                         child: const Text('Logout'),
                       ),

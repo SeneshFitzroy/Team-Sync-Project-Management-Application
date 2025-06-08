@@ -603,9 +603,7 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
             ],
           );
         },
-      ) ?? false;
-
-      if (confirm) {
+      ) ?? false;      if (confirm) {
         // Show a loading indicator
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -614,10 +612,20 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
           ),
         );
         
+        // Clear bypass mode first
+        try {
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setBool('bypass_mode', false);
+          print("Bypass mode cleared");
+        } catch (e) {
+          print("Error clearing bypass mode: $e");
+        }
+        
         // Actually sign out the user from Firebase Auth
         await FirebaseAuth.instance.signOut();
         print("User logged out from Firebase");
-          // For testing purposes, add a debug print to confirm navigation is triggered
+        
+        // For testing purposes, add a debug print to confirm navigation is triggered
         print("Navigating to welcome page...");
         
         // Use Future.delayed to ensure the auth state change has propagated
