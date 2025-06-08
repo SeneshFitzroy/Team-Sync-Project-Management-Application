@@ -7,7 +7,7 @@ import '../Services/firebase_service.dart';
 import './Dashboard.dart';
 import './Chat.dart';
 import './Calendar.dart';
-import './Profile.dart'; // Make sure this points to the right file
+import './Profile.dart';
 
 // Enhanced Task model with Firebase ID support
 class Task {
@@ -20,6 +20,7 @@ class Task {
   Color priorityColor;
   String assignee;
   Color statusColor;
+  String? category; // For personal tasks
 
   Task({
     this.id,
@@ -31,7 +32,65 @@ class Task {
     required this.priorityColor,
     required this.assignee,
     required this.statusColor,
+    this.category,
   });
+
+  // Convert Task to Map for Firebase
+  Map<String, dynamic> toMap() {
+    return {
+      'projectName': projectName,
+      'taskName': taskName,
+      'status': status,
+      'dueDate': dueDate,
+      'priority': priority,
+      'assignee': assignee,
+      'category': category,
+      'createdAt': FieldValue.serverTimestamp(),
+      'updatedAt': FieldValue.serverTimestamp(),
+    };
+  }
+
+  // Create Task from Firebase document
+  static Task fromMap(Map<String, dynamic> map, String id) {
+    return Task(
+      id: id,
+      projectName: map['projectName'] ?? '',
+      taskName: map['taskName'] ?? '',
+      status: map['status'] ?? 'To Do',
+      dueDate: map['dueDate'] ?? '',
+      priority: map['priority'] ?? 'Medium',
+      priorityColor: _getPriorityColor(map['priority'] ?? 'Medium'),
+      assignee: map['assignee'] ?? 'Me',
+      statusColor: _getStatusColor(map['status'] ?? 'To Do'),
+      category: map['category'],
+    );
+  }
+
+  static Color _getPriorityColor(String priority) {
+    switch (priority.toLowerCase()) {
+      case 'high':
+        return const Color(0xFFE53E3E);
+      case 'medium':
+        return const Color(0xFF187E0F);
+      case 'low':
+        return const Color(0xFF3182CE);
+      default:
+        return const Color(0xFF187E0F);
+    }
+  }
+
+  static Color _getStatusColor(String status) {
+    switch (status.toLowerCase()) {
+      case 'completed':
+        return const Color(0xFF38A169);
+      case 'in progress':
+        return const Color(0xFFD69E2E);
+      case 'to do':
+        return const Color(0xFF3182CE);
+      default:
+        return const Color(0xFF192F5D);
+    }
+  }
 }
 
 class TaskManager extends StatefulWidget {
@@ -60,9 +119,9 @@ class _TaskManagerState extends State<TaskManager> {
   int _currentIndex = 1; // Set to 1 for Tasks tab
   String _searchQuery = ''; // For search functionality
 
-  late List<Task> _projectTasks;
-  late List<Task> _myTasks;
-  late List<Task> _filteredTasks; // Filtered tasks based on search
+  List<Task> _projectTasks = [];
+  List<Task> _myTasks = [];
+  List<Task> _filteredTasks = []; // Filtered tasks based on search
   
   StreamSubscription<QuerySnapshot>? _tasksSubscription;
   StreamSubscription<QuerySnapshot>? _myTasksSubscription;
@@ -88,7 +147,8 @@ class _TaskManagerState extends State<TaskManager> {
       _myTasksSubscription = FirebaseService.getUserTasks().listen(
         (snapshot) {
           if (mounted) {
-            setState(() {              _myTasks = snapshot.docs.map((doc) {
+            setState(() {
+              _myTasks = snapshot.docs.map((doc) {
                 final data = doc.data() as Map<String, dynamic>;
                 return Task(
                   id: doc.id, // Store Firebase document ID
@@ -98,8 +158,7 @@ class _TaskManagerState extends State<TaskManager> {
                   dueDate: _formatDate(data['dueDate']),
                   priority: data['priority'] ?? 'Medium',
                   priorityColor: _getPriorityColor(data['priority'] ?? 'Medium'),
-                  assignee: data['assigneeEmail'] ?? 'Unassigned',
-                  statusColor: _getStatusColor(data['status'] ?? 'Not Started'),
+                  assignee: data['assigneeEmail'] ?? 'Unassigned',                  statusColor: _getStatusColor(data['status'] ?? 'Not Started'),
                 );
               }).toList();
               _isLoading = false;
@@ -178,16 +237,7 @@ class _TaskManagerState extends State<TaskManager> {
           assignee: 'Mike Ross',
           statusColor: const Color(0xFFD14318),
         ),
-        Task(
-          projectName: 'Data Analytics',
-          taskName: 'Dashboard Implementation',
-          status: 'Not Started',
-          dueDate: '2024-03-05',
-          priority: 'Low',
-          priorityColor: const Color(0xFF192F5D),
-          assignee: 'Team Lead',
-          statusColor: const Color(0xFFCCCCCC),
-        ),      ];
+      ];
 
       _myTasks = [
         Task(
@@ -199,6 +249,273 @@ class _TaskManagerState extends State<TaskManager> {
           priorityColor: const Color(0xFFD14318),
           assignee: 'Me',
           statusColor: const Color(0xFF187E0F),
+        ),
+        Task(
+          projectName: 'Documentation',
+          taskName: 'Update User Manual',
+          status: 'Completed',
+          dueDate: '2024-02-10',
+          priority: 'Medium',
+          priorityColor: const Color(0xFF187E0F),
+          assignee: 'Me',
+          statusColor: const Color(0xFF192F5D),
+        ),
+      ];
+      
+      _isLoading = false;
+      _filterTasks();
+    });
+  }
+
+  @override
+  void dispose() {
+    _tasksSubscription?.cancel();
+    _myTasksSubscription?.cancel();
+    super.dispose();
+  }
+
+  void _filterTasks() {
+    setState(() {
+      // If a project was selected, filter tasks and set to project tab
+      if (widget.selectedProject != null) {
+        _showProjectTasks = true;
+        // Filter project tasks to show only tasks for the selected project
+        _projectTasks = _projectTasks
+            .where((task) => task.projectName == widget.selectedProject)
+            .toList();
+
+        // If no tasks match the selected project, add a placeholder task
+        if (_projectTasks.isEmpty && widget.selectedProject != null) {
+          _projectTasks = [
+            Task(
+              projectName: widget.selectedProject!,
+              taskName: 'Create first task',
+              status: 'Not Started',
+              dueDate: 'No date',
+              priority: 'Medium',
+              priorityColor: widget.projectColor ?? const Color(0xFF187E0F),
+              assignee: 'Unassigned',
+              statusColor: const Color(0xFFCCCCCC),
+            ),
+          ];
+        }
+      }
+
+      _filteredTasks = _showProjectTasks ? _projectTasks : _myTasks;
+    });
+  }
+
+  void _onSearch(String query) {
+    setState(() {
+      _searchQuery = query.toLowerCase();
+      _filteredTasks = (_showProjectTasks ? _projectTasks : _myTasks)
+          .where((task) =>
+              task.taskName.toLowerCase().contains(_searchQuery) ||
+              task.assignee.toLowerCase().contains(_searchQuery) ||
+              task.status.toLowerCase().contains(_searchQuery))
+          .toList();
+    });
+  }
+
+  void _toggleTaskTab(bool showProjectTasks) {
+    setState(() {
+      _showProjectTasks = showProjectTasks;
+      _filteredTasks = _showProjectTasks ? _projectTasks : _myTasks;
+    });
+  }
+
+  void _onNavBarTap(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
+
+    // Navigate to the appropriate screen based on index
+    if (index != 1) {
+      // If not Tasks tab (since we're already in TaskManager)
+      switch (index) {
+        case 0: // Dashboard
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const Dashboard()),
+          );
+          break;
+        case 2: // Chat
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const ChatScreen()),
+          );
+          break;
+        case 3: // Calendar
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const Calendar()),
+          );
+          break;
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Column(
+          children: [
+            _buildHeader(),
+            // Add project summary card if a project was selected
+            if (widget.selectedProject != null) _buildProjectSummary(),
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                children: [
+                  const SizedBox(height: 24),
+                  _buildTabs(),
+                  const SizedBox(height: 24),
+                  _buildSearchBar(),
+                  const SizedBox(height: 24),
+                  // Display appropriate tasks based on selected tab
+                  ..._buildTaskList(),
+                  const SizedBox(height: 36),
+                  _buildAddButton(),
+                  const SizedBox(height: 24),
+                ],
+              ),
+            ),
+            NavBar(
+              selectedIndex: _currentIndex,
+              onTap: _onNavBarTap,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // New method to build project summary card
+  Widget _buildProjectSummary() {
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0x56192F5D),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: widget.projectColor?.withOpacity(0.3) ??
+              const Color(0xFF192F5D).withOpacity(0.3),
+          width: 1,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 12,
+                height: 12,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: widget.projectColor ?? const Color(0xFF187E0F),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                widget.selectedProject ?? '',
+                style: const TextStyle(
+                  color: Colors.black,
+                  fontSize: 18,
+                  fontFamily: 'Inter',
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Icon(Icons.group,
+                  size: 16, color: Colors.black.withOpacity(0.75)),
+              const SizedBox(width: 8),
+              Text(
+                widget.projectMembers ?? '0 Members',
+                style: TextStyle(
+                  color: Colors.black.withOpacity(0.75),
+                  fontSize: 14,
+                  fontFamily: 'Poppins',
+                ),
+              ),
+              const SizedBox(width: 20),
+              Icon(
+                widget.projectStatus == 'active'
+                    ? Icons.check_circle
+                    : widget.projectStatus == 'at-risk'
+                        ? Icons.warning
+                        : Icons.pause_circle,
+                size: 16,
+                color: widget.projectStatus == 'active'
+                    ? Colors.green
+                    : widget.projectStatus == 'at-risk'
+                        ? Colors.orange
+                        : Colors.grey,
+              ),
+              const SizedBox(width: 4),
+              Text(
+                widget.projectStatus ?? 'status',
+                style: TextStyle(
+                  color: Colors.black.withOpacity(0.75),
+                  fontSize: 14,
+                  fontFamily: 'Poppins',
+                ),
+              ),
+            ],
+          ),
+          if (widget.projectProgress != null) ...[
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Text(
+                  'Progress: ',
+                  style: TextStyle(
+                    color: Colors.black.withOpacity(0.75),
+                    fontSize: 14,
+                    fontFamily: 'Poppins',
+                  ),
+                ),
+                Text(
+                  '${(widget.projectProgress! * 100).toInt()}%',
+                  style: const TextStyle(
+                    color: Colors.black,
+                    fontSize: 14,
+                    fontFamily: 'Poppins',
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Container(
+              height: 4,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(2),
+                color: Colors.grey.withOpacity(0.3),
+              ),
+              child: FractionallySizedBox(
+                alignment: Alignment.centerLeft,
+                widthFactor: widget.projectProgress!,
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(2),
+                    color: widget.projectColor ?? const Color(0xFF187E0F),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
         ),
         Task(
           projectName: 'Documentation',
