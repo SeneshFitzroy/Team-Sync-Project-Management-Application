@@ -441,8 +441,8 @@ class _LoginPageState extends State<LoginPage> {
                           fontSize: 16,
                         ),
                       ),
-                      TextButton(
-                        onPressed: () {                          Navigator.push(
+                      TextButton(                        onPressed: () {
+                          Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (context) => const CreateAccount(),
