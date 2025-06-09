@@ -15,9 +15,6 @@ echo Starting Flutter app...
 echo URL will be: http://localhost:3000
 echo.
 
-cd /d "c:\Users\senes\OneDrive\Desktop\MAD\Team-Sync-Project-Management-Application"
-flutter clean
-flutter pub get
 flutter run -d chrome --web-port=3000
 
 echo.
