@@ -88,14 +88,12 @@ void main() async {
       print('🔧 Firebase Pigeon error (handled gracefully): ${details.exception}');
       return; // Don't crash the app
     }
-    
-    // Handle other errors normally
+      // Handle other errors normally
     if (kDebugMode) {
       FlutterError.presentError(details);
     } else {
       // In production, log errors but don't crash
       print('⚠️ Production error (logged): ${details.exception}');
-    }
     }
   };
   
