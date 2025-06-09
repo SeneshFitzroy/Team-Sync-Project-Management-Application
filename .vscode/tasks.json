@@ -2,10 +2,10 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
-			"command": "flutter run -d chrome --web-port=3000",
+			"command": "set CHROME_EXECUTABLE=\"C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe\" && flutter run -d chrome --web-port=8080",
 			"group": "build",
 			"isBackground": true,
-			"label": "Flutter Run Chrome Web",
+			"label": "Flutter Run Edge",
 			"problemMatcher": [
 				"$dart-analyze"
 			],
