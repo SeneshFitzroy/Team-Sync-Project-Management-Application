@@ -386,7 +386,12 @@ class FirebaseService {
       try {
         final userId = getCurrentUserId();
         if (userId != null) {
-          await _firestore.collection('activity_logs').add({
+          // Store activities in user-specific subcollection to avoid permission issues
+          await _firestore
+              .collection('users')
+              .doc(userId)
+              .collection('activities')
+              .add({
             'userId': userId,
             'activity': activity,
             'data': data,
