@@ -10,6 +10,11 @@ service cloud.firestore {
         allow read, write: if request.auth != null && request.auth.uid == userId;
       }
       
+      // User's tasks subcollection
+      match /tasks/{taskId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+      
       // User's activities subcollection
       match /activities/{activityId} {
         allow read, write: if request.auth != null && request.auth.uid == userId;
