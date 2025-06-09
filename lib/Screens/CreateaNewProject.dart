@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'AddTeamMembers.dart';
 import '../Services/firebase_service.dart';
+import 'PermissionErrorScreen.dart';
 
 class CreateANewProject extends StatefulWidget {
   const CreateANewProject({super.key});
@@ -130,19 +131,35 @@ class _CreateANewProjectState extends State<CreateANewProject> {
             'title': projectData['title'],
             'description': projectData['description'],
           });
-        }
-      } catch (e) {
+        }      } catch (e) {
         // Hide loading
         if (mounted) Navigator.pop(context);
         
-        // Show error message
+        // Check if it's a permission error and show helpful screen
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Error creating project: $e'),
-              backgroundColor: Colors.red,
-            ),
-          );
+          if (e.toString().contains('Permission denied') || e.toString().contains('permission-denied')) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => PermissionErrorScreen(
+                  errorMessage: e.toString(),
+                  actionTitle: 'Create Project',
+                  onRetry: () {
+                    Navigator.pop(context);
+                    _createProject(); // Retry project creation
+                  },
+                ),
+              ),
+            );
+          } else {
+            // Show regular error message for other errors
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Error creating project: $e'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
         }
       }
     }
