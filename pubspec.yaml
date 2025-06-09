@@ -26,7 +26,6 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
-  dwds: ^24.3.10  # Fixed version for compatibility
 
 flutter:
   uses-material-design: true
