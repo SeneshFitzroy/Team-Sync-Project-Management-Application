@@ -176,20 +176,30 @@ class FirebaseService {
     }
   }
 
-  static Future<void> deleteProject(String projectId) async {
+  static Future<void> deleteProject(String projectId, {required String userId}) async {
     try {
-      // Delete all tasks in the project first
-      final tasks = await _firestore
-          .collection('tasks')
-          .where('projectId', isEqualTo: projectId)
-          .get();
-      
-      for (var task in tasks.docs) {
-        await task.reference.delete();
+      // Delete all tasks in the user's tasks collection for this project
+      final userId = getCurrentUserId();
+      if (userId != null) {
+        final tasks = await _firestore
+            .collection('users')
+            .doc(userId)
+            .collection('tasks')
+            .where('projectId', isEqualTo: projectId)
+            .get();
+        
+        for (var task in tasks.docs) {
+          await task.reference.delete();
+        }
       }
       
-      // Delete the project
-      await _firestore.collection('projects').doc(projectId).delete();
+      // Delete the project from user's projects collection
+      await _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('projects')
+          .doc(projectId)
+          .delete();
       print('✓ Project deleted successfully');
     } catch (e) {
       print('✗ Error deleting project: $e');
@@ -197,13 +207,17 @@ class FirebaseService {
     }
   }
 
-  // Task Management
+  // Task Management - User-specific subcollections
   static Future<String> createTask(Map<String, dynamic> taskData) async {
     try {
       final userId = getCurrentUserId();
       if (userId == null) throw Exception('User not authenticated');
       
-      final docRef = await _firestore.collection('tasks').add({
+      final docRef = await _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('tasks')
+          .add({
         ...taskData,
         'createdBy': userId,
         'createdAt': FieldValue.serverTimestamp(),
@@ -219,10 +233,16 @@ class FirebaseService {
   }
 
   static Stream<QuerySnapshot> getProjectTasks(String projectId) {
+    final userId = getCurrentUserId();
+    if (userId == null) {
+      return const Stream.empty();
+    }
+    
     return _firestore
+        .collection('users')
+        .doc(userId)
         .collection('tasks')
         .where('projectId', isEqualTo: projectId)
-        .orderBy('createdAt', descending: true)
         .snapshots();
   }
 
@@ -233,15 +253,23 @@ class FirebaseService {
     }
     
     return _firestore
+        .collection('users')
+        .doc(userId)
         .collection('tasks')
-        .where('assignedTo', arrayContains: userId)
-        .orderBy('dueDate', descending: false)
         .snapshots();
   }
 
   static Future<void> updateTask(String taskId, Map<String, dynamic> updates) async {
     try {
-      await _firestore.collection('tasks').doc(taskId).update({
+      final userId = getCurrentUserId();
+      if (userId == null) throw Exception('User not authenticated');
+      
+      await _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('tasks')
+          .doc(taskId)
+          .update({
         ...updates,
         'updatedAt': FieldValue.serverTimestamp(),
       });
@@ -254,7 +282,15 @@ class FirebaseService {
 
   static Future<void> deleteTask(String taskId) async {
     try {
-      await _firestore.collection('tasks').doc(taskId).delete();
+      final userId = getCurrentUserId();
+      if (userId == null) throw Exception('User not authenticated');
+      
+      await _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('tasks')
+          .doc(taskId)
+          .delete();
       print('✓ Task deleted successfully');
     } catch (e) {
       print('✗ Error deleting task: $e');
@@ -262,14 +298,20 @@ class FirebaseService {
     }
   }
 
-  // Chat/Messages
+  // Chat/Messages - User-specific subcollections
   static Future<void> sendMessage(String projectId, String message) async {
     try {
       final userId = getCurrentUserId();
       final userEmail = getCurrentUserEmail();
       if (userId == null) throw Exception('User not authenticated');
       
-      await _firestore.collection('projects').doc(projectId).collection('messages').add({
+      await _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('projects')
+          .doc(projectId)
+          .collection('messages')
+          .add({
         'message': message,
         'senderId': userId,
         'senderEmail': userEmail,
