@@ -19,8 +19,18 @@ class FirebaseService {
     return error.toString().contains('permission-denied');
   }
 
-  static bool _shouldRetry(dynamic error) {
-    return _isNetworkError(error) && !_isPermissionError(error);
+  // Enhanced retry method using retry package
+  static Future<T> _retryFirestoreOperation<T>(
+    Future<T> Function() operation, {
+    int maxAttempts = 3,
+    Duration delay = const Duration(seconds: 1),
+  }) async {
+    return await retry(
+      operation,
+      maxAttempts: maxAttempts,
+      delayFactor: delay,
+      retryIf: (e) => _isNetworkError(e) && !_isPermissionError(e),
+    );
   }
 
   // Get current user ID
