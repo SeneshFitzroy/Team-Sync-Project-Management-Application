@@ -1,7 +1,6 @@
 // Debug script for comprehensive logout testing
 // Run this in your terminal to test logout functionality
 
-import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

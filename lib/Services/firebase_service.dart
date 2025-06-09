@@ -29,7 +29,7 @@ class FirebaseService {
       }
     } catch (e) {
       print('✗ Error saving user data: $e');
-      throw e;
+      rethrow;
     }
   }
 
@@ -61,7 +61,7 @@ class FirebaseService {
       }
     } catch (e) {
       print('✗ Error updating profile: $e');
-      throw e;
+      rethrow;
     }
   }
 
@@ -84,7 +84,7 @@ class FirebaseService {
       return docRef.id;
     } catch (e) {
       print('✗ Error creating project: $e');
-      throw e;
+      rethrow;
     }
   }
 
@@ -110,7 +110,7 @@ class FirebaseService {
       print('✓ Project updated successfully');
     } catch (e) {
       print('✗ Error updating project: $e');
-      throw e;
+      rethrow;
     }
   }
 
@@ -131,7 +131,7 @@ class FirebaseService {
       print('✓ Project deleted successfully');
     } catch (e) {
       print('✗ Error deleting project: $e');
-      throw e;
+      rethrow;
     }
   }
 
@@ -152,7 +152,7 @@ class FirebaseService {
       return docRef.id;
     } catch (e) {
       print('✗ Error creating task: $e');
-      throw e;
+      rethrow;
     }
   }
 
@@ -186,7 +186,7 @@ class FirebaseService {
       print('✓ Task updated successfully');
     } catch (e) {
       print('✗ Error updating task: $e');
-      throw e;
+      rethrow;
     }
   }
 
@@ -196,7 +196,7 @@ class FirebaseService {
       print('✓ Task deleted successfully');
     } catch (e) {
       print('✗ Error deleting task: $e');
-      throw e;
+      rethrow;
     }
   }
 
@@ -217,7 +217,7 @@ class FirebaseService {
       print('✓ Message sent successfully');
     } catch (e) {
       print('✗ Error sending message: $e');
-      throw e;
+      rethrow;
     }
   }
 
@@ -241,7 +241,7 @@ class FirebaseService {
       print('✓ Notification created successfully');
     } catch (e) {
       print('✗ Error creating notification: $e');
-      throw e;
+      rethrow;
     }
   }
 
@@ -273,7 +273,7 @@ class FirebaseService {
       }
     } catch (e) {
       print('✗ Error marking notification as read: $e');
-      throw e;
+      rethrow;
     }
   }
 
@@ -309,7 +309,7 @@ class FirebaseService {
       print('✓ Team member added successfully');
     } catch (e) {
       print('✗ Error adding team member: $e');
-      throw e;
+      rethrow;
     }
   }
 
@@ -323,7 +323,7 @@ class FirebaseService {
       print('✓ Password reset email sent');
     } catch (e) {
       print('✗ Error sending password reset email: $e');
-      throw e;
+      rethrow;
     }
   }
 

@@ -1,5 +1,5 @@
 // This file is marked for deletion
-  static Future<User?> safeSignInWithEmailAndPassword({
+  Future<User?> safeSignInWithEmailAndPassword({
     required String email,
     required String password,
     BuildContext? context,
@@ -73,7 +73,7 @@
   }
   
   /// Safe method to get current user that won't throw the PigeonUserDetails error
-  static User? getCurrentUser() {
+  User? getCurrentUser() {
     try {
       return FirebaseAuth.instance.currentUser;
     } catch (e) {

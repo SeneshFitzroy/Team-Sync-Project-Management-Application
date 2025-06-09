@@ -5,6 +5,8 @@ void main() {
 }
 
 class IconTestApp extends StatelessWidget {
+  const IconTestApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -15,6 +17,8 @@ class IconTestApp extends StatelessWidget {
 }
 
 class IconTestScreen extends StatelessWidget {
+  const IconTestScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

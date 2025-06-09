@@ -3,7 +3,6 @@
 // Test script to verify logout functionality
 // This script simulates the logout process to ensure all components work
 
-import 'dart:io';
 
 void main() {
   print('🔍 LOGOUT FUNCTIONALITY TEST');
