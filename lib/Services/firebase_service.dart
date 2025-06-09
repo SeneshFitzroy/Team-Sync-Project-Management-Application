@@ -115,9 +115,6 @@ class FirebaseService {
     }
   }
 
-  // Project Management - REMOVED DUPLICATE METHOD
-  // Use the user-specific createProject method below
-
   // Project Management - User-specific collections
   static Stream<QuerySnapshot> getUserProjects({String? userId}) {
     final uid = userId ?? getCurrentUserId();
@@ -216,11 +213,11 @@ class FirebaseService {
   static Future<void> deleteProject(String projectId, {required String userId}) async {
     try {
       // Delete all tasks in the user's tasks collection for this project
-      final userId = getCurrentUserId();
-      if (userId != null) {
+      final currentUserId = getCurrentUserId();
+      if (currentUserId != null) {
         final tasks = await _firestore
             .collection('users')
-            .doc(userId)
+            .doc(currentUserId)
             .collection('tasks')
             .where('projectId', isEqualTo: projectId)
             .get();
