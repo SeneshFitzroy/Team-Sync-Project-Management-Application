@@ -5,6 +5,23 @@ class FirebaseService {
   static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   static final FirebaseAuth _auth = FirebaseAuth.instance;
 
+  // Error detection helpers
+  static bool _isNetworkError(dynamic error) {
+    final errorString = error.toString().toLowerCase();
+    return errorString.contains('network') || 
+           errorString.contains('timeout') || 
+           errorString.contains('connection') ||
+           errorString.contains('unavailable');
+  }
+
+  static bool _isPermissionError(dynamic error) {
+    return error.toString().contains('permission-denied');
+  }
+
+  static bool _shouldRetry(dynamic error) {
+    return _isNetworkError(error) && !_isPermissionError(error);
+  }
+
   // Get current user ID
   static String? getCurrentUserId() {
     return _auth.currentUser?.uid;
@@ -39,7 +56,7 @@ class FirebaseService {
       } catch (e) {
         print('✗ Error saving user data (attempt $attempt): $e');
         
-        if (e.toString().contains('permission-denied')) {
+        if (_isPermissionError(e)) {
           print('📝 Note: Firestore permissions need to be configured for writes');
           return; // Don't retry permission errors
         }
