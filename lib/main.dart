@@ -97,7 +97,8 @@ class MyApp extends StatelessWidget {
           elevation: 0,
         ),      ),
       debugShowCheckedModeBanner: false,
-      home: const AuthWrapper(),      routes: {
+      home: const AuthWrapper(),
+      routes: {
         '/welcome1': (context) => const WelcomePage1(),
         '/welcome2': (context) => const LoginPage(),
         '/login': (context) => const LoginPage(),
