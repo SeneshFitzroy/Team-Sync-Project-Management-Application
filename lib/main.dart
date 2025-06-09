@@ -97,19 +97,23 @@ class MyApp extends StatelessWidget {
         ),
       ),
       debugShowCheckedModeBanner: false,
-      home: const AuthWrapper(),
-      routes: {
+      home: const AuthWrapper(),      routes: {
         '/welcome1': (context) => const WelcomePage1(),
         '/welcome2': (context) => const LoginPage(),
         '/login': (context) => const LoginPage(),
-        '/signup': (context) => const CreateAccount(),        '/dashboard': (context) => const Dashboard(),
+        '/signup': (context) => const CreateAccount(),
+        '/dashboard': (context) => const Dashboard(),
         '/forgot-password': (context) => const ForgetPasswordScreen(),
-        '/taskmanager': (context) => const TaskManager(
-          selectedProject: null,
-          projectColor: null,
-          projectProgress: null,
-          projectMembers: null,
-          projectStatus: null,
+        '/taskmanager': (context) => Scaffold(
+          body: SafeArea(
+            child: TaskManager(
+              selectedProject: null,
+              projectColor: null,
+              projectProgress: null,
+              projectMembers: null,
+              projectStatus: null,
+            ),
+          ),
         ),
         '/profile': (context) => const ProfileScreen(),
         '/calendar': (context) => const Calendar(),
