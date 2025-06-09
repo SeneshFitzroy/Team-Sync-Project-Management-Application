@@ -20,6 +20,30 @@
             "args": [
                 "--web-port=8080"
             ]
+        },
+        {
+            "name": "Flutter (Chrome)",
+            "type": "dart",
+            "request": "launch",
+            "program": "lib/main.dart",
+            "deviceId": "chrome",
+            "args": [
+                "--web-port",
+                "3000"
+            ]
+        },
+        {
+            "name": "Flutter (Windows)",
+            "type": "dart",
+            "request": "launch",
+            "program": "lib/main.dart",
+            "deviceId": "windows"
+        },
+        {
+            "name": "Flutter (Any Device)",
+            "type": "dart",
+            "request": "launch",
+            "program": "lib/main.dart"
         }
     ]
 }
