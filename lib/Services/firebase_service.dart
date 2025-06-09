@@ -127,17 +127,44 @@ class FirebaseService {
     }
   }
 
-  static Stream<QuerySnapshot> getUserProjects() {
-    final userId = getCurrentUserId();
-    if (userId == null) {
+  // Project Management - User-specific collections
+  static Stream<QuerySnapshot> getUserProjects({String? userId}) {
+    final uid = userId ?? getCurrentUserId();
+    if (uid == null) {
       return const Stream.empty();
     }
     
+    // Use user-specific subcollection to avoid index requirements
     return _firestore
+        .collection('users')
+        .doc(uid)
         .collection('projects')
-        .where('members', arrayContains: userId)
-        .orderBy('updatedAt', descending: true)
         .snapshots();
+  }
+
+  static Future<String> createProject(Map<String, dynamic> projectData, {required String userId}) async {
+    try {
+      if (_auth.currentUser == null) throw Exception('User not authenticated');
+      
+      final docRef = await _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('projects')
+          .add({
+        ...projectData,
+        'ownerId': userId,
+        'createdBy': getCurrentUserEmail(),
+        'createdAt': FieldValue.serverTimestamp(),
+        'updatedAt': FieldValue.serverTimestamp(),
+        'members': [userId], // Owner is always a member
+      });
+      
+      print('✓ Project created with ID: ${docRef.id}');
+      return docRef.id;
+    } catch (e) {
+      print('✗ Error creating project: $e');
+      rethrow;
+    }
   }
 
   static Future<void> updateProject(String projectId, Map<String, dynamic> updates) async {
