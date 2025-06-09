@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../Services/firebase_service.dart';
 
 class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({super.key});
@@ -10,6 +11,67 @@ class NotificationsScreen extends StatefulWidget {
 class _NotificationsScreenState extends State<NotificationsScreen> {
   bool emailNotifications = true;
   bool mobileNotifications = true;
+  List<Map<String, dynamic>> _notifications = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadNotifications();
+  }
+
+  Future<void> _loadNotifications() async {
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+
+      // Listen to notifications from Firebase
+      FirebaseService.getUserNotifications().listen((snapshot) {
+        if (mounted) {
+          setState(() {
+            _notifications = snapshot.docs.map((doc) {
+              final data = doc.data() as Map<String, dynamic>;
+              return {
+                'id': doc.id,
+                'title': data['title'] ?? 'Notification',
+                'message': data['message'] ?? '',
+                'read': data['read'] ?? false,
+                'createdAt': data['createdAt'],
+                'type': data['type'] ?? 'info',
+              };
+            }).toList();
+            _isLoading = false;
+          });
+        }
+      });
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to load notifications: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _markAsRead(String notificationId) async {
+    try {
+      await FirebaseService.markNotificationAsRead(notificationId);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to mark as read: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,13 +101,89 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           ),
         ),
         centerTitle: true,
-      ),
-      body: Padding(
+      ),      body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 30),
+            const SizedBox(height: 20),
+            
+            // Recent Notifications Section
+            const Text(
+              'Recent Notifications',
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 22,
+                fontFamily: 'Inter',
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 15),
+            
+            // Notifications List
+            Expanded(
+              flex: 2,
+              child: _isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : _notifications.isEmpty
+                      ? const Center(
+                          child: Text(
+                            'No notifications yet',
+                            style: TextStyle(
+                              color: Color(0xFF8A8888),
+                              fontSize: 16,
+                              fontFamily: 'Inter',
+                            ),
+                          ),
+                        )
+                      : ListView.builder(
+                          itemCount: _notifications.length,
+                          itemBuilder: (context, index) {
+                            final notification = _notifications[index];
+                            return Card(
+                              margin: const EdgeInsets.only(bottom: 10),
+                              child: ListTile(
+                                leading: Icon(
+                                  notification['read'] ? Icons.mail_outline : Icons.mail,
+                                  color: notification['read'] ? Colors.grey : Colors.blue,
+                                ),
+                                title: Text(
+                                  notification['title'],
+                                  style: TextStyle(
+                                    fontWeight: notification['read'] ? FontWeight.normal : FontWeight.bold,
+                                  ),
+                                ),
+                                subtitle: Text(notification['message']),
+                                onTap: () {
+                                  if (!notification['read']) {
+                                    _markAsRead(notification['id']);
+                                  }
+                                },
+                              ),
+                            );
+                          },
+                        ),
+            ),
+            
+            const SizedBox(height: 20),
+            const Divider(
+              color: Color(0xFFA9A9A9),
+              thickness: 1,
+            ),
+            const SizedBox(height: 20),
+            
+            // Settings Section
+            const Text(
+              'Notification Settings',
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 22,
+                fontFamily: 'Inter',
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 15),
+            
             NotificationSection(
               title: 'Email Notification',
               subtitle: 'Received directly to your email',
@@ -73,6 +211,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                 });
               },
             ),
+            const SizedBox(height: 20),
           ],
         ),
       ),

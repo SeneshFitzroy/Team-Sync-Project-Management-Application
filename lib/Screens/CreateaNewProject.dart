@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'AddTeamMembers.dart';
+import '../Services/firebase_service.dart';
+import 'PermissionErrorScreen.dart';
 
 class CreateANewProject extends StatefulWidget {
   const CreateANewProject({super.key});
@@ -74,27 +76,92 @@ class _CreateANewProjectState extends State<CreateANewProject> {
       _selectedTeamMembers.remove(member);
     });
   }
-
-  void _createProject() {
+  void _createProject() async {
     if (_formKey.currentState!.validate()) {
-      // Create a project data map to return to the Dashboard
-      final projectData = {
-        'title': _projectNameController.text,
-        'members': '${_selectedTeamMembers.length} Members',
-        'status': 'active', // New projects start as active
-        'progress': 0.0, // New projects start at 0% progress
-        'progressText': '0%',
-        'color': _selectedColor, // Use selected color
-        'description': _descriptionController.text, // Include description
-      };
-      
-      // Show a success message
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Project created successfully!')),
-      );
-      
-      // Return the project data to the Dashboard
-      Navigator.pop(context, projectData);
+      try {
+        // Show loading
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) => const Center(
+            child: CircularProgressIndicator(),
+          ),
+        );
+
+        // Create a project data map for Firebase
+        final projectData = {
+          'title': _projectNameController.text.trim(),
+          'description': _descriptionController.text.trim(),
+          'status': 'active',
+          'progress': 0.0,
+          'members': _selectedTeamMembers.map((member) => member.id).toList(),
+          'teamMemberDetails': _selectedTeamMembers.map((member) => {
+            'id': member.id,
+            'name': member.name,
+            'role': member.role,
+          }).toList(),
+        };        // Save to Firebase
+        final userId = FirebaseService.getCurrentUserId();
+        if (userId == null) throw Exception('User not authenticated');
+        
+        final projectId = await FirebaseService.createProject(projectData, userId: userId);
+        
+        // Log activity
+        await FirebaseService.logActivity('project_created', {
+          'projectId': projectId,
+          'projectTitle': projectData['title'],
+          'memberCount': _selectedTeamMembers.length,
+          'timestamp': DateTime.now().toIso8601String(),
+        });
+
+        // Hide loading
+        if (mounted) Navigator.pop(context);
+
+        // Show success message
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Project "${projectData['title']}" created successfully!'),
+              backgroundColor: const Color(0xFF187E0F),
+            ),
+          );
+          
+          // Return the project data to the Dashboard for immediate UI update
+          Navigator.pop(context, {
+            'title': projectData['title'],
+            'description': projectData['description'],
+          });
+        }      } catch (e) {
+        // Hide loading
+        if (mounted) Navigator.pop(context);
+        
+        // Check if it's a permission error and show helpful screen
+        if (mounted) {
+          if (e.toString().contains('Permission denied') || e.toString().contains('permission-denied')) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => PermissionErrorScreen(
+                  errorMessage: e.toString(),
+                  actionTitle: 'Create Project',
+                  onRetry: () {
+                    Navigator.pop(context);
+                    _createProject(); // Retry project creation
+                  },
+                ),
+              ),
+            );
+          } else {
+            // Show regular error message for other errors
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Error creating project: $e'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+        }
+      }
     }
   }
 

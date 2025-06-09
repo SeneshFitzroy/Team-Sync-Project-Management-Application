@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'welcome-page2.dart';
 
 class WelcomePage1 extends StatelessWidget {
   const WelcomePage1({super.key});
@@ -55,13 +54,8 @@ class WelcomePage1 extends StatelessWidget {
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(32),
                       ),
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const WelcomePage2()),
-                          );
+                      child: ElevatedButton(                        onPressed: () {
+                          Navigator.pushNamed(context, '/welcome2');
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.white,

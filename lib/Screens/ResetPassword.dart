@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../Services/firebase_service.dart';
 import 'login-page.dart';
 
 class ResetPassword extends StatefulWidget {
@@ -17,11 +18,9 @@ class ResetPassword extends StatefulWidget {
 class _ResetPasswordState extends State<ResetPassword> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  bool _obscurePassword = true;
+  final FirebaseAuth _auth = FirebaseAuth.instance;  bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
   bool _isResetting = false;
-  String? _actionCode;
   
   @override
   void dispose() {
@@ -70,22 +69,26 @@ class _ResetPasswordState extends State<ResetPassword> {
     setState(() {
       _isResetting = true;
     });
-    
-    try {
-      // Note: In a real implementation with Firebase Authentication,
-      // the actual password reset happens when the user clicks the link in their email
-      // This mock implementation assumes the verification is complete
+      try {
+      // In a real Firebase implementation, this would use the actionCode from email link
+      // For now, we'll demonstrate a user-initiated password reset
       
-      // For demonstration purposes - in a real app, this would use the actionCode
-      // from the URL parameters when the user clicks the reset link
-      
-      await Future.delayed(const Duration(seconds: 1)); // Simulate API call
+      if (widget.email.isNotEmpty) {
+        // Re-send password reset email as confirmation
+        await _auth.sendPasswordResetEmail(email: widget.email);
+        
+        // Log activity
+        await FirebaseService.logActivity('password_reset_confirmed', {
+          'email': widget.email,
+          'timestamp': DateTime.now().toIso8601String(),
+        });
+      }
       
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Password reset successful!'),
+          content: Text('Password reset instructions sent! Please check your email.'),
           backgroundColor: Colors.green,
-          duration: Duration(seconds: 2),
+          duration: Duration(seconds: 3),
         ),
       );
       
@@ -98,7 +101,32 @@ class _ResetPasswordState extends State<ResetPassword> {
             (route) => false,
           );
         }
-      });
+      });    } on FirebaseAuthException catch (e) {
+      String errorMessage;
+      
+      switch (e.code) {
+        case 'user-not-found':
+          errorMessage = 'No user found with this email address';
+          break;
+        case 'invalid-email':
+          errorMessage = 'Invalid email address';
+          break;
+        case 'too-many-requests':
+          errorMessage = 'Too many reset attempts. Please wait before trying again.';
+          break;
+        default:
+          errorMessage = 'Error: ${e.message}';
+      }
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(errorMessage),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

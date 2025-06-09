@@ -12,15 +12,16 @@ dependencies:
   cupertino_icons: ^1.0.8
   intl: ^0.18.1
   
-  # Use these specific versions known to work without the PigeonUserDetails error
-  firebase_core: ^2.26.0  # Downgrade from ^3.x.x
-  firebase_auth: ^4.17.7  # Downgrade from ^5.x.x
-  cloud_firestore: ^4.8.0  # Adjust version to match core/auth
-  firebase_storage: ^11.7.0  # If you're using Firebase Storage
-  google_sign_in: ^6.1.4  # If you're using Google Sign-In
-  
+  # Compatible Firebase versions
+  firebase_core: ^2.32.0
+  firebase_auth: ^4.20.0
+  cloud_firestore: ^4.17.5
+  firebase_storage: ^11.7.7
+  google_sign_in: ^6.2.1
+  url_launcher: ^6.1.12
   shared_preferences: ^2.2.0
-  flutter_secure_storage: ^8.0.0  # Add this line
+  flutter_secure_storage: ^8.1.0
+  retry: ^3.1.2
 
 dev_dependencies:
   flutter_test:
@@ -30,4 +31,4 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - assets/images/Logo.png
+    - assets/images/

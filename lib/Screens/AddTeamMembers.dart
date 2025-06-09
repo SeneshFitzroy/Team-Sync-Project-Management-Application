@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:async';
+import '../Services/firebase_service.dart';
 
 class TeamMember {
   final String id;
@@ -37,22 +40,76 @@ class _AddTeamMembersState extends State<AddTeamMembers> {
   final TextEditingController _searchController = TextEditingController();
   List<TeamMember> _allTeamMembers = [];
   List<TeamMember> _filteredTeamMembers = [];
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    // Initialize with sample data
-    _allTeamMembers = [
-      TeamMember(name: 'Sarah Chen', role: 'UI Designer'),
-      TeamMember(name: 'Mike Peters', role: 'Product Manager'),
-      TeamMember(name: 'Anna Smith', role: 'Developer'),
-      TeamMember(name: 'James Wilson', role: 'Marketing Lead'),
-      TeamMember(name: 'Elena Rodriguez', role: 'Data Analyst'),
-      TeamMember(name: 'David Kim', role: 'UX Researcher'),
-    ];
-    _filteredTeamMembers = List.from(_allTeamMembers);
-
+    _loadTeamMembers();
     _searchController.addListener(_filterMembers);
+  }
+
+  Future<void> _loadTeamMembers() async {
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+
+      // Get all users from Firebase (excluding current user)
+      final usersSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .limit(50) // Limit to prevent too many results
+          .get();
+
+      final currentUserId = FirebaseService.getCurrentUserId();
+      
+      final List<TeamMember> members = [];
+      for (var doc in usersSnapshot.docs) {
+        // Skip current user
+        if (doc.id == currentUserId) continue;
+        
+        final data = doc.data();
+        members.add(TeamMember(
+          id: doc.id,
+          name: data['displayName'] ?? data['name'] ?? 'Unknown User',
+          role: data['role'] ?? data['jobTitle'] ?? 'Team Member',
+          avatarUrl: data['profileImageUrl'] ?? '',
+        ));
+      }
+
+      // Add some default members if no users found
+      if (members.isEmpty) {
+        members.addAll([
+          TeamMember(id: 'sample1', name: 'Sarah Chen', role: 'UI Designer'),
+          TeamMember(id: 'sample2', name: 'Mike Peters', role: 'Product Manager'),
+          TeamMember(id: 'sample3', name: 'Anna Smith', role: 'Developer'),
+          TeamMember(id: 'sample4', name: 'James Wilson', role: 'Marketing Lead'),
+          TeamMember(id: 'sample5', name: 'Elena Rodriguez', role: 'Data Analyst'),
+          TeamMember(id: 'sample6', name: 'David Kim', role: 'UX Researcher'),
+        ]);
+      }
+
+      setState(() {
+        _allTeamMembers = members;
+        _filteredTeamMembers = List.from(_allTeamMembers);
+        _isLoading = false;
+      });
+    } catch (e) {
+      print('Error loading team members: $e');
+      // Fallback to default members
+      setState(() {
+        _allTeamMembers = [
+          TeamMember(id: 'sample1', name: 'Sarah Chen', role: 'UI Designer'),
+          TeamMember(id: 'sample2', name: 'Mike Peters', role: 'Product Manager'),
+          TeamMember(id: 'sample3', name: 'Anna Smith', role: 'Developer'),
+          TeamMember(id: 'sample4', name: 'James Wilson', role: 'Marketing Lead'),
+          TeamMember(id: 'sample5', name: 'Elena Rodriguez', role: 'Data Analyst'),
+          TeamMember(id: 'sample6', name: 'David Kim', role: 'UX Researcher'),
+        ];
+        _filteredTeamMembers = List.from(_allTeamMembers);
+        _isLoading = false;
+      });
+    }
   }
 
   @override
@@ -168,9 +225,25 @@ class _AddTeamMembersState extends State<AddTeamMembers> {
                 height: 1.50,
               ),
             ),
-          ),
-          Expanded(
-            child: ListView.builder(
+          ),          Expanded(
+            child: _isLoading
+                ? const Center(
+                    child: CircularProgressIndicator(
+                      color: Color(0xFF192F5D),
+                    ),
+                  )
+                : _filteredTeamMembers.isEmpty
+                    ? const Center(
+                        child: Text(
+                          'No team members found',
+                          style: TextStyle(
+                            color: Color(0xFF666666),
+                            fontSize: 16,
+                            fontFamily: 'Inter',
+                          ),
+                        ),
+                      )
+                    : ListView.builder(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               itemCount: _filteredTeamMembers.length,
               itemBuilder: (context, index) {

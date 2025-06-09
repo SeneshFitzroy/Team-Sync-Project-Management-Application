@@ -28,9 +28,52 @@
 
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png"/>
-
   <title>fluttercomponenets</title>
   <link rel="manifest" href="manifest.json">
+    <style>
+    /* Modern forced-colors support for accessibility */
+    @media (forced-colors: active) {
+      :root {
+        color-scheme: light dark;
+      }
+      
+      /* Enhanced accessibility for forced colors mode */
+      .flutter-view {
+        forced-color-adjust: none;
+      }
+      
+      /* Button styles for high contrast */
+      button, input[type="button"] {
+        background-color: ButtonFace;
+        color: ButtonText;
+        border: 1px solid ButtonBorder;
+      }
+      
+      /* Link styles for high contrast */
+      a {
+        color: LinkText;
+      }
+      
+      a:visited {
+        color: VisitedText;
+      }
+    }
+    
+    /* Hide loading indicator on app start */
+    .loading {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    
+    /* Performance optimizations */
+    canvas {
+      image-rendering: -webkit-optimize-contrast;
+      image-rendering: optimize-contrast;
+    }
+  </style>
 </head>
 <body>
   <script src="flutter_bootstrap.js" async></script>
