@@ -29,15 +29,14 @@ class _EditProfileState extends State<EditProfile> {
   late final TextEditingController _usernameController;
   
   bool _isLoading = false;
-
   @override
   void initState() {
     super.initState();
-    // Initialize controllers with passed data
-    _nameController = TextEditingController(text: widget.name);
-    _phoneController = TextEditingController(text: widget.phoneNumber);
-    _emailController = TextEditingController(text: widget.email);
-    _usernameController = TextEditingController(text: widget.username);
+    // Initialize controllers with passed data or empty strings
+    _nameController = TextEditingController(text: widget.name ?? '');
+    _phoneController = TextEditingController(text: widget.phoneNumber ?? '');
+    _emailController = TextEditingController(text: widget.email ?? '');
+    _usernameController = TextEditingController(text: widget.username ?? '');
   }
 
   Future<void> _saveProfile() async {
