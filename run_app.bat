@@ -1,33 +1,44 @@
 @echo off
-echo Starting Flutter Team Sync Application...
+title Team Sync Flutter App Launcher
+color 0A
+
+echo ================================================================
+echo           TEAM SYNC PROJECT MANAGEMENT APPLICATION
+echo ================================================================
 echo.
 
-echo Step 1: Checking Flutter setup...
-flutter doctor
+echo [1/4] Checking Flutter setup...
+flutter doctor --android-licenses > nul 2>&1
 
-echo.
-echo Step 2: Getting dependencies...
+echo [2/4] Getting dependencies...
 flutter pub get
 
-echo.
-echo Step 3: Checking available devices...
+echo [3/4] Checking available devices...
 flutter devices
 
 echo.
-echo Step 4: Listing available emulators...
-flutter emulators
+echo ================================================================
+echo                    LAUNCHING APPLICATION
+echo ================================================================
+echo.
+
+echo Trying Windows Desktop App...
+start "Team Sync Windows" cmd /k "flutter run -d windows"
+
+timeout /t 3 /nobreak > nul
 
 echo.
-echo Step 5: Attempting to run on web (Chrome)...
-start "Flutter Web" flutter run -d chrome --web-port=3000
+echo Trying Web Browser (Chrome)...
+start "Team Sync Web" cmd /k "flutter run -d chrome --web-port=3000"
 
 echo.
-echo Step 6: If web doesn't work, trying Windows...
-start "Flutter Windows" flutter run -d windows
-
+echo ================================================================
+echo App is launching! Check the new windows that opened.
 echo.
-echo If you have an Android emulator, you can start it with:
-echo flutter emulators --launch [EMULATOR_ID]
-echo Then run: flutter run
+echo If you see any errors, try:
+echo - flutter clean
+echo - flutter pub get
+echo - flutter run
+echo ================================================================
 
 pause

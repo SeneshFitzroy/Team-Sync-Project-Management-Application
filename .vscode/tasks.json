@@ -2,13 +2,12 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
-			"command": "flutter run -d windows",
+			"command": "flutter run -d chrome --web-port=3000",
 			"group": "build",
 			"isBackground": true,
-			"label": "Flutter Run Windows",
+			"label": "Flutter Run Chrome Web",
 			"problemMatcher": [
-				"$dart-analyze",
-				"$dart-compile"
+				"$dart-analyze"
 			],
 			"type": "shell"
 		}
