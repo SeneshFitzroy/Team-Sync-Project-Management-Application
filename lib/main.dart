@@ -97,11 +97,11 @@ class MyApp extends StatelessWidget {
           elevation: 0,
         ),      ),
       debugShowCheckedModeBanner: false,
-      home: const AuthWrapper(),
-      routes: {
+      home: const AuthWrapper(),      routes: {
         '/welcome1': (context) => const WelcomePage1(),
         '/welcome2': (context) => const LoginPage(),
-        '/login': (context) => const LoginPage(),        '/signup': (context) => const CreateAccount(),
+        '/login': (context) => const LoginPage(),
+        '/signup': (context) => const CreateAccount(),
         '/dashboard': (context) => const Dashboard(),
         '/forgot-password': (context) => const ForgetPasswordScreen(),
         '/taskmanager': (context) => const TaskManager(),
