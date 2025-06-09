@@ -2,12 +2,13 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
-			"command": "flutter analyze --no-preamble",
-			"group": "test",
-			"isBackground": false,
-			"label": "Flutter Analyze",
+			"command": "flutter run -d windows",
+			"group": "build",
+			"isBackground": true,
+			"label": "Flutter Run Windows",
 			"problemMatcher": [
-				"$dart-analyze"
+				"$dart-analyze",
+				"$dart-compile"
 			],
 			"type": "shell"
 		}
