@@ -67,7 +67,7 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
 
     try {
       _projectsSubscription?.cancel(); // Cancel any existing subscription
-      _projectsSubscription = FirebaseService.getUserProjects(_currentUser!.uid).listen(
+      _projectsSubscription = FirebaseService.getUserProjects(userId: _currentUser!.uid).listen(
         (snapshot) {
           if (!mounted) return;
           setState(() {
