@@ -68,17 +68,34 @@ void main() async {
   } catch (e) {
     print("Firebase initialization error: $e");
   }
-  
-  // Set up global error handling specifically for the PigeonUserDetails error
+    // Set up global error handling for registerExtension and other errors
   FlutterError.onError = (FlutterErrorDetails details) {
-    if (details.exception.toString().contains('PigeonUserDetails') || 
-        details.exception.toString().contains('List<Object?>') ||
-        details.exception.toString().contains('PigeonUserInfo')) {
-      print('Caught Firebase Pigeon error in global handler: ${details.exception}');
-      // Don't crash the app - just log it
-    } else {
-      // Forward to original handler for other errors
+    final errorMessage = details.exception.toString();
+    
+    // Handle registerExtension errors from dart:developer
+    if (errorMessage.contains('registerExtension') || 
+        errorMessage.contains('developer event method hooks')) {
+      if (kDebugMode) {
+        print('🛠️ Debug extension error (safe to ignore in production): ${details.exception}');
+      }
+      return; // Don't crash the app
+    }
+    
+    // Handle Firebase Pigeon errors
+    if (errorMessage.contains('PigeonUserDetails') || 
+        errorMessage.contains('List<Object?>') ||
+        errorMessage.contains('PigeonUserInfo')) {
+      print('🔧 Firebase Pigeon error (handled gracefully): ${details.exception}');
+      return; // Don't crash the app
+    }
+    
+    // Handle other errors normally
+    if (kDebugMode) {
       FlutterError.presentError(details);
+    } else {
+      // In production, log errors but don't crash
+      print('⚠️ Production error (logged): ${details.exception}');
+    }
     }
   };
   
