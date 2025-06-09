@@ -107,16 +107,21 @@ class _LoginPageState extends State<LoginPage> {
         email: email,
         password: password,
       );
-      
-      if (credential.user != null) {
+        if (credential.user != null) {
         print('✅ Firebase login successful for: ${credential.user!.email}');
         
-        // Save user data to Firestore
-        await FirebaseService.saveUserData({
-          'email': email,
-          'lastLogin': FieldValue.serverTimestamp(),
-          'loginCount': FieldValue.increment(1),
-        });
+        // Try to save user data to Firestore (non-blocking)
+        try {
+          await FirebaseService.saveUserData({
+            'email': email,
+            'lastLogin': FieldValue.serverTimestamp(),
+            'loginCount': FieldValue.increment(1),
+          });
+          print('📝 User data saved to Firestore successfully');
+        } catch (e) {
+          print('📝 Note: Firestore write failed (will continue login): $e');
+          // Don't block login flow for Firestore errors
+        }
         
         // Save local preferences
         await _saveUserPreferences();
@@ -131,11 +136,17 @@ class _LoginPageState extends State<LoginPage> {
           await prefs.setString('saved_email', email);
         }
         
-        // Log activity
-        await FirebaseService.logActivity('user_login', {
-          'email': email,
-          'timestamp': DateTime.now().toIso8601String(),
-        });
+        // Try to log activity (non-blocking)
+        try {
+          await FirebaseService.logActivity('user_login', {
+            'email': email,
+            'timestamp': DateTime.now().toIso8601String(),
+          });
+          print('📝 Activity logged successfully');
+        } catch (e) {
+          print('📝 Note: Activity logging failed (will continue login): $e');
+          // Don't block login flow for Firestore errors
+        }
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
