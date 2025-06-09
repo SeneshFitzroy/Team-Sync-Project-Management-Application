@@ -130,6 +130,22 @@ class MyApp extends StatelessWidget {
   }
 }
 
+// TaskManager Wrapper to fix constructor issue
+class TaskManagerWrapper extends StatelessWidget {
+  const TaskManagerWrapper({super.key});
+  
+  @override
+  Widget build(BuildContext context) {
+    return const TaskManager(
+      selectedProject: null,
+      projectColor: null,
+      projectProgress: null,
+      projectMembers: null,
+      projectStatus: null,
+    );
+  }
+}
+
 class AuthWrapper extends StatelessWidget {
   const AuthWrapper({super.key});
 
