@@ -28,9 +28,26 @@
 
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png"/>
-
   <title>fluttercomponenets</title>
   <link rel="manifest" href="manifest.json">
+  
+  <style>
+    /* Modern forced-colors support for accessibility */
+    @media (forced-colors: active) {
+      :root {
+        color-scheme: light dark;
+      }
+    }
+    
+    /* Hide loading indicator on app start */
+    .loading {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+  </style>
 </head>
 <body>
   <script src="flutter_bootstrap.js" async></script>
