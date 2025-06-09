@@ -158,9 +158,14 @@ class FirebaseService {
     }
   }
 
-  static Future<void> updateProject(String projectId, Map<String, dynamic> updates) async {
+  static Future<void> updateProject(String projectId, Map<String, dynamic> updates, {required String userId}) async {
     try {
-      await _firestore.collection('projects').doc(projectId).update({
+      await _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('projects')
+          .doc(projectId)
+          .update({
         ...updates,
         'updatedAt': FieldValue.serverTimestamp(),
       });
