@@ -349,21 +349,44 @@ class FirebaseService {
     }
   }
 
-  // Analytics and logging
+  // Analytics and logging with retry logic and auth checks
   static Future<void> logActivity(String activity, Map<String, dynamic> data) async {
-    try {
-      final userId = getCurrentUserId();
-      if (userId != null) {
-        await _firestore.collection('activity_logs').add({
-          'userId': userId,
-          'activity': activity,
-          'data': data,
-          'timestamp': FieldValue.serverTimestamp(),
-        });
+    // Check if user is authenticated before attempting Firestore operations
+    if (_auth.currentUser == null) {
+      print('⚠️ User not authenticated - skipping activity log');
+      return;
+    }
+
+    int retries = 2; // Fewer retries for logging
+    for (int attempt = 1; attempt <= retries; attempt++) {
+      try {
+        final userId = getCurrentUserId();
+        if (userId != null) {
+          await _firestore.collection('activity_logs').add({
+            'userId': userId,
+            'activity': activity,
+            'data': data,
+            'timestamp': FieldValue.serverTimestamp(),
+          });
+          print('✓ Activity logged: $activity (attempt $attempt)');
+          return; // Success - exit retry loop
+        }
+      } catch (e) {
+        print('✗ Error logging activity (attempt $attempt): $e');
+        
+        if (e.toString().contains('permission-denied')) {
+          print('📝 Note: Firestore permissions need to be configured for activity logs');
+          return; // Don't retry permission errors
+        }
+        
+        if (attempt == retries) {
+          print('❌ Failed to log activity after $retries attempts');
+          // Don't throw - logging shouldn't break the app
+        } else {
+          // Wait before retrying
+          await Future.delayed(Duration(milliseconds: 300 * attempt));
+        }
       }
-    } catch (e) {
-      print('✗ Error logging activity: $e');
-      // Don't throw - logging shouldn't break the app
     }
   }
 }
