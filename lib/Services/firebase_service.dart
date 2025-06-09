@@ -326,7 +326,14 @@ class FirebaseService {
   }
 
   static Stream<QuerySnapshot> getProjectMessages(String projectId) {
+    final userId = getCurrentUserId();
+    if (userId == null) {
+      return const Stream.empty();
+    }
+    
     return _firestore
+        .collection('users')
+        .doc(userId)
         .collection('projects')
         .doc(projectId)
         .collection('messages')
@@ -384,6 +391,9 @@ class FirebaseService {
   // Team Management
   static Future<void> addTeamMember(String projectId, String memberEmail) async {
     try {
+      final userId = getCurrentUserId();
+      if (userId == null) throw Exception('User not authenticated');
+      
       // Find user by email
       final userQuery = await _firestore
           .collection('users')
@@ -396,8 +406,13 @@ class FirebaseService {
       
       final memberId = userQuery.docs.first.id;
       
-      // Add member to project
-      await _firestore.collection('projects').doc(projectId).update({
+      // Add member to project in user's collection
+      await _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('projects')
+          .doc(projectId)
+          .update({
         'members': FieldValue.arrayUnion([memberId]),
         'updatedAt': FieldValue.serverTimestamp(),
       });

@@ -99,10 +99,11 @@ class _CreateANewProjectState extends State<CreateANewProject> {
             'name': member.name,
             'role': member.role,
           }).toList(),
-        };
-
-        // Save to Firebase
-        final projectId = await FirebaseService.createProject(projectData);
+        };        // Save to Firebase
+        final userId = FirebaseService.getCurrentUserId();
+        if (userId == null) throw Exception('User not authenticated');
+        
+        final projectId = await FirebaseService.createProject(projectData, userId: userId);
         
         // Log activity
         await FirebaseService.logActivity('project_created', {
