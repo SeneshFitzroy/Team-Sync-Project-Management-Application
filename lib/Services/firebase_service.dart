@@ -15,23 +15,42 @@ class FirebaseService {
     return _auth.currentUser?.email;
   }
 
-  // User Management
+  // User Management with retry logic and auth checks
   static Future<void> saveUserData(Map<String, dynamic> userData) async {
-    try {
-      final userId = getCurrentUserId();
-      if (userId != null) {
-        await _firestore.collection('users').doc(userId).set({
-          ...userData,
-          'createdAt': FieldValue.serverTimestamp(),
-          'updatedAt': FieldValue.serverTimestamp(),
-        }, SetOptions(merge: true));
-        print('✓ User data saved successfully');
-      }
-    } catch (e) {
-      print('✗ Error saving user data: $e');
-      // Don't rethrow to allow login to continue even if Firestore write fails
-      if (e.toString().contains('permission-denied')) {
-        print('📝 Note: Firestore permissions need to be configured for writes');
+    // Check if user is authenticated before attempting Firestore operations
+    if (_auth.currentUser == null) {
+      print('⚠️ User not authenticated - skipping Firestore write');
+      return;
+    }
+
+    int retries = 3;
+    for (int attempt = 1; attempt <= retries; attempt++) {
+      try {
+        final userId = getCurrentUserId();
+        if (userId != null) {
+          await _firestore.collection('users').doc(userId).set({
+            ...userData,
+            'createdAt': FieldValue.serverTimestamp(),
+            'updatedAt': FieldValue.serverTimestamp(),
+          }, SetOptions(merge: true));
+          print('✓ User data saved successfully (attempt $attempt)');
+          return; // Success - exit retry loop
+        }
+      } catch (e) {
+        print('✗ Error saving user data (attempt $attempt): $e');
+        
+        if (e.toString().contains('permission-denied')) {
+          print('📝 Note: Firestore permissions need to be configured for writes');
+          return; // Don't retry permission errors
+        }
+        
+        if (attempt == retries) {
+          print('❌ Failed to save user data after $retries attempts');
+          // Don't rethrow to allow login to continue even if Firestore write fails
+        } else {
+          // Wait before retrying
+          await Future.delayed(Duration(milliseconds: 500 * attempt));
+        }
       }
     }
   }
