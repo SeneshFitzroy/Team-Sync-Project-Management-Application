@@ -2,15 +2,14 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
-			"label": "Flutter Run Debug",
-			"type": "shell",
-			"command": "flutter run --debug",
-			"group": "build",
-			"isBackground": true,
+			"command": "flutter analyze --no-preamble",
+			"group": "test",
+			"isBackground": false,
+			"label": "Flutter Analyze",
 			"problemMatcher": [
-				"$dart-analyze",
-				"$dart-compile"
-			]
+				"$dart-analyze"
+			],
+			"type": "shell"
 		}
 	]
 }
