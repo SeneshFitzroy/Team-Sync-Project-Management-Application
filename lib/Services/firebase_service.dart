@@ -29,7 +29,10 @@ class FirebaseService {
       }
     } catch (e) {
       print('✗ Error saving user data: $e');
-      rethrow;
+      // Don't rethrow to allow login to continue even if Firestore write fails
+      if (e.toString().contains('permission-denied')) {
+        print('📝 Note: Firestore permissions need to be configured for writes');
+      }
     }
   }
 
