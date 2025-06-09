@@ -104,7 +104,7 @@ class MyApp extends StatelessWidget {
         '/login': (context) => const LoginPage(),
         '/signup': (context) => const CreateAccount(),        '/dashboard': (context) => const Dashboard(),
         '/forgot-password': (context) => const ForgetPasswordScreen(),
-        // '/taskmanager': (context) => const TaskManager(),
+        '/taskmanager': (context) => const TaskManager(),
         '/profile': (context) => const ProfileScreen(),
         '/calendar': (context) => const Calendar(),
         '/chat': (context) => const ChatScreen(),
