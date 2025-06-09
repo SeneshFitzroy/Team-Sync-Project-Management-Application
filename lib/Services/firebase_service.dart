@@ -133,9 +133,12 @@ class FirebaseService {
         .snapshots();
   }
 
+  // Enhanced project creation with permission error handling
   static Future<String> createProject(Map<String, dynamic> projectData, {required String userId}) async {
     try {
       if (_auth.currentUser == null) throw Exception('User not authenticated');
+      
+      print('🔄 Creating project: ${projectData['title']}');
       
       // Enhanced project data with better structure
       final enhancedProjectData = {
@@ -149,27 +152,45 @@ class FirebaseService {
         'version': 1,
       };
       
-      // Add to user's collection (primary)
-      final userDocRef = await _firestore
-          .collection('users')
-          .doc(userId)
-          .collection('projects')
-          .add(enhancedProjectData);
-      
-      // Also add to global projects collection for team collaboration
-      await _firestore
-          .collection('projects')
-          .doc(userDocRef.id)
-          .set({
-        ...enhancedProjectData,
-        'userProjectId': userDocRef.id,
-        'teamAccess': true,
+      // Try with retry logic for better reliability
+      return await _retryFirestoreOperation(() async {
+        // Add to user's collection (primary)
+        final userDocRef = await _firestore
+            .collection('users')
+            .doc(userId)
+            .collection('projects')
+            .add(enhancedProjectData);
+        
+        // Also add to global projects collection for team collaboration
+        try {
+          await _firestore
+              .collection('projects')
+              .doc(userDocRef.id)
+              .set({
+            ...enhancedProjectData,
+            'userProjectId': userDocRef.id,
+            'teamAccess': true,
+          });
+          print('✓ Project added to global collection for team access');
+        } catch (e) {
+          print('⚠️ Could not add to global collection (continuing): $e');
+          // Don't fail the entire operation if global collection fails
+        }
+        
+        print('✅ Project created successfully with ID: ${userDocRef.id}');
+        return userDocRef.id;
       });
       
-      print('✓ Project created with ID: ${userDocRef.id}');
-      return userDocRef.id;
     } catch (e) {
-      print('✗ Error creating project: $e');
+      print('❌ Error creating project: $e');
+      
+      // If it's a permission error, provide helpful guidance
+      if (_isPermissionError(e)) {
+        print('📝 PERMISSION ERROR: Please deploy Firestore rules first');
+        print('📝 Run: deploy_rules_manual.bat or use Firebase Console');
+        throw Exception('Permission denied. Please deploy Firestore security rules first.');
+      }
+      
       rethrow;
     }
   }
