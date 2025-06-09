@@ -137,21 +137,37 @@ class FirebaseService {
     try {
       if (_auth.currentUser == null) throw Exception('User not authenticated');
       
-      final docRef = await _firestore
-          .collection('users')
-          .doc(userId)
-          .collection('projects')
-          .add({
+      // Enhanced project data with better structure
+      final enhancedProjectData = {
         ...projectData,
         'ownerId': userId,
         'createdBy': getCurrentUserEmail(),
         'createdAt': FieldValue.serverTimestamp(),
         'updatedAt': FieldValue.serverTimestamp(),
-        'members': [userId], // Owner is always a member
+        'members': projectData['members'] ?? [userId], // Include team members
+        'isActive': true,
+        'version': 1,
+      };
+      
+      // Add to user's collection (primary)
+      final userDocRef = await _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('projects')
+          .add(enhancedProjectData);
+      
+      // Also add to global projects collection for team collaboration
+      await _firestore
+          .collection('projects')
+          .doc(userDocRef.id)
+          .set({
+        ...enhancedProjectData,
+        'userProjectId': userDocRef.id,
+        'teamAccess': true,
       });
       
-      print('✓ Project created with ID: ${docRef.id}');
-      return docRef.id;
+      print('✓ Project created with ID: ${userDocRef.id}');
+      return userDocRef.id;
     } catch (e) {
       print('✗ Error creating project: $e');
       rethrow;
