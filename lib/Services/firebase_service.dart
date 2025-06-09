@@ -133,9 +133,19 @@ class FirebaseService {
   // Enhanced project creation with permission error handling
   static Future<String> createProject(Map<String, dynamic> projectData, {required String userId}) async {
     try {
-      if (_auth.currentUser == null) throw Exception('User not authenticated');
+      // Enhanced authentication check
+      if (_auth.currentUser == null) {
+        throw Exception('User not authenticated. Please log in again.');
+      }
+      
+      // Verify userId matches current user
+      if (userId != _auth.currentUser!.uid) {
+        throw Exception('User ID mismatch. Please log in again.');
+      }
       
       print('🔄 Creating project: ${projectData['title']}');
+      print('👤 User ID: $userId');
+      print('✉️ User Email: ${getCurrentUserEmail()}');
       
       // Enhanced project data with better structure
       final enhancedProjectData = {
