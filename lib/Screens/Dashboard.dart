@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
 import '../Components/nav_bar.dart';
 import '../Services/firebase_service.dart';
@@ -21,17 +22,19 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
   bool _isSearching = false;
   final TextEditingController _searchController = TextEditingController();
   late AnimationController _filterAnimController;
-  
+
   // Filter states
   bool _showActiveOnly = false;
   bool _showAtRiskOnly = false;
   bool _showCompletedOnly = false;
   String _selectedSortOption = 'Progress (High to Low)';
 
-  // Project list - using Firebase data with fallback to sample data
+  // Project list
   List<Map<String, dynamic>> projects = [];
-  bool _isLoading = false;
+  bool _isLoading = true;
+  String? _errorMessage;
   StreamSubscription<QuerySnapshot>? _projectsSubscription;
+  User? _currentUser;
 
   @override
   void initState() {
@@ -40,58 +43,83 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
       vsync: this,
       duration: const Duration(milliseconds: 300),
     );
-    
-    // Initialize with Firebase projects or fallback to sample data
+    _initializeUserAndProjects();
+  }
+
+  void _initializeUserAndProjects() async {
+    _currentUser = FirebaseAuth.instance.currentUser;
+    if (_currentUser == null) {
+      // Redirect to login if not authenticated
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => const WelcomePage1()),
+        (route) => false,
+      );
+      return;
+    }
     _loadFirebaseProjects();
   }
 
   void _loadFirebaseProjects() {
     setState(() {
       _isLoading = true;
+      _errorMessage = null;
     });
 
     try {
-      // Listen to Firebase projects stream
-      _projectsSubscription = FirebaseService.getUserProjects().listen(
+      _projectsSubscription?.cancel(); // Cancel any existing subscription
+      _projectsSubscription = FirebaseService.getUserProjects(_currentUser!.uid).listen(
         (snapshot) {
-          if (mounted) {
-            setState(() {
-              projects = snapshot.docs.map((doc) {
-                final data = doc.data() as Map<String, dynamic>;
-                return {
-                  'id': doc.id,
-                  'title': data['title'] ?? 'Untitled Project',
-                  'members': data['members'] is List 
-                      ? '${(data['members'] as List).length} Members'
-                      : data['members'] ?? '0 Members',
-                  'status': data['status'] ?? 'active',
-                  'progress': (data['progress'] ?? 0.0).toDouble(),
-                  'progressText': '${((data['progress'] ?? 0.0) * 100).round()}%',
-                  'color': _getProjectColor(data['status'] ?? 'active'),
-                  'description': data['description'] ?? '',
-                  'updatedAt': data['updatedAt'],
-                };
-              }).toList();
-              _isLoading = false;
-              _applySorting();
-            });
-          }
+          if (!mounted) return;
+          setState(() {
+            projects = snapshot.docs.map((doc) {
+              final data = doc.data() as Map<String, dynamic>;
+              return {
+                'id': doc.id,
+                'title': data['title'] ?? 'Untitled Project',
+                'members': (data['members'] as List<dynamic>?)?.length.toString() ?? '0',
+                'status': data['status'] ?? 'active',
+                'progress': (data['progress']?.toDouble() ?? 0.0),
+                'progressText': '${((data['progress']?.toDouble() ?? 0.0) * 100).round()}%',
+                'color': _getProjectColor(data['status'] ?? 'active'),
+                'description': data['description'] ?? '',
+                'updatedAt': (data['updatedAt'] as Timestamp?)?.toDate(),
+              };
+            }).toList();
+            _isLoading = false;
+            _applySorting();
+          });
         },
         onError: (error) {
-          print('Error loading projects: $error');
-          // Fallback to sample data on error
-          _loadSampleProjects();
+          if (!mounted) return;
+          setState(() {
+            _isLoading = false;
+            _errorMessage = 'Failed to load projects: $error';
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error loading projects: $error'),
+              backgroundColor: Colors.red,
+            ),
+          );
         },
       );
     } catch (e) {
-      print('Error setting up projects listener: $e');
-      // Fallback to sample data on error
-      _loadSampleProjects();
+      if (!mounted) return;
+      setState(() {
+        _isLoading = false;
+        _errorMessage = 'Error setting up projects: $e';
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
   Color _getProjectColor(String status) {
-    switch (status) {
+    switch (status.toLowerCase()) {
       case 'active':
         return const Color(0xFF187E0F);
       case 'at-risk':
@@ -101,60 +129,6 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
       default:
         return const Color(0xFF9B870C);
     }
-  }
-
-  void _loadSampleProjects() {
-    // Fallback sample projects if Firebase fails
-    setState(() {
-      _isLoading = true;
-    });
-
-    Future.delayed(const Duration(milliseconds: 500), () {
-      if (mounted) {
-        setState(() {
-          projects = [
-            {
-              'title': 'Mobile App Design',
-              'members': '5 Members',
-              'status': 'active',
-              'progress': 0.75,
-              'progressText': '75%',
-              'color': const Color(0xFF187E0F),
-              'description': 'Designing the new mobile app interface',
-            },
-            {
-              'title': 'Website Redesign',
-              'members': '3 Members',
-              'status': 'at-risk',
-              'progress': 0.35,
-              'progressText': '35%',
-              'color': const Color(0xFFD14318),
-              'description': 'Complete website redesign project',
-            },
-            {
-              'title': 'Marketing Campaign',
-              'members': '4 Members',
-              'status': 'completed',
-              'progress': 1.0,
-              'progressText': '100%',
-              'color': const Color(0xFF192F5D),
-              'description': 'Q4 marketing campaign planning',
-            },
-            {
-              'title': 'Database Migration',
-              'members': '2 Members',
-              'status': 'active',
-              'progress': 0.6,
-              'progressText': '60%',
-              'color': const Color(0xFF9B870C),
-              'description': 'Migrating legacy database to cloud',
-            },
-          ];
-          _isLoading = false;
-          _applySorting();
-        });
-      }
-    });
   }
 
   @override
@@ -169,7 +143,7 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
     setState(() {
       _selectedIndex = index;
     });
-    
+
     if (index != 0) {
       switch (index) {
         case 1: // Tasks
@@ -378,7 +352,6 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
                           child: ElevatedButton(
                             onPressed: () {
                               setState(() {
-                                // Apply the current filter states
                                 _applySorting();
                               });
                               Navigator.pop(context);
@@ -476,11 +449,10 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
       );
 
       if (confirm == true) {
-        // Clear preferences
+        await FirebaseAuth.instance.signOut();
         final prefs = await SharedPreferences.getInstance();
         await prefs.clear();
-        
-        // Navigate to welcome page
+
         if (mounted) {
           Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(builder: (context) => const WelcomePage1()),
@@ -489,12 +461,12 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
         }
       }
     } catch (e) {
-      print("Logout error: $e");
-      // Still navigate even if there's an error
       if (mounted) {
-        Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (context) => const WelcomePage1()),
-          (route) => false,
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Logout error: $e'),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     }
@@ -745,8 +717,6 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
   }
 
   Widget _buildProjectsList() {
-    var filteredProjects = List<Map<String, dynamic>>.from(projects);
-    
     if (_isLoading) {
       return const Center(
         child: Padding(
@@ -755,25 +725,63 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
         ),
       );
     }
-    
-    // Filter projects by search query
-    if (_searchQuery.isNotEmpty) {
-      filteredProjects = filteredProjects.where((project) => 
-        project['title'].toString().toLowerCase().contains(_searchQuery.toLowerCase())
-      ).toList();
+
+    if (_errorMessage != null) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                _errorMessage!,
+                style: const TextStyle(color: Colors.red, fontSize: 16),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: _loadFirebaseProjects,
+                child: const Text('Retry'),
+              ),
+            ],
+          ),
+        ),
+      );
     }
-    
+
+    if (projects.isEmpty) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.all(24.0),
+          child: Text(
+            'No projects found. Create a new project to get started!',
+            style: TextStyle(fontSize: 16, color: Colors.grey),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      );
+    }
+
+    var filteredProjects = List<Map<String, dynamic>>.from(projects);
+
+    // Filter by search query
+    if (_searchQuery.isNotEmpty) {
+      filteredProjects = filteredProjects.where((project) {
+        return (project['title'] as String).toLowerCase().contains(_searchQuery.toLowerCase());
+      }).toList();
+    }
+
     // Apply status filters
     if (_showActiveOnly || _showAtRiskOnly || _showCompletedOnly) {
       filteredProjects = filteredProjects.where((project) {
-        final status = project['status'].toString();
+        final status = project['status'].toString().toLowerCase();
         if (_showActiveOnly && status == 'active') return true;
         if (_showAtRiskOnly && status == 'at-risk') return true;
         if (_showCompletedOnly && status == 'completed') return true;
         return false;
       }).toList();
     }
-    
+
     return Column(
       children: [
         ...filteredProjects.map((project) => Column(
@@ -791,12 +799,13 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
                       'projectProgress': project['progress'] as double,
                       'projectMembers': project['members'] as String,
                       'projectStatus': project['status'] as String,
+                      'projectId': project['id'] as String,
                     },
                   );
                 },
                 child: _buildProjectCard(
                   title: project['title'] as String,
-                  members: project['members'] as String,
+                  members: '${project['members']} Members',
                   status: project['status'] as String,
                   progress: project['progress'] as double,
                   progressText: project['progressText'] as String,
@@ -814,13 +823,15 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
   }
 
   void _applySorting() {
-    if (_selectedSortOption == 'Progress (High to Low)') {
-      projects.sort((a, b) => (b['progress'] as double).compareTo(a['progress'] as double));
-    } else if (_selectedSortOption == 'Progress (Low to High)') {
-      projects.sort((a, b) => (a['progress'] as double).compareTo(b['progress'] as double));
-    } else if (_selectedSortOption == 'Alphabetical (A-Z)') {
-      projects.sort((a, b) => (a['title'] as String).compareTo(b['title'] as String));
-    }
+    setState(() {
+      if (_selectedSortOption == 'Progress (High to Low)') {
+        projects.sort((a, b) => (b['progress'] as double).compareTo(a['progress'] as double));
+      } else if (_selectedSortOption == 'Progress (Low to High)') {
+        projects.sort((a, b) => (a['progress'] as double).compareTo(b['progress'] as double));
+      } else if (_selectedSortOption == 'Alphabetical (A-Z)') {
+        projects.sort((a, b) => (a['title'] as String).compareTo(b['title'] as String));
+      }
+    });
   }
 
   Widget _buildProjectCard({
@@ -833,7 +844,7 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
   }) {
     final availableWidth = MediaQuery.of(context).size.width - 48 - 24;
     final progressWidth = availableWidth * progress;
-    
+
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
       width: double.infinity,
@@ -881,7 +892,7 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
               ),
             ),
           ),
-          if (status == 'completed')
+          if (status.toLowerCase() == 'completed')
             Positioned(
               top: 10,
               right: 10,
@@ -937,19 +948,25 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
                     ),
                     const SizedBox(width: 20),
                     Icon(
-                      status == 'active' ? Icons.check_circle : 
-                      status == 'at-risk' ? Icons.warning :
-                      Icons.task_alt,
-                      size: 16, 
-                      color: status == 'active' ? const Color(0xFF187E0F) :
-                             status == 'at-risk' ? const Color(0xFFD14318) :
-                             const Color(0xFF187E0F),
+                      status.toLowerCase() == 'active'
+                          ? Icons.check_circle
+                          : status.toLowerCase() == 'at-risk'
+                              ? Icons.warning
+                              : Icons.task_alt,
+                      size: 16,
+                      color: status.toLowerCase() == 'active'
+                          ? const Color(0xFF187E0F)
+                          : status.toLowerCase() == 'at-risk'
+                              ? const Color(0xFFD14318)
+                              : const Color(0xFF187E0F),
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      status == 'active' ? 'Active' :
-                      status == 'at-risk' ? 'At Risk' :
-                      'Completed',
+                      status.toLowerCase() == 'active'
+                          ? 'Active'
+                          : status.toLowerCase() == 'at-risk'
+                              ? 'At Risk'
+                              : 'Completed',
                       style: TextStyle(
                         color: Colors.black.withOpacity(0.75),
                         fontSize: 14,
@@ -1022,48 +1039,60 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
           context,
           MaterialPageRoute(builder: (context) => const CreateANewProject()),
         );
-        
-        if (newProjectData != null) {
+
+        if (newProjectData != null && _currentUser != null) {
           try {
-            // Save project to Firebase
-            final projectId = await FirebaseService.createProject({
-              'title': newProjectData['title'],
-              'description': newProjectData['description'],
-              'status': 'active',
-              'progress': 0.0,
-              'members': [], // Will be updated when team members are added
-            });
-            
-            // Log activity
-            await FirebaseService.logActivity('project_created', {
-              'projectId': projectId,
-              'projectTitle': newProjectData['title'],
-              'timestamp': DateTime.now().toIso8601String(),
-            });
-            
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Row(
-                  children: [
-                    const Icon(Icons.check_circle, color: Colors.white),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text('New project "${newProjectData['title']}" created'),
-                    ),
-                  ],
+            final projectId = await FirebaseService.createProject(
+              {
+                'title': newProjectData['title'],
+                'description': newProjectData['description'],
+                'status': 'active',
+                'progress': 0.0,
+                'members': [],
+                'createdAt': FieldValue.serverTimestamp(),
+                'updatedAt': FieldValue.serverTimestamp(),
+                'ownerId': _currentUser!.uid,
+              },
+              userId: _currentUser!.uid,
+            );
+
+            await FirebaseService.logActivity(
+              'project_created',
+              {
+                'projectId': projectId,
+                'projectTitle': newProjectData['title'],
+                'timestamp': FieldValue.serverTimestamp(),
+                'userId': _currentUser!.uid,
+              },
+            );
+
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Row(
+                    children: [
+                      const Icon(Icons.check_circle, color: Colors.white),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text('New project "${newProjectData['title']}" created'),
+                      ),
+                    ],
+                  ),
+                  backgroundColor: const Color(0xFF187E0F),
+                  duration: const Duration(seconds: 3),
                 ),
-                backgroundColor: const Color(0xFF187E0F),
-                duration: const Duration(seconds: 3),
-              ),
-            );
+              );
+            }
           } catch (e) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('Error creating project: $e'),
-                backgroundColor: Colors.red,
-                duration: const Duration(seconds: 3),
-              ),
-            );
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Error creating project: $e'),
+                  backgroundColor: Colors.red,
+                  duration: const Duration(seconds: 3),
+                ),
+              );
+            }
           }
         }
       },
