@@ -1,33 +1,42 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Allow read/write access to all authenticated users for development
-    match /{document=**} {
-      allow read, write: if request.auth != null;
-    }
-    
-    // Allow public read access to certain collections if needed
-    match /public/{document=**} {
-      allow read: if true;
-    }
-    
-    // User-specific data
+    // User-specific data - most restrictive and secure
     match /users/{userId} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
+      
+      // User's projects subcollection
+      match /projects/{projectId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+      
+      // User's activities subcollection
+      match /activities/{activityId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+      
+      // User's notifications subcollection
+      match /notifications/{notificationId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
     }
     
-    // User activities and logs
-    match /activities/{document} {
-      allow read, write: if request.auth != null;
+    // Global activity logs (optional - for admin monitoring)
+    match /activity_logs/{activityId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && 
+                      request.resource.data.userId == request.auth.uid;
     }
     
-    // Tasks and projects
-    match /tasks/{document} {
-      allow read, write: if request.auth != null;
+    // Public data (read-only for authenticated users)
+    match /public/{document=**} {
+      allow read: if request.auth != null;
+      allow write: if false; // Only admins can write to public data
     }
     
-    match /projects/{document} {
-      allow read, write: if request.auth != null;
+    // Fallback - deny all other access
+    match /{document=**} {
+      allow read, write: if false;
     }
   }
 }
