@@ -95,9 +95,9 @@ class MyApp extends StatelessWidget {
           backgroundColor: Color(0xFF1989BD),
           foregroundColor: Colors.white,
           elevation: 0,
-        ),      ),
-      debugShowCheckedModeBanner: false,
-      home: const AuthWrapper(),      routes: {
+        ),      ),      debugShowCheckedModeBanner: false,
+      home: const AuthWrapper(),
+      routes: {
         '/welcome1': (context) => const WelcomePage1(),
         '/welcome2': (context) => const LoginPage(),
         '/login': (context) => const LoginPage(),
@@ -110,9 +110,9 @@ class MyApp extends StatelessWidget {
         '/chat': (context) => const ChatScreen(),
         '/create-project': (context) => const CreateANewProject(),
         '/add-members': (context) => const AddTeamMembers(),
-        '/notifications': (context) => const NotificationsScreen(),
-        '/about': (context) => const AboutTaskSync(),
-        '/contact': (context) => const ContactSupport(),        '/edit-profile': (context) => const EditProfile(),
+        '/notifications': (context) => const NotificationsScreen(),        '/about': (context) => const AboutTaskSync(),
+        '/contact': (context) => const ContactSupport(),
+        '/edit-profile': (context) => const EditProfile(),
         '/change-password': (context) => const ChangePassword(),
       },
     );
