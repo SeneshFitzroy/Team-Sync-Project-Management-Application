@@ -104,28 +104,8 @@ class FirebaseService {
     }
   }
 
-  // Project Management
-  static Future<String> createProject(Map<String, dynamic> projectData) async {
-    try {
-      final userId = getCurrentUserId();
-      if (userId == null) throw Exception('User not authenticated');
-      
-      final docRef = await _firestore.collection('projects').add({
-        ...projectData,
-        'ownerId': userId,
-        'createdBy': getCurrentUserEmail(),
-        'createdAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
-        'members': [userId], // Owner is always a member
-      });
-      
-      print('✓ Project created with ID: ${docRef.id}');
-      return docRef.id;
-    } catch (e) {
-      print('✗ Error creating project: $e');
-      rethrow;
-    }
-  }
+  // Project Management - REMOVED DUPLICATE METHOD
+  // Use the user-specific createProject method below
 
   // Project Management - User-specific collections
   static Stream<QuerySnapshot> getUserProjects({String? userId}) {
