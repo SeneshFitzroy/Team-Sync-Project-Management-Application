@@ -47,11 +47,21 @@ void main() async {
     });
     
     print("Firebase initialized successfully");
-    
-    // Basic tests to ensure Firebase Auth is working
+      // Basic tests to ensure Firebase Auth is working
     try {
       final auth = FirebaseAuth.instance;
       print("Firebase Auth initialized: ${auth.app.name}");
+      
+      // Set up authentication state monitoring
+      if (kDebugMode) {
+        auth.authStateChanges().listen((User? user) {
+          if (user != null) {
+            print('🔐 User authenticated: ${user.email}');
+          } else {
+            print('🔐 User signed out');
+          }
+        });
+      }
     } catch (e) {
       print("Error accessing Firebase Auth: $e");
     }
