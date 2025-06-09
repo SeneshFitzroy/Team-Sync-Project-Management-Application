@@ -11,23 +11,22 @@ dependencies:
     sdk: flutter
   cupertino_icons: ^1.0.8
   intl: ^0.18.1
-  
-  # Updated Firebase versions for better compatibility
-  firebase_core: ^3.6.0
-  firebase_auth: ^5.3.1
-  cloud_firestore: ^5.4.4
-  firebase_storage: ^12.3.2
+    # Updated Firebase versions for better compatibility
+  firebase_core: ^2.32.0
+  firebase_auth: ^4.20.0
+  cloud_firestore: ^4.17.5
+  firebase_storage: ^11.7.7
   google_sign_in: ^6.2.1
   url_launcher: ^6.1.12
   shared_preferences: ^2.2.0
-  flutter_secure_storage: ^8.0.0
+  flutter_secure_storage: ^8.1.0
   retry: ^3.1.2  # Added for network retry logic
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
-  dwds: ^28.0.1  # Added for better debugging support
+  dwds: ^24.3.10  # Fixed version for compatibility
 
 flutter:
   uses-material-design: true
