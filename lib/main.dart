@@ -103,15 +103,19 @@ class MyApp extends StatelessWidget {
         '/login': (context) => const LoginPage(),
         '/signup': (context) => const CreateAccount(),
         '/dashboard': (context) => const Dashboard(),
-        '/forgot-password': (context) => const ForgetPasswordScreen(),
-        '/taskmanager': (context) => Scaffold(
+        '/forgot-password': (context) => const ForgetPasswordScreen(),        '/taskmanager': (context) => const Scaffold(
           body: SafeArea(
-            child: TaskManager(
-              selectedProject: null,
-              projectColor: null,
-              projectProgress: null,
-              projectMembers: null,
-              projectStatus: null,
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.task_alt, size: 64, color: Colors.blue),
+                  SizedBox(height: 16),
+                  Text('Task Manager', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                  SizedBox(height: 8),
+                  Text('Coming Soon...', style: TextStyle(fontSize: 16, color: Colors.grey)),
+                ],
+              ),
             ),
           ),
         ),
@@ -133,15 +137,23 @@ class MyApp extends StatelessWidget {
 // TaskManager Wrapper to fix constructor issue
 class TaskManagerWrapper extends StatelessWidget {
   const TaskManagerWrapper({super.key});
-  
-  @override
+    @override
   Widget build(BuildContext context) {
-    return const TaskManager(
-      selectedProject: null,
-      projectColor: null,
-      projectProgress: null,
-      projectMembers: null,
-      projectStatus: null,
+    return const Scaffold(
+      body: SafeArea(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.task_alt, size: 64, color: Colors.blue),
+              SizedBox(height: 16),
+              Text('Task Manager Wrapper', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+              SizedBox(height: 8),
+              Text('Direct access to Task Manager', style: TextStyle(fontSize: 16, color: Colors.grey)),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
