@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import '../Components/nav_bar.dart';
-import './Dashboard.dart';
-import './TaskManager.dart';
-import './Calendar.dart';
-import './Profile.dart'; // Add this import
+import './Profile.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
@@ -45,27 +42,16 @@ class _ChatScreenState extends State<ChatScreen> with SingleTickerProviderStateM
     setState(() {
       _currentIndex = index;
     });
-    
-    // Navigate to the appropriate screen based on index
+      // Navigate to the appropriate screen based on index
     if (index != 2) { // If not Chat tab (since we're already in Chat)
       switch (index) {
         case 0: // Dashboard
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const Dashboard()),
-          );
-          break;
-        case 1: // Tasks
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const TaskManager()),
-          );
+          Navigator.pushReplacementNamed(context, '/dashboard');
+          break;        case 1: // Tasks
+          Navigator.pushReplacementNamed(context, '/taskmanager');
           break;
         case 3: // Calendar
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const Calendar()),
-          );
+          Navigator.pushReplacementNamed(context, '/calendar');
           break;
       }
     }
@@ -341,64 +327,10 @@ class _ChatScreenState extends State<ChatScreen> with SingleTickerProviderStateM
           ),
           */
         ],
-      ),
-      bottomNavigationBar: NavBar(
+      ),      bottomNavigationBar: NavBar(
         selectedIndex: _currentIndex,
         onTap: _onNavBarTap,
       ),
-    );
-  }
-
-  Widget _buildNavItem(IconData icon, String label, bool isSelected, {int? badgeCount}) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Stack(
-          clipBehavior: Clip.none,
-          children: [
-            Icon(
-              icon,
-              color: isSelected ? const Color(0xFF150303) : const Color(0xFF666666),
-            ),
-            if (badgeCount != null)
-              Positioned(
-                right: -10,
-                top: -5,
-                child: Container(
-                  padding: const EdgeInsets.all(4),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFFF1212),
-                    shape: BoxShape.circle,
-                  ),
-                  constraints: const BoxConstraints(
-                    minWidth: 16,
-                    minHeight: 16,
-                  ),
-                  child: Center(
-                    child: Text(
-                      badgeCount.toString(),
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-          ],
-        ),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: TextStyle(
-            color: isSelected ? const Color(0xFF150303) : const Color(0xFF666666),
-            fontSize: 12,
-            fontFamily: 'Inter',
-            fontWeight: FontWeight.w400,
-          ),
-        ),
-      ],
     );
   }
 }

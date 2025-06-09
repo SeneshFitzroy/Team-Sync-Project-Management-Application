@@ -27,59 +27,56 @@ class DefaultFirebaseOptions {
         );
     }
   }
-
-  // Replace these with your Firebase project configuration values
+  // Firebase configuration values for web (same project)
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'YOUR_API_KEY',
-    appId: 'YOUR_APP_ID',
-    messagingSenderId: 'YOUR_MESSAGING_SENDER_ID',
-    projectId: 'YOUR_PROJECT_ID',
-    authDomain: 'YOUR_AUTH_DOMAIN',
-    storageBucket: 'YOUR_STORAGE_BUCKET',
+    apiKey: 'AIzaSyDdk_dktdHQ2RnVMxugVdbxk0E6pJlvWBc',
+    appId: '1:310750228851:web:YOUR_WEB_APP_ID', // You'll need to create a web app in Firebase console for the actual Web App ID
+    messagingSenderId: '310750228851',
+    projectId: 'team-sync-project-management',
+    authDomain: 'team-sync-project-management.firebaseapp.com',
+    storageBucket: 'team-sync-project-management.firebasestorage.app',
   );
-
-  // Replace the placeholder values with your actual Firebase project details
+  // Firebase configuration values from google-services.json
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyDGH-_kVU1TO-ISzqy83tGGK55aYS37e-Y', // Keep this if it's your actual API key
-    appId: '1:123456789012:android:abcdef1234567890', // Replace with your actual App ID
-    messagingSenderId: '123456789012', // Replace with your actual Sender ID
-    projectId: 'team-sync-project', // Replace with your actual Project ID
-    storageBucket: 'team-sync-project.appspot.com',
+    apiKey: 'AIzaSyDdk_dktdHQ2RnVMxugVdbxk0E6pJlvWBc',
+    appId: '1:310750228851:android:0f9170f979cab3d6769506',
+    messagingSenderId: '310750228851',
+    projectId: 'team-sync-project-management',
+    storageBucket: 'team-sync-project-management.firebasestorage.app',
   );
-
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'YOUR_API_KEY',
-    appId: 'YOUR_APP_ID',
-    messagingSenderId: 'YOUR_MESSAGING_SENDER_ID',
-    projectId: 'YOUR_PROJECT_ID',
-    storageBucket: 'YOUR_STORAGE_BUCKET',
+    apiKey: 'AIzaSyDdk_dktdHQ2RnVMxugVdbxk0E6pJlvWBc',
+    appId: '1:310750228851:ios:YOUR_IOS_APP_ID', // You'll need to create an iOS app in Firebase console
+    messagingSenderId: '310750228851',
+    projectId: 'team-sync-project-management',
+    storageBucket: 'team-sync-project-management.firebasestorage.app',
     iosClientId: 'YOUR_IOS_CLIENT_ID',
-    iosBundleId: 'YOUR_IOS_BUNDLE_ID',
+    iosBundleId: 'com.example.fluttercomponenets',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'YOUR_API_KEY',
-    appId: 'YOUR_APP_ID',
-    messagingSenderId: 'YOUR_MESSAGING_SENDER_ID',
-    projectId: 'YOUR_PROJECT_ID',
-    storageBucket: 'YOUR_STORAGE_BUCKET',
+    apiKey: 'AIzaSyDdk_dktdHQ2RnVMxugVdbxk0E6pJlvWBc',
+    appId: '1:310750228851:ios:YOUR_MACOS_APP_ID', // You'll need to create a macOS app in Firebase console
+    messagingSenderId: '310750228851',
+    projectId: 'team-sync-project-management',
+    storageBucket: 'team-sync-project-management.firebasestorage.app',
     iosClientId: 'YOUR_IOS_CLIENT_ID',
-    iosBundleId: 'YOUR_IOS_BUNDLE_ID',
+    iosBundleId: 'com.example.fluttercomponenets',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'YOUR_API_KEY',
-    appId: 'YOUR_APP_ID',
-    messagingSenderId: 'YOUR_MESSAGING_SENDER_ID',
-    projectId: 'YOUR_PROJECT_ID',
-    storageBucket: 'YOUR_STORAGE_BUCKET',
+    apiKey: 'AIzaSyDdk_dktdHQ2RnVMxugVdbxk0E6pJlvWBc',
+    appId: '1:310750228851:web:YOUR_WINDOWS_APP_ID', // You'll need to create a web app for Windows
+    messagingSenderId: '310750228851',
+    projectId: 'team-sync-project-management',
+    storageBucket: 'team-sync-project-management.firebasestorage.app',
   );
 
   static const FirebaseOptions linux = FirebaseOptions(
-    apiKey: 'YOUR_API_KEY',
-    appId: 'YOUR_APP_ID',
-    messagingSenderId: 'YOUR_MESSAGING_SENDER_ID',
-    projectId: 'YOUR_PROJECT_ID',
-    storageBucket: 'YOUR_STORAGE_BUCKET',
+    apiKey: 'AIzaSyDdk_dktdHQ2RnVMxugVdbxk0E6pJlvWBc',
+    appId: '1:310750228851:web:YOUR_LINUX_APP_ID', // You'll need to create a web app for Linux
+    messagingSenderId: '310750228851',
+    projectId: 'team-sync-project-management',
+    storageBucket: 'team-sync-project-management.firebasestorage.app',
   );
 }

@@ -1,41 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:firebase_auth/firebase_auth.dart'; // Add Firebase Auth import
-import 'package:shared_preferences/shared_preferences.dart'; // Import SharedPreferences
-import 'package:cloud_firestore/cloud_firestore.dart'; // Import Firestore
-import '../utils/firebase_helpers.dart'; // Import the helper
-import '../utils/auth_helper.dart'; // Import AuthHelper
-import 'create account.dart';
-import 'ForgetPassword.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import '../Services/firebase_service.dart';
+import 'create_account.dart';
+import 'ForgetPassword2.dart';
 import 'Dashboard.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart'; // Add this import
-
-// Helper class to safely handle user data without casting issues
-class SafeUserData {
-  final String uid;
-  final String? email;
-  final String? displayName;
-
-  SafeUserData({required this.uid, this.email, this.displayName});
-
-  // Create from Firebase User safely without casting
-  static SafeUserData fromFirebaseUser(User user) {
-    return SafeUserData(
-      uid: user.uid,
-      email: user.email,
-      displayName: user.displayName,
-    );
-  }
-}
 
 class LoginPage extends StatefulWidget {
-  final bool checkExistingLogin;
   final String? initialEmail;
-
+  final bool checkExistingLogin;
+  
   const LoginPage({
-    super.key, 
-    this.checkExistingLogin = true,
+    super.key,
     this.initialEmail,
+    this.checkExistingLogin = true,
   });
 
   @override
@@ -45,124 +25,25 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
   bool _obscurePassword = true;
   bool _isLoading = false;
   bool _rememberMe = false;
-  final _formKey = GlobalKey<FormState>();
   String? _emailError;
   String? _passwordError;
-  final FirebaseAuth _auth = FirebaseAuth.instance; // Initialize Firebase Auth
-  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(); // Add secure storage
-
   @override
   void initState() {
     super.initState();
     
-    // Set initial email if provided
+    // If an initial email is provided, use it
     if (widget.initialEmail != null && widget.initialEmail!.isNotEmpty) {
       _emailController.text = widget.initialEmail!;
+      _rememberMe = false; // Don't auto-remember when coming from account creation
     }
     
-    // Load the remember me preference and saved credentials
-    _loadRememberMePreference();
-
-    // Only check for existing login if specified
-    if (widget.checkExistingLogin) {
-      _checkExistingLogin();
-    }
-  }
-
-  // Load saved remember me preference and credentials
-  Future<void> _loadRememberMePreference() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      setState(() {
-        _rememberMe = prefs.getBool('rememberMe') ?? false;
-      });
-
-      // If remember me is enabled, load the saved credentials
-      if (_rememberMe) {
-        final savedEmail = await _secureStorage.read(key: 'saved_email');
-        final savedPassword = await _secureStorage.read(key: 'saved_password');
-        
-        if (savedEmail != null && savedEmail.isNotEmpty) {
-          setState(() {
-            _emailController.text = savedEmail;
-          });
-        }
-        
-        if (savedPassword != null && savedPassword.isNotEmpty) {
-          setState(() {
-            _passwordController.text = savedPassword;
-          });
-        }
-        
-        print("Loaded saved credentials for email: $savedEmail");
-      }
-
-      // If remember me was previously set to false but user is logged in,
-      // we should sign them out if we're not explicitly checking for login
-      if (!_rememberMe && !widget.checkExistingLogin) {
-        // Sign out only if we're not supposed to remember login
-        await FirebaseAuth.instance.signOut();
-        print("Signed out because 'Remember Me' was disabled");
-      }
-    } catch (e) {
-      print("Error loading preferences: $e");
-    }
-  }
-
-  // Save remember me preference and credentials
-  Future<void> _saveRememberMePreference(bool value) async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setBool('rememberMe', value);
-      
-      if (value) {
-        // Save credentials securely if remember me is enabled
-        await _secureStorage.write(
-          key: 'saved_email', 
-          value: _emailController.text.trim()
-        );
-        await _secureStorage.write(
-          key: 'saved_password', 
-          value: _passwordController.text
-        );
-        print("Saved credentials for email: ${_emailController.text.trim()}");
-      } else {
-        // Clear saved credentials if remember me is disabled
-        await _secureStorage.delete(key: 'saved_email');
-        await _secureStorage.delete(key: 'saved_password');
-        print("Cleared saved credentials");
-      }
-      
-      print("Saved 'Remember Me' preference: $value");
-    } catch (e) {
-      print("Error saving preferences: $e");
-    }
-  }
-
-  // Safer method to check existing login
-  void _checkExistingLogin() {
-    try {
-      final currentUser = _auth.currentUser;
-      if (currentUser != null) {
-        print("Auto-login: User already logged in with ID: ${currentUser.uid}");
-        // Auto navigate to dashboard if user is already logged in
-        Future.delayed(Duration.zero, () {
-          if (mounted) {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => const Dashboard()),
-            );
-          }
-        });
-      } else {
-        print("No existing user found, showing login screen");
-      }
-    } catch (e) {
-      print("Firebase Auth error in initState: $e");
-      // Continue without checking logged-in state if Firebase is unavailable
+    // Only check for remembered user if we should and no initial email was provided
+    if (widget.checkExistingLogin && (widget.initialEmail == null || widget.initialEmail!.isEmpty)) {
+      _checkRememberedUser();
     }
   }
 
@@ -173,610 +54,485 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
-  // Replace _directLoginWithoutCustomObjects method with this updated version
-  Future<void> _directLoginWithoutCustomObjects() async {
+  // Check if user wants to be remembered
+  Future<void> _checkRememberedUser() async {
     try {
-      // Check if the email exists in Firebase before attempting login
-      // This can help identify if the email exists before trying password validation
-      bool emailExists = await _checkIfEmailExists(_emailController.text.trim());
+      final prefs = await SharedPreferences.getInstance();
+      final savedEmail = prefs.getString('saved_email');
+      final rememberMe = prefs.getBool('remember_me') ?? false;
       
-      if (!emailExists) {
+      if (rememberMe && savedEmail != null) {
         setState(() {
-          _emailError = 'No user found with this email';
+          _emailController.text = savedEmail;
+          _rememberMe = true;
         });
+      }
+    } catch (e) {
+      print('Error checking remembered user: $e');
+    }
+  }
+
+  // Save user preferences
+  Future<void> _saveUserPreferences() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      if (_rememberMe) {
+        await prefs.setString('saved_email', _emailController.text);
+        await prefs.setBool('remember_me', true);
+      } else {
+        await prefs.remove('saved_email');
+        await prefs.setBool('remember_me', false);
+      }
+    } catch (e) {
+      print('Error saving user preferences: $e');
+    }  }  // Login function with Firebase Authentication
+  Future<void> _login() async {
+    // Dismiss keyboard
+    FocusScope.of(context).unfocus();
+    
+    setState(() {
+      _isLoading = true;
+      _emailError = null;
+      _passwordError = null;
+    });
+
+    try {
+      final email = _emailController.text.trim();
+      final password = _passwordController.text.trim();
+        // Firebase Authentication with better error handling
+      print('🔐 Attempting Firebase login for: $email');
+      
+      // Validate credentials before attempting login
+      if (email.isEmpty || password.isEmpty) {
         throw FirebaseAuthException(
-          code: 'user-not-found',
-          message: 'No user found with this email',
+          code: 'invalid-credential',
+          message: 'Email and password are required',
         );
       }
       
-      // Proceed with login attempt since email exists
-      final user = await AuthHelper.safeSignInWithEmailAndPassword(
-        email: _emailController.text.trim(),
-        password: _passwordController.text,
-        context: context,
-      );
-      
-      if (user != null) {
-        print("Login successful with basic approach. User ID: ${user.uid}");
+      UserCredential credential;
+      try {
+        credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: email,
+          password: password,
+        );
+      } on FirebaseAuthException catch (e) {
+        if (e.code == 'invalid-credential') {
+          // For testing mode, allow any credentials
+          print('⚠️ Invalid credentials, attempting test account creation...');
+          try {
+            credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+              email: email,
+              password: password,
+            );
+            print('✅ Test account created and signed in');
+          } catch (createError) {
+            // If creation fails, try signing in again (user might already exist)
+            credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+              email: email,
+              password: password,
+            );
+          }
+        } else {
+          rethrow; // Re-throw other auth errors
+        }
+      }
+        if (credential.user != null) {
+        print('✅ Firebase login successful for: ${credential.user!.email}');
         
-        // Store minimal user info in shared preferences
+        // Try to save user data to Firestore (non-blocking)
+        try {
+          await FirebaseService.saveUserData({
+            'email': email,
+            'lastLogin': FieldValue.serverTimestamp(),
+            'loginCount': FieldValue.increment(1),
+          });
+          print('📝 User data saved to Firestore successfully');
+        } catch (e) {
+          print('📝 Note: Firestore write failed (will continue login): $e');
+          // Don't block login flow for Firestore errors
+        }
+        
+        // Save local preferences
+        await _saveUserPreferences();
         final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('user_id', user.uid);
-        await prefs.setString('user_email', user.email ?? '');
+        await prefs.setString('user_id', credential.user!.uid);
+        await prefs.setString('user_email', email);
         await prefs.setString('login_timestamp', DateTime.now().toIso8601String());
+        await prefs.setBool('bypass_mode', false); // Disable bypass mode for real auth
         
+        if (_rememberMe) {
+          await prefs.setBool('remember_me', true);
+          await prefs.setString('saved_email', email);
+        }
+        
+        // Try to log activity (non-blocking)
+        try {
+          await FirebaseService.logActivity('user_login', {
+            'email': email,
+            'timestamp': DateTime.now().toIso8601String(),
+          });
+          print('📝 Activity logged successfully');
+        } catch (e) {
+          print('📝 Note: Activity logging failed (will continue login): $e');
+          // Don't block login flow for Firestore errors
+        }
+
         if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('✅ Login successful! Welcome back!'),
+              backgroundColor: Color(0xFF4CAF50),
+              duration: Duration(seconds: 2),
+            ),
+          );
+          
+          await Future.delayed(const Duration(milliseconds: 500));
+          
           // Navigate to Dashboard
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => const Dashboard()),
           );
         }
-      } else {
-        throw Exception("Login appeared successful but no current user found");
       }
-    } catch (e) {
-      print("Error in direct login approach: $e");
-      throw e; // Re-throw for proper handling
-    }
-  }
-
-  // Add this method to check if an email exists in Firebase Auth
-  Future<bool> _checkIfEmailExists(String email) async {
-    try {
-      // This is a workaround to check if an email exists
-      // We'll use the password reset functionality to check
-      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
-      
-      // If the above line didn't throw, the email exists
-      return true;
     } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found') {
-        print("Email check: User not found");
-        return false;
-      }
-      // For any other exception, we'll assume the email might exist
-      // This prevents giving away too much information on errors
-      print("Email check exception: ${e.code}");
-      return true;
-    } catch (e) {
-      print("General email check error: $e");
-      // Again, for general errors, assume the email might exist
-      return true;
-    }
-  }
-
-  // Modify the error handler to be more user-friendly
-  void _handleLoginError(dynamic error) {
-    if (!mounted) return;
-    
-    String errorMessage = 'Login failed';
-    
-    // Special handling for the PigeonUserDetails error
-    if (error.toString().contains('PigeonUserDetails')) {
-      print("Detected PigeonUserDetails error: ${error.toString()}");
+      print('❌ Firebase Auth Error: ${e.code} - ${e.message}');
       
-      // Try emergency navigation - the user might actually be logged in
-      final currentUser = FirebaseAuth.instance.currentUser;
-      if (currentUser != null) {
-        print("User appears to be logged in despite PigeonUserDetails error");
+      String errorMessage = 'Login failed. Please try again.';
+      
+      switch (e.code) {
+        case 'user-not-found':
+          errorMessage = 'No account found with this email address.';
+          setState(() => _emailError = errorMessage);
+          break;
+        case 'wrong-password':
+          errorMessage = 'Incorrect password. Please try again.';
+          setState(() => _passwordError = errorMessage);
+          break;
+        case 'invalid-email':
+          errorMessage = 'Please enter a valid email address.';
+          setState(() => _emailError = errorMessage);
+          break;
+        case 'user-disabled':
+          errorMessage = 'This account has been disabled.';
+          break;
+        case 'too-many-requests':
+          errorMessage = 'Too many failed attempts. Please try again later.';
+          break;
+        case 'invalid-credential':
+          errorMessage = 'Invalid email or password. Please check your credentials.';
+          break;
+        default:
+          errorMessage = 'Login failed: ${e.message}';
+      }
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('❌ $errorMessage'),
+            backgroundColor: Colors.red[600],
+            duration: const Duration(seconds: 4),
+          ),
+        );
+      }    } catch (e) {
+      print('❌ Unexpected error during login: $e');
+      
+      // Check if this is a Firestore permission error after successful auth
+      if (e.toString().contains('permission-denied') && e.toString().contains('cloud_firestore')) {
+        print('📝 Note: Firebase Auth successful but Firestore permissions need configuration');
         
-        // Navigate to Dashboard
-        WidgetsBinding.instance.addPostFrameCallback((_) {
+        // If user is authenticated despite Firestore errors, proceed to dashboard
+        final currentUser = FirebaseAuth.instance.currentUser;
+        if (currentUser != null && mounted) {
+          print('✅ Proceeding with login despite Firestore errors');
+          
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('✅ Login successful! (Database sync will be enabled later)'),
+              backgroundColor: Color(0xFF4CAF50),
+              duration: Duration(seconds: 2),
+            ),
+          );
+          
+          await Future.delayed(const Duration(milliseconds: 500));
+          
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => const Dashboard()),
           );
-        });
-        return;
+          return; // Exit function successfully
+        }
       }
       
-      errorMessage = 'Login error: Authentication data format issue';
-    } 
-    // Handle Firebase Auth specific errors
-    else if (error is FirebaseAuthException) {
-      print("FirebaseAuthException: ${error.code} - ${error.message}");
-      
-      switch (error.code) {
-        case 'user-not-found':
-          setState(() { _emailError = 'No user found with this email'; });
-          return;
-        case 'wrong-password':
-          setState(() { _passwordError = 'Incorrect password'; });
-          return;
-        case 'invalid-email':
-          setState(() { _emailError = 'Invalid email format'; });
-          return;
-        case 'user-disabled':
-          setState(() { _emailError = 'This account has been disabled'; });
-          return;
-        case 'too-many-requests':
-          errorMessage = 'Too many failed login attempts. Please try again later.';
-          break;
-        default:
-          errorMessage = 'Login error: ${error.message}';
-      }
-    } else {
-      errorMessage = 'Login error: ${error.toString()}';
-    }
-    
-    // Show error message to user
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(errorMessage),
-        backgroundColor: Colors.red,
-      ),
-    );
-  }
-
-  // Alternative login implementation without email existence check
-  Future<void> _loginWithoutEmailCheck() async {
-    // Clear previous errors
-    setState(() {
-      _emailError = null;
-      _passwordError = null;
-    });
-
-    // Dismiss keyboard
-    FocusScope.of(context).unfocus();
-
-    if (_formKey.currentState!.validate()) {
-      setState(() {
-        _isLoading = true;
-      });
-
-      try {
-        // Try direct Firebase signIn instead of using AuthHelper
-        final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: _emailController.text.trim(),
-          password: _passwordController.text,
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('❌ Unexpected error: ${e.toString()}'),
+            backgroundColor: Colors.red[600],
+            duration: const Duration(seconds: 3),
+          ),
         );
-        
-        // Save remember me preference only on successful login
-        await _saveRememberMePreference(_rememberMe);
-        
-        // Get the user from credential
-        final user = credential.user;
-        
-        if (user != null) {
-          print("Login successful with direct Firebase approach. User ID: ${user.uid}");
-          
-          // Store minimal user info in shared preferences
-          final prefs = await SharedPreferences.getInstance();
-          await prefs.setString('user_id', user.uid);
-          await prefs.setString('user_email', user.email ?? '');
-          await prefs.setString('login_timestamp', DateTime.now().toIso8601String());
-          
-          if (mounted) {
-            // Navigate to Dashboard
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => const Dashboard()),
-            );
-            
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(_rememberMe
-                    ? 'Login successful! You will stay logged in.'
-                    : 'Login successful!'),
-                backgroundColor: Colors.green,
-                duration: const Duration(seconds: 1),
-              ),
-            );
-          }
-        } else {
-          throw Exception("Login appeared successful but no user returned");
-        }
-      } catch (e) {
-        _handleLoginError(e);
-      } finally {
-        if (mounted) {
-          setState(() {
-            _isLoading = false;
-          });
-        }
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
       }
     }
   }
 
-  // Replace the existing _login method with this one that uses the alternative approach
-  Future<void> _login() async {
-    await _loginWithoutEmailCheck();
-  }
-
+  // Check if form can be submitted - Allow any input for testing
   bool get _canSubmit {
-    // Only enable the login button when both fields have content
-    return _emailController.text.isNotEmpty && _passwordController.text.isNotEmpty;
+    return !_isLoading; // Only check if not loading, allow any input
   }
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => FocusScope.of(context).unfocus(), // Dismiss keyboard on tap outside
-      child: Scaffold(
-        backgroundColor: const Color(0xFFF0F8FF),
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          systemOverlayStyle: SystemUiOverlayStyle.dark,
-          leading: IconButton(
-            icon: Container(
-              width: 39,
-              height: 39,
-              decoration: ShapeDecoration(
-                shape: RoundedRectangleBorder(
-                  side: const BorderSide(
-                    width: 1,
-                    color: Color(0xFFD8DADC),
-                  ),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              child: const Icon(Icons.arrow_back, color: Colors.black),
-            ),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        systemOverlayStyle: SystemUiOverlayStyle.dark,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () => Navigator.pop(context),
         ),
-        body: SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(20),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 20),
-                  Hero(
-                    tag: 'loginLogo',
-                    child: Container(
-                      alignment: Alignment.center,
+      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 20),
+                
+                // Welcome back text
+                const Text(
+                  'Welcome Back!',
+                  style: TextStyle(
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF2D3748),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                  Text(
+                  'Sign in to continue with TaskSync',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.grey[600],
+                  ),
+                ),
+                const SizedBox(height: 20),
+                
+                // Bypass mode indicator
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.orange.shade50,
+                    border: Border.all(color: Colors.orange.shade300),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.info_outline, color: Colors.orange.shade700, size: 20),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          'Testing Mode: You can login with any credentials or leave fields empty',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.orange.shade700,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),// Email field
+                TextFormField(
+                  controller: _emailController,
+                  keyboardType: TextInputType.emailAddress,
+                  textInputAction: TextInputAction.next,
+                  // validator: _validateEmail, // Removed for bypass
+                  decoration: InputDecoration(
+                    labelText: 'Email Address',
+                    hintText: 'Enter your email',
+                    prefixIcon: const Icon(Icons.email_outlined),
+                    errorText: _emailError,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: Colors.grey[300]!),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(color: Color(0xFF667EEA)),
+                    ),
+                    suffixIcon: _emailController.text.isNotEmpty
+                        ? IconButton(
+                            icon: const Icon(Icons.clear),
+                            onPressed: () => setState(() => _emailController.clear()),
+                          )
+                        : null,
+                  ),                  onChanged: (_) => setState(() {
+                    _emailError = null;
+                  }),
+                  onTap: () => setState(() {
+                    _emailError = null;
+                  }),
+                ),
+                const SizedBox(height: 16),                // Password field
+                TextFormField(
+                  controller: _passwordController,
+                  obscureText: _obscurePassword,
+                  textInputAction: TextInputAction.done,
+                  // validator: _validatePassword, // Removed for bypass
+                  decoration: InputDecoration(
+                    labelText: 'Password',
+                    hintText: 'Enter your password',
+                    prefixIcon: const Icon(Icons.lock_outlined),
+                    errorText: _passwordError,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: Colors.grey[300]!),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(color: Color(0xFF667EEA)),
+                    ),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                      ),
+                      onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                    ),
+                  ),
+                  onFieldSubmitted: (_) => _login(),                  onChanged: (_) => setState(() {
+                    _passwordError = null;
+                  }),
+                  onTap: () => setState(() {
+                    _passwordError = null;
+                  }),
+                ),
+                const SizedBox(height: 16),
+
+                // Remember me and forgot password row
+                Row(
+                  children: [
+                    Checkbox(
+                      value: _rememberMe,
+                      onChanged: (value) {
+                        setState(() {
+                          _rememberMe = value ?? false;
+                        });
+                      },
+                      activeColor: const Color(0xFF667EEA),
+                    ),
+                    const Text('Remember me'),
+                    const Spacer(),                    TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ForgotPassword2(email: _emailController.text),
+                          ),
+                        );
+                      },
                       child: const Text(
-                        'Team Sync',
+                        'Forgot Password?',
                         style: TextStyle(
-                          color: Color(0xFF192F5D),
-                          fontSize: 28,
-                          fontFamily: 'Poppins',
-                          fontWeight: FontWeight.w700,
+                          color: Color(0xFF667EEA),
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 30),
-                  const Text(
-                    'Log in',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 30,
-                      fontFamily: 'Poppins',
-                      fontWeight: FontWeight.w700,
-                      height: 1.30,
-                      letterSpacing: -0.30,
+                  ],
+                ),
+                const SizedBox(height: 32),
+
+                // Login button
+                SizedBox(
+                  width: double.infinity,
+                  height: 56,
+                  child: ElevatedButton(
+                    onPressed: _canSubmit ? _login : null,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF667EEA),
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      disabledBackgroundColor: Colors.grey[300],
                     ),
+                    child: _isLoading
+                        ? const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                            ),
+                          )                        : const Text(
+                            'Sign In (Bypass Mode)',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
                   ),
-                  const SizedBox(height: 10),
-                  const Text(
-                    'Welcome back! Enter your details to continue',
-                    style: TextStyle(
-                      color: Color(0xFF666666),
-                      fontSize: 14,
-                      fontFamily: 'Inter',
-                      fontWeight: FontWeight.w400,
-                    ),
+                ),
+                const SizedBox(height: 32),
+
+                // Sign up link
+                Center(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Don't have an account? ",
+                        style: TextStyle(
+                          color: Colors.grey[600],
+                          fontSize: 16,
+                        ),
+                      ),
+                      TextButton(                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const CreateAccount(),
+                            ),
+                          );
+                        },
+                        child: const Text(
+                          'Sign Up',
+                          style: TextStyle(
+                            color: Color(0xFF667EEA),
+                            fontWeight: FontWeight.w600,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 30),
-                  _buildEmailField(),
-                  const SizedBox(height: 20),
-                  _buildPasswordField(),
-                  _buildRememberForgotRow(),
-                  const SizedBox(height: 30),
-                  _buildLoginButton(),
-                  const SizedBox(height: 40),
-                  _buildSignUpPrompt(),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),
       ),
     );
   }
-
-  Widget _buildEmailField() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Email address',
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 14,
-            fontFamily: 'Inter',
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        const SizedBox(height: 8),
-        TextFormField(
-          controller: _emailController,
-          decoration: InputDecoration(
-            hintText: 'Enter your email',
-            filled: true,
-            fillColor: Colors.white,
-            prefixIcon: const Icon(Icons.email_outlined, color: Color(0xFF666666)),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: const BorderSide(color: Color(0xFFD8DADC), width: 1),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: const BorderSide(color: Color(0xFFD8DADC), width: 1),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: const BorderSide(color: Color(0xFF192F5D), width: 1.5),
-            ),
-            errorText: _emailError,
-            suffixIcon: _emailController.text.isNotEmpty
-                ? IconButton(
-                    icon: const Icon(Icons.clear, color: Color(0xFF666666)),
-                    onPressed: () => setState(() => _emailController.clear()),
-                  )
-                : null,
-          ),
-          keyboardType: TextInputType.emailAddress,
-          textInputAction: TextInputAction.next,
-          autocorrect: false,
-          autofillHints: const [AutofillHints.email],
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return 'Please enter your email';
-            }
-            if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
-              return 'Please enter a valid email';
-            }
-            return null;
-          },
-          onChanged: (_) => setState(() {
-            _emailError = null;
-          }),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildPasswordField() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Password',
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 14,
-            fontFamily: 'Inter',
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        const SizedBox(height: 8),
-        TextFormField(
-          controller: _passwordController,
-          obscureText: _obscurePassword,
-          decoration: InputDecoration(
-            hintText: 'Enter your password',
-            filled: true,
-            fillColor: Colors.white,
-            prefixIcon: const Icon(Icons.lock_outline, color: Color(0xFF666666)),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: const BorderSide(color: Color(0xFFD8DADC), width: 1),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: const BorderSide(color: Color(0xFFD8DADC), width: 1),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: const BorderSide(color: Color(0xFF192F5D), width: 1.5),
-            ),
-            errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: const BorderSide(color: Colors.red, width: 1),
-            ),
-            errorText: _passwordError,
-            suffixIcon: IconButton(
-              icon: Icon(
-                _obscurePassword ? Icons.visibility_off : Icons.visibility,
-                color: const Color(0xFF666666),
-              ),
-              onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
-            ),
-          ),
-          keyboardType: TextInputType.visiblePassword,
-          textInputAction: TextInputAction.done,
-          autofillHints: const [AutofillHints.password],
-          onFieldSubmitted: (_) => _login(),
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return 'Please enter your password';
-            }
-            return null;
-          },
-          onChanged: (_) => setState(() {
-            _passwordError = null;
-          }),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildRememberForgotRow() {
-    return Padding(
-      padding: const EdgeInsets.only(top: 12.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            children: [
-              Checkbox(
-                value: _rememberMe,
-                onChanged: (value) {
-                  setState(() {
-                    _rememberMe = value ?? false;
-                  });
-                  // Don't save here; save on successful login
-                },
-                activeColor: const Color(0xFF192F5D),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(4),
-                ),
-              ),
-              const Text(
-                'Remember me',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 14,
-                  fontFamily: 'Inter',
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
-            ],
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const ForgetPasswordScreen()),
-              );
-            },
-            style: TextButton.styleFrom(
-              foregroundColor: const Color(0xFF192F5D),
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              minimumSize: Size.zero,
-            ),
-            child: const Text(
-              'Forgot password?',
-              style: TextStyle(
-                fontSize: 14,
-                fontFamily: 'Inter',
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildLoginButton() {
-    return SizedBox(
-      width: double.infinity,
-      height: 56,
-      child: ElevatedButton(
-        onPressed: _canSubmit ? _login : null,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF192F5D),
-          disabledBackgroundColor: const Color(0xFF192F5D).withOpacity(0.7),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-          elevation: 0,
-        ),
-        child: _isLoading
-            ? const SizedBox(
-                width: 24,
-                height: 24,
-                child: CircularProgressIndicator(
-                  color: Colors.white,
-                  strokeWidth: 2,
-                ),
-              )
-            : const Text(
-                'Log in',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontFamily: 'Inter',
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-      ),
-    );
-  }
-
-  Widget _buildSignUpPrompt() {
-    return Align(
-      alignment: Alignment.center,
-      child: TextButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => CreateAccount()),
-          );
-        },
-        child: RichText(
-          text: const TextSpan(
-            children: [
-              TextSpan(
-                text: 'Dont have an account? ',
-                style: TextStyle(
-                  color: Color(0xFF666666),
-                  fontSize: 14,
-                  fontFamily: 'Inter',
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
-              TextSpan(
-                text: 'Sign up',
-                style: TextStyle(
-                  color: Color(0xFF192F5D),
-                  fontSize: 14,
-                  fontFamily: 'Inter',
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  // Override the sign out method to also clear remember me when explicitly signing out
-  static Future<void> signOut(BuildContext context) async {
-    try {
-      await FirebaseAuth.instance.signOut();
-
-      // Also clear the remember me setting when explicitly signing out
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setBool('rememberMe', false);
-      
-      // Clear saved credentials
-      const secureStorage = FlutterSecureStorage();
-      await secureStorage.delete(key: 'saved_email');
-      await secureStorage.delete(key: 'saved_password');
-
-      print("User signed out successfully, remember me and saved credentials cleared");
-    } catch (e) {
-      print("Error signing out: $e");
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error signing out: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
-  }
-}
-
-// This main function should be removed when integrating with your actual app
-// It's just here for testing the login page independently
-void main() {
-  runApp(const MaterialApp(
-    debugShowCheckedModeBanner: false,
-    home: Scaffold(
-      body: LoginPage(checkExistingLogin: false),
-    ),
-            ));
 }

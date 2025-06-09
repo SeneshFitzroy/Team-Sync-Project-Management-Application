@@ -4,8 +4,10 @@ import 'Notifications.dart';  // Import the Notifications screen
 import 'ChangePassword.dart';  // Import the ChangePassword screen
 import 'AboutTaskSync.dart';  // Import the AboutTaskSync screen
 import 'ContactSupport.dart';  // Import the ContactSupport screen
-import 'welcome-page2.dart';  // Import the Welcome Page
+import 'welcome-page1.dart';  // Import the Welcome Page
 import 'package:firebase_auth/firebase_auth.dart';  // Import Firebase Auth for logout
+import 'package:shared_preferences/shared_preferences.dart';  // Import SharedPreferences
+import '../Services/firebase_service.dart';  // Import Firebase Service
 
 class ProfileScreen extends StatefulWidget {  // Changed to StatefulWidget
   const ProfileScreen({super.key});
@@ -16,11 +18,61 @@ class ProfileScreen extends StatefulWidget {  // Changed to StatefulWidget
 
 class _ProfileScreenState extends State<ProfileScreen> {
   // Variables to store user data
-  String userName = 'Mandira De Silva';
-  String userHandle = '@mandira2002';
-  String email = 'Mandira@gmail.com';
-  String phoneNumber = '0761120457';
+  String userName = 'Loading...';
+  String userHandle = '@loading';
+  String email = 'Loading...';
+  String phoneNumber = 'Loading...';
+  bool _isLoading = true;
+  String? _error;
 
+  @override
+  void initState() {
+    super.initState();
+    _loadUserProfile();
+  }
+
+  Future<void> _loadUserProfile() async {
+    try {
+      setState(() {
+        _isLoading = true;
+        _error = null;
+      });
+
+      // Get user data from Firebase
+      final userData = await FirebaseService.getUserData();
+      final currentUser = FirebaseAuth.instance.currentUser;
+
+      if (userData != null) {
+        setState(() {
+          userName = userData['displayName'] ?? userData['name'] ?? 'User';
+          email = userData['email'] ?? currentUser?.email ?? 'No email';
+          phoneNumber = userData['phoneNumber'] ?? userData['phone'] ?? 'No phone';
+          userHandle = '@${userName.toLowerCase().replaceAll(' ', '')}';
+          _isLoading = false;
+        });
+      } else if (currentUser != null) {
+        // Fallback to Firebase Auth data if Firestore data not available
+        setState(() {
+          userName = currentUser.displayName ?? 'User';
+          email = currentUser.email ?? 'No email';
+          phoneNumber = 'No phone';
+          userHandle = '@${userName.toLowerCase().replaceAll(' ', '')}';
+          _isLoading = false;
+        });
+      } else {
+        setState(() {
+          _error = 'No user data found';
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _error = 'Failed to load profile: $e';
+        _isLoading = false;
+      });
+      print('Error loading user profile: $e');
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,8 +100,37 @@ class _ProfileScreenState extends State<ProfileScreen> {
             fontWeight: FontWeight.w700,
           ),
         ),
+        actions: [
+          if (_isLoading)
+            const Padding(
+              padding: EdgeInsets.all(16.0),
+              child: SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+            ),
+        ],
       ),
-      body: SingleChildScrollView(
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : _error != null
+              ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.error_outline, size: 64, color: Colors.red),
+                      SizedBox(height: 16),
+                      Text(_error!, style: TextStyle(color: Colors.red)),
+                      SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: _loadUserProfile,
+                        child: Text('Retry'),
+                      ),
+                    ],
+                  ),
+                )
+              : SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -96,8 +177,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             
             const SizedBox(height: 30),
-            
-            // Edit Profile Button
+              // Edit Profile Button
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
@@ -115,14 +195,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                   );
                   
-                  // Update profile if result is returned
-                  if (result != null && result is Map<String, String>) {
-                    setState(() {
-                      userName = result['name'] ?? userName;
-                      userHandle = result['username'] ?? userHandle;
-                      email = result['email'] ?? email;
-                      phoneNumber = result['phoneNumber'] ?? phoneNumber;
-                    });
+                  // Refresh profile data after edit
+                  if (result != null) {
+                    _loadUserProfile(); // Reload data from Firebase
                   }
                 },
                 style: ElevatedButton.styleFrom(
@@ -233,31 +308,36 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       TextButton(
                         onPressed: () => Navigator.pop(context),
                         child: const Text('Cancel'),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          // Sign out from Firebase
-                          FirebaseAuth.instance.signOut().then((_) {
+                      ),                      TextButton(
+                        onPressed: () async {
+                          try {
+                            // Clear SharedPreferences
+                            final prefs = await SharedPreferences.getInstance();
+                            await prefs.clear();
+                            
+                            // Sign out from Firebase
+                            await FirebaseAuth.instance.signOut();
+                            
                             // Close the dialog
                             Navigator.pop(context);
+                            
                             // Navigate to Welcome Page and remove all previous routes
                             Navigator.of(context).pushAndRemoveUntil(
                               MaterialPageRoute(
-                                builder: (context) => const WelcomePage2(),
+                                builder: (context) => const WelcomePage1(),
                               ),
-                              (route) => false, // Remove all previous routes
+                              (route) => false,
                             );
-                          }).catchError((error) {
-                            print("Error signing out: $error");
+                          } catch (error) {
                             // Still navigate to Welcome Page even if there's an error
                             Navigator.pop(context);
                             Navigator.of(context).pushAndRemoveUntil(
                               MaterialPageRoute(
-                                builder: (context) => const WelcomePage2(),
+                                builder: (context) => const WelcomePage1(),
                               ),
                               (route) => false,
                             );
-                          });
+                          }
                         },
                         child: const Text('Logout'),
                       ),
