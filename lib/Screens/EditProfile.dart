@@ -4,17 +4,17 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../Services/firebase_service.dart';
 
 class EditProfile extends StatefulWidget {
-  final String name;
-  final String username;
-  final String email;
-  final String phoneNumber;
+  final String? name;
+  final String? username;
+  final String? email;
+  final String? phoneNumber;
 
   const EditProfile({
     super.key, 
-    required this.name,
-    required this.username,
-    required this.email,
-    required this.phoneNumber,
+    this.name,
+    this.username,
+    this.email,
+    this.phoneNumber,
   });
 
   @override

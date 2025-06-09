@@ -112,8 +112,7 @@ class MyApp extends StatelessWidget {
         '/add-members': (context) => const AddTeamMembers(),
         '/notifications': (context) => const NotificationsScreen(),
         '/about': (context) => const AboutTaskSync(),
-        '/contact': (context) => const ContactSupport(),
-        '/edit-profile': (context) => const EditProfile(
+        '/contact': (context) => const ContactSupport(),        '/edit-profile': (context) => const EditProfile(
           name: '',
           username: '',
           email: '',
