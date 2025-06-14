@@ -11,7 +11,8 @@ import 'Screens/login-page.dart';
 import 'Screens/create_account.dart';
 import 'Screens/Dashboard.dart';
 import 'Screens/ForgetPassword.dart';
-import 'Screens/TaskManager.dart';
+import 'Screens/TaskManagerSimple.dart' as TaskManagerLib;
+// import 'Screens/TaskManager.dart';
 import 'Screens/Profile.dart';
 import 'Screens/Calendar.dart';
 import 'Screens/Chat.dart';
@@ -129,7 +130,7 @@ class MyApp extends StatelessWidget {
         '/login': (context) => const LoginPage(),
         '/signup': (context) => const CreateAccount(),        '/dashboard': (context) => const Dashboard(),
         '/forgot-password': (context) => const ForgetPasswordScreen(),
-        '/taskmanager': (context) => const TaskManager(),
+        '/taskmanager': (context) => const TaskManagerLib.TaskManager(),
         '/profile': (context) => const ProfileScreen(),
         '/calendar': (context) => const Calendar(),
         '/chat': (context) => const ChatScreen(),
