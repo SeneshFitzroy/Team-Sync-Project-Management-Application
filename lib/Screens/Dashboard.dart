@@ -28,13 +28,17 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
   bool _showAtRiskOnly = false;
   bool _showCompletedOnly = false;
   String _selectedSortOption = 'Progress (High to Low)';
-
   // Project list
   List<Map<String, dynamic>> projects = [];
   bool _isLoading = true;
   String? _errorMessage;
   StreamSubscription<QuerySnapshot>? _projectsSubscription;
   User? _currentUser;
+
+  // Modal dialog states
+  bool isLoading = false;
+  bool isSearching = false;
+  List<Map<String, dynamic>> publicProjects = [];
 
   @override
   void initState() {
@@ -1767,47 +1771,11 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
   }
 
   String _generateInviteCode() {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    final random = DateTime.now().millisecondsSinceEpoch;
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';    final random = DateTime.now().millisecondsSinceEpoch;
     String code = '';
     for (int i = 0; i < 6; i++) {
       code += chars[(random + i) % chars.length];
     }
     return code;
-  }
-        height: 56,
-        decoration: ShapeDecoration(
-          color: const Color(0xFF192F5D),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(50),
-          ),
-          shadows: [
-            BoxShadow(
-              color: const Color(0xFF192F5D).withOpacity(0.3),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: const Center(
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.add, color: Colors.white),
-              SizedBox(width: 8),
-              Text(
-                'Create New Project',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
   }
 }
