@@ -521,6 +521,8 @@ class _TaskManagerState extends State<TaskManager> {
       },
     );
   }
+    );
+  }
 
   Widget _buildTaskCard(Task task) {
     return Container(
