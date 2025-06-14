@@ -253,8 +253,7 @@ class _CalendarState extends State<Calendar> {
                 crossAxisCount: 7,
                 childAspectRatio: 1,
               ),
-              itemCount: 42, // 6 weeks * 7 days
-              itemBuilder: (context, index) {
+              itemCount: 42, // 6 weeks * 7 days              itemBuilder: (context, index) {
                 final int firstDayOfMonth = DateTime(_selectedMonth.year, _selectedMonth.month, 1).weekday;
                 final int daysInMonth = DateTime(_selectedMonth.year, _selectedMonth.month + 1, 0).day;
                 final int dayNumber = index - (firstDayOfMonth - 2);
@@ -263,57 +262,163 @@ class _CalendarState extends State<Calendar> {
                   return Container(); // Empty container for days outside the month
                 }
                 
+                final currentDate = DateTime(_selectedMonth.year, _selectedMonth.month, dayNumber);
                 final bool isToday = dayNumber == DateTime.now().day &&
                     _selectedMonth.month == DateTime.now().month &&
                     _selectedMonth.year == DateTime.now().year;
+                final bool isSelected = _selectedDate != null &&
+                    dayNumber == _selectedDate!.day &&
+                    _selectedMonth.month == _selectedDate!.month &&
+                    _selectedMonth.year == _selectedDate!.year;
                 
-                return Container(
-                  margin: const EdgeInsets.all(2),
-                  decoration: BoxDecoration(
-                    color: isToday ? const Color(0xFF3B82F6) : Colors.transparent,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Center(
-                    child: Text(
-                      dayNumber.toString(),
-                      style: TextStyle(
-                        color: isToday ? Colors.white : const Color(0xFF1E293B),
-                        fontWeight: isToday ? FontWeight.w600 : FontWeight.normal,
-                      ),
+                // Check if this date has tasks
+                final dateStr = DateFormat('yyyy-MM-dd').format(currentDate);
+                final hasTask = _tasks.any((task) => task['date'] == dateStr);
+                
+                return GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _selectedDate = currentDate;
+                    });
+                    _loadSelectedDateTasks();
+                  },
+                  child: Container(
+                    margin: const EdgeInsets.all(2),
+                    decoration: BoxDecoration(
+                      color: isSelected 
+                          ? const Color(0xFF3B82F6)
+                          : isToday 
+                              ? const Color(0xFF3B82F6).withOpacity(0.3)
+                              : Colors.transparent,
+                      borderRadius: BorderRadius.circular(8),
+                      border: hasTask 
+                          ? Border.all(color: const Color(0xFF10B981), width: 2)
+                          : null,
+                    ),
+                    child: Stack(
+                      children: [
+                        Center(
+                          child: Text(
+                            dayNumber.toString(),
+                            style: TextStyle(
+                              color: isSelected 
+                                  ? Colors.white 
+                                  : isToday 
+                                      ? const Color(0xFF1E293B)
+                                      : const Color(0xFF1E293B),
+                              fontWeight: isSelected || isToday 
+                                  ? FontWeight.w600 
+                                  : FontWeight.normal,
+                            ),
+                          ),
+                        ),
+                        if (hasTask && !isSelected)
+                          Positioned(
+                            bottom: 2,
+                            right: 2,
+                            child: Container(
+                              width: 6,
+                              height: 6,
+                              decoration: const BoxDecoration(
+                                color: Color(0xFF10B981),
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                          ),
+                      ],
                     ),
                   ),
                 );
               },
             ),
           ),
-          
-          // Filter dropdown
-          Padding(
+            // Add Task Button
+          Container(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'Filter by priority: ',
-                  style: TextStyle(fontWeight: FontWeight.w500),
+                Text(
+                  _selectedDate != null 
+                      ? 'Tasks for ${DateFormat('MMM d, yyyy').format(_selectedDate!)}'
+                      : 'Tasks for Today',
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF1E293B),
+                  ),
                 ),
-                DropdownButton<String>(
-                  value: _filterPriority,
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      _filterPriority = newValue!;
-                    });
-                  },
-                  items: <String>['all', 'high', 'medium', 'low']
-                      .map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value == 'all' ? 'All' : value.toUpperCase()),
-                    );
-                  }).toList(),
+                ElevatedButton.icon(
+                  onPressed: () => _showAddTaskDialog(),
+                  icon: const Icon(Icons.add, size: 18),
+                  label: const Text('Add Task'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF3B82F6),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
                 ),
               ],
             ),
           ),
+          
+          const SizedBox(height: 16),
+          
+          // Selected date tasks
+          if (_selectedDate != null && _selectedDateTasks.isNotEmpty)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Tasks for selected date:',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: Color(0xFF64748B),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  ..._selectedDateTasks.map((task) => _buildTaskCard(
+                    task['title'] as String,
+                    task['time'] as String,
+                    task['date'] as String,
+                    task['priority'] as String,
+                  )).toList(),
+                ],
+              ),
+            ),
+          
+          if (_selectedDate != null && _selectedDateTasks.isEmpty)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.event_available,
+                        color: Colors.grey.shade400,
+                        size: 24,
+                      ),
+                      const SizedBox(width: 12),
+                      Text(
+                        'No tasks scheduled for this date',
+                        style: TextStyle(
+                          color: Colors.grey.shade600,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
           
           const SizedBox(height: 16),
           
