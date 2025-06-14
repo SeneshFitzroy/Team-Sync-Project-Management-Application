@@ -251,94 +251,267 @@ class FirebaseService {
     }
   }
 
-  // Task Management - User-specific subcollections
-  static Future<String> createTask(Map<String, dynamic> taskData) async {
+  // Enhanced Project Management Methods
+  
+  // Search for public projects that users can join
+  static Future<List<Map<String, dynamic>>> searchPublicProjects({
+    String? searchQuery,
+    int limit = 20,
+  }) async {
     try {
-      final userId = getCurrentUserId();
-      if (userId == null) throw Exception('User not authenticated');
+      Query query = _firestore
+          .collection('projects')
+          .where('isPublic', isEqualTo: true)
+          .where('isActive', isEqualTo: true)
+          .limit(limit);
+
+      if (searchQuery != null && searchQuery.isNotEmpty) {
+        // Use a simple text search approach
+        query = query
+            .where('title', isGreaterThanOrEqualTo: searchQuery)
+            .where('title', isLessThanOrEqualTo: '$searchQuery\uf8ff');
+      }
+
+      final querySnapshot = await query.get();
       
-      final docRef = await _firestore
-          .collection('users')
-          .doc(userId)
-          .collection('tasks')
-          .add({
-        ...taskData,
-        'createdBy': userId,
-        'createdAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
-      });
-      
-      print('✓ Task created with ID: ${docRef.id}');
-      return docRef.id;
+      return querySnapshot.docs.map((doc) {
+        final data = doc.data() as Map<String, dynamic>;
+        return {
+          'id': doc.id,
+          ...data,
+        };
+      }).toList();
     } catch (e) {
-      print('✗ Error creating task: $e');
-      rethrow;
+      print('❌ Error searching public projects: $e');
+      return [];
     }
   }
 
-  static Stream<QuerySnapshot> getProjectTasks(String projectId) {
-    final userId = getCurrentUserId();
-    if (userId == null) {
-      return const Stream.empty();
-    }
-    
-    return _firestore
-        .collection('users')
-        .doc(userId)
-        .collection('tasks')
-        .where('projectId', isEqualTo: projectId)
-        .snapshots();
-  }
-
-  static Stream<QuerySnapshot> getUserTasks() {
-    final userId = getCurrentUserId();
-    if (userId == null) {
-      return const Stream.empty();
-    }
-    
-    return _firestore
-        .collection('users')
-        .doc(userId)
-        .collection('tasks')
-        .snapshots();
-  }
-
-  static Future<void> updateTask(String taskId, Map<String, dynamic> updates) async {
+  // Join an existing project
+  static Future<bool> joinProject({
+    required String projectId,
+    required String userId,
+  }) async {
     try {
-      final userId = getCurrentUserId();
-      if (userId == null) throw Exception('User not authenticated');
-      
+      if (_auth.currentUser == null || userId != _auth.currentUser!.uid) {
+        throw Exception('User not authenticated');
+      }
+
+      return await _retryFirestoreOperation(() async {
+        // Get the project from global collection
+        final projectDoc = await _firestore
+            .collection('projects')
+            .doc(projectId)
+            .get();
+
+        if (!projectDoc.exists) {
+          throw Exception('Project not found');
+        }
+
+        final projectData = projectDoc.data()!;
+        final currentMembers = List<String>.from(projectData['members'] ?? []);
+        
+        if (currentMembers.contains(userId)) {
+          throw Exception('Already a member of this project');
+        }
+
+        // Add user to project members
+        await _firestore
+            .collection('projects')
+            .doc(projectId)
+            .update({
+          'members': FieldValue.arrayUnion([userId]),
+          'memberCount': (currentMembers.length + 1),
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
+
+        // Add project to user's collection
+        await _firestore
+            .collection('users')
+            .doc(userId)
+            .collection('projects')
+            .doc(projectId)
+            .set({
+          ...projectData,
+          'joinedAt': FieldValue.serverTimestamp(),
+          'role': 'member',
+          'isOwner': false,
+        });
+
+        print('✅ Successfully joined project: ${projectData['title']}');
+        return true;
+      });
+    } catch (e) {
+      print('❌ Error joining project: $e');
+      return false;
+    }
+  }
+
+  // Get project by invite code
+  static Future<Map<String, dynamic>?> getProjectByInviteCode(String inviteCode) async {
+    try {
+      final querySnapshot = await _firestore
+          .collection('projects')
+          .where('inviteCode', isEqualTo: inviteCode)
+          .where('isActive', isEqualTo: true)
+          .limit(1)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        final doc = querySnapshot.docs.first;
+        return {
+          'id': doc.id,
+          ...doc.data() as Map<String, dynamic>,
+        };
+      }
+      return null;
+    } catch (e) {
+      print('❌ Error getting project by invite code: $e');
+      return null;
+    }
+  }
+
+  // Enhanced Calendar and Task Scheduling Methods
+  
+  // Create a scheduled task for future dates
+  static Future<String?> createScheduledTask({
+    required Map<String, dynamic> taskData,
+    required DateTime scheduledDate,
+    String? userId,
+  }) async {
+    try {
+      final uid = userId ?? getCurrentUserId();
+      if (uid == null || _auth.currentUser == null) {
+        throw Exception('User not authenticated');
+      }
+
+      return await _retryFirestoreOperation(() async {
+        final enhancedTaskData = {
+          ...taskData,
+          'userId': uid,
+          'createdBy': getCurrentUserEmail(),
+          'scheduledDate': Timestamp.fromDate(scheduledDate),
+          'dueDate': Timestamp.fromDate(scheduledDate),
+          'isScheduled': true,
+          'type': 'scheduled',
+          'status': 'To Do',
+          'priority': taskData['priority'] ?? 'Medium',
+          'createdAt': FieldValue.serverTimestamp(),
+          'updatedAt': FieldValue.serverTimestamp(),
+        };
+
+        final docRef = await _firestore
+            .collection('users')
+            .doc(uid)
+            .collection('tasks')
+            .add(enhancedTaskData);
+
+        print('✅ Scheduled task created for ${scheduledDate.toString().split(' ')[0]}');
+        return docRef.id;
+      });
+    } catch (e) {
+      print('❌ Error creating scheduled task: $e');
+      return null;
+    }
+  }
+
+  // Get tasks for a specific date range
+  static Stream<QuerySnapshot> getTasksForDateRange({
+    required DateTime startDate,
+    required DateTime endDate,
+    String? userId,
+  }) {
+    final uid = userId ?? getCurrentUserId();
+    if (uid == null) {
+      return const Stream.empty();
+    }
+
+    final startTimestamp = Timestamp.fromDate(startDate);
+    final endTimestamp = Timestamp.fromDate(endDate);
+
+    return _firestore
+        .collection('users')
+        .doc(uid)
+        .collection('tasks')
+        .where('scheduledDate', isGreaterThanOrEqualTo: startTimestamp)
+        .where('scheduledDate', isLessThanOrEqualTo: endTimestamp)
+        .orderBy('scheduledDate')
+        .snapshots();
+  }
+
+  // Get upcoming tasks (next 7 days)
+  static Stream<QuerySnapshot> getUpcomingTasks({String? userId}) {
+    final now = DateTime.now();
+    final nextWeek = now.add(const Duration(days: 7));
+    
+    return getTasksForDateRange(
+      startDate: now,
+      endDate: nextWeek,
+      userId: userId,
+    );
+  }
+
+  // Update task schedule
+  static Future<bool> rescheduleTask({
+    required String taskId,
+    required DateTime newDate,
+    String? userId,
+  }) async {
+    try {
+      final uid = userId ?? getCurrentUserId();
+      if (uid == null || _auth.currentUser == null) {
+        throw Exception('User not authenticated');
+      }
+
       await _firestore
           .collection('users')
-          .doc(userId)
+          .doc(uid)
           .collection('tasks')
           .doc(taskId)
           .update({
-        ...updates,
+        'scheduledDate': Timestamp.fromDate(newDate),
+        'dueDate': Timestamp.fromDate(newDate),
         'updatedAt': FieldValue.serverTimestamp(),
       });
-      print('✓ Task updated successfully');
+
+      print('✅ Task rescheduled to ${newDate.toString().split(' ')[0]}');
+      return true;
     } catch (e) {
-      print('✗ Error updating task: $e');
-      rethrow;
+      print('❌ Error rescheduling task: $e');
+      return false;
     }
   }
 
-  static Future<void> deleteTask(String taskId) async {
+  // Get tasks for a specific day
+  static Future<List<Map<String, dynamic>>> getTasksForDay({
+    required DateTime date,
+    String? userId,
+  }) async {
     try {
-      final userId = getCurrentUserId();
-      if (userId == null) throw Exception('User not authenticated');
-      
-      await _firestore
+      final uid = userId ?? getCurrentUserId();
+      if (uid == null) return [];
+
+      final startOfDay = DateTime(date.year, date.month, date.day);
+      final endOfDay = DateTime(date.year, date.month, date.day, 23, 59, 59);
+
+      final querySnapshot = await _firestore
           .collection('users')
-          .doc(userId)
+          .doc(uid)
           .collection('tasks')
-          .doc(taskId)
-          .delete();
-      print('✓ Task deleted successfully');
+          .where('scheduledDate', isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay))
+          .where('scheduledDate', isLessThanOrEqualTo: Timestamp.fromDate(endOfDay))
+          .orderBy('scheduledDate')
+          .get();
+
+      return querySnapshot.docs.map((doc) {
+        return {
+          'id': doc.id,
+          ...doc.data() as Map<String, dynamic>,
+        };
+      }).toList();
     } catch (e) {
-      print('✗ Error deleting task: $e');
-      rethrow;
+      print('❌ Error getting tasks for day: $e');
+      return [];
     }
   }
 
@@ -532,7 +705,270 @@ class FirebaseService {
           // Wait before retrying
           await Future.delayed(Duration(milliseconds: 300 * attempt));
         }
+      }    }
+  }
+
+  // Enhanced Project Management Methods
+  
+  // Search for public projects that users can join
+  static Future<List<Map<String, dynamic>>> searchPublicProjects({
+    String? searchQuery,
+    int limit = 20,
+  }) async {
+    try {
+      Query query = _firestore
+          .collection('projects')
+          .where('isPublic', isEqualTo: true)
+          .where('isActive', isEqualTo: true)
+          .limit(limit);
+
+      if (searchQuery != null && searchQuery.isNotEmpty) {
+        // Use a simple text search approach
+        query = query
+            .where('title', isGreaterThanOrEqualTo: searchQuery)
+            .where('title', isLessThanOrEqualTo: '$searchQuery\uf8ff');
       }
+
+      final querySnapshot = await query.get();
+      
+      return querySnapshot.docs.map((doc) {
+        final data = doc.data() as Map<String, dynamic>;
+        return {
+          'id': doc.id,
+          ...data,
+        };
+      }).toList();
+    } catch (e) {
+      print('❌ Error searching public projects: $e');
+      return [];
+    }
+  }
+
+  // Join an existing project
+  static Future<bool> joinProject({
+    required String projectId,
+    required String userId,
+  }) async {
+    try {
+      if (_auth.currentUser == null || userId != _auth.currentUser!.uid) {
+        throw Exception('User not authenticated');
+      }
+
+      return await _retryFirestoreOperation(() async {
+        // Get the project from global collection
+        final projectDoc = await _firestore
+            .collection('projects')
+            .doc(projectId)
+            .get();
+
+        if (!projectDoc.exists) {
+          throw Exception('Project not found');
+        }
+
+        final projectData = projectDoc.data()!;
+        final currentMembers = List<String>.from(projectData['members'] ?? []);
+        
+        if (currentMembers.contains(userId)) {
+          throw Exception('Already a member of this project');
+        }
+
+        // Add user to project members
+        await _firestore
+            .collection('projects')
+            .doc(projectId)
+            .update({
+          'members': FieldValue.arrayUnion([userId]),
+          'memberCount': (currentMembers.length + 1),
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
+
+        // Add project to user's collection
+        await _firestore
+            .collection('users')
+            .doc(userId)
+            .collection('projects')
+            .doc(projectId)
+            .set({
+          ...projectData,
+          'joinedAt': FieldValue.serverTimestamp(),
+          'role': 'member',
+          'isOwner': false,
+        });
+
+        print('✅ Successfully joined project: ${projectData['title']}');
+        return true;
+      });
+    } catch (e) {
+      print('❌ Error joining project: $e');
+      return false;
+    }
+  }
+
+  // Get project by invite code
+  static Future<Map<String, dynamic>?> getProjectByInviteCode(String inviteCode) async {
+    try {
+      final querySnapshot = await _firestore
+          .collection('projects')
+          .where('inviteCode', isEqualTo: inviteCode)
+          .where('isActive', isEqualTo: true)
+          .limit(1)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        final doc = querySnapshot.docs.first;
+        return {
+          'id': doc.id,
+          ...doc.data() as Map<String, dynamic>,
+        };
+      }
+      return null;
+    } catch (e) {
+      print('❌ Error getting project by invite code: $e');
+      return null;
+    }
+  }
+
+  // Enhanced Calendar and Task Scheduling Methods
+  
+  // Create a scheduled task for future dates
+  static Future<String?> createScheduledTask({
+    required Map<String, dynamic> taskData,
+    required DateTime scheduledDate,
+    String? userId,
+  }) async {
+    try {
+      final uid = userId ?? getCurrentUserId();
+      if (uid == null || _auth.currentUser == null) {
+        throw Exception('User not authenticated');
+      }
+
+      return await _retryFirestoreOperation(() async {
+        final enhancedTaskData = {
+          ...taskData,
+          'userId': uid,
+          'createdBy': getCurrentUserEmail(),
+          'scheduledDate': Timestamp.fromDate(scheduledDate),
+          'dueDate': Timestamp.fromDate(scheduledDate),
+          'isScheduled': true,
+          'type': 'scheduled',
+          'status': 'To Do',
+          'priority': taskData['priority'] ?? 'Medium',
+          'createdAt': FieldValue.serverTimestamp(),
+          'updatedAt': FieldValue.serverTimestamp(),
+        };
+
+        final docRef = await _firestore
+            .collection('users')
+            .doc(uid)
+            .collection('tasks')
+            .add(enhancedTaskData);
+
+        print('✅ Scheduled task created for ${scheduledDate.toString().split(' ')[0]}');
+        return docRef.id;
+      });
+    } catch (e) {
+      print('❌ Error creating scheduled task: $e');
+      return null;
+    }
+  }
+
+  // Get tasks for a specific date range
+  static Stream<QuerySnapshot> getTasksForDateRange({
+    required DateTime startDate,
+    required DateTime endDate,
+    String? userId,
+  }) {
+    final uid = userId ?? getCurrentUserId();
+    if (uid == null) {
+      return const Stream.empty();
+    }
+
+    final startTimestamp = Timestamp.fromDate(startDate);
+    final endTimestamp = Timestamp.fromDate(endDate);
+
+    return _firestore
+        .collection('users')
+        .doc(uid)
+        .collection('tasks')
+        .where('scheduledDate', isGreaterThanOrEqualTo: startTimestamp)
+        .where('scheduledDate', isLessThanOrEqualTo: endTimestamp)
+        .orderBy('scheduledDate')
+        .snapshots();
+  }
+
+  // Get upcoming tasks (next 7 days)
+  static Stream<QuerySnapshot> getUpcomingTasks({String? userId}) {
+    final now = DateTime.now();
+    final nextWeek = now.add(const Duration(days: 7));
+    
+    return getTasksForDateRange(
+      startDate: now,
+      endDate: nextWeek,
+      userId: userId,
+    );
+  }
+
+  // Update task schedule
+  static Future<bool> rescheduleTask({
+    required String taskId,
+    required DateTime newDate,
+    String? userId,
+  }) async {
+    try {
+      final uid = userId ?? getCurrentUserId();
+      if (uid == null || _auth.currentUser == null) {
+        throw Exception('User not authenticated');
+      }
+
+      await _firestore
+          .collection('users')
+          .doc(uid)
+          .collection('tasks')
+          .doc(taskId)
+          .update({
+        'scheduledDate': Timestamp.fromDate(newDate),
+        'dueDate': Timestamp.fromDate(newDate),
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+
+      print('✅ Task rescheduled to ${newDate.toString().split(' ')[0]}');
+      return true;
+    } catch (e) {
+      print('❌ Error rescheduling task: $e');
+      return false;
+    }
+  }
+
+  // Get tasks for a specific day
+  static Future<List<Map<String, dynamic>>> getTasksForDay({
+    required DateTime date,
+    String? userId,
+  }) async {
+    try {
+      final uid = userId ?? getCurrentUserId();
+      if (uid == null) return [];
+
+      final startOfDay = DateTime(date.year, date.month, date.day);
+      final endOfDay = DateTime(date.year, date.month, date.day, 23, 59, 59);
+
+      final querySnapshot = await _firestore
+          .collection('users')
+          .doc(uid)
+          .collection('tasks')
+          .where('scheduledDate', isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay))
+          .where('scheduledDate', isLessThanOrEqualTo: Timestamp.fromDate(endOfDay))
+          .orderBy('scheduledDate')
+          .get();
+
+      return querySnapshot.docs.map((doc) {
+        return {
+          'id': doc.id,
+          ...doc.data() as Map<String, dynamic>,
+        };
+      }).toList();
+    } catch (e) {
+      print('❌ Error getting tasks for day: $e');
+      return [];
     }
   }
 }

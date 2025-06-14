@@ -1031,74 +1031,751 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
       ),
     );
   }
-
   Widget _buildCreateProjectButton() {
-    return GestureDetector(
-      onTap: () async {
-        final newProjectData = await Navigator.push<Map<String, dynamic>>(
-          context,
-          MaterialPageRoute(builder: (context) => const CreateANewProject()),
-        );
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 24.0),
+      child: Row(
+        children: [
+          // Create New Project Button
+          Expanded(
+            child: GestureDetector(
+              onTap: _showCreateProjectDialog,
+              child: Container(
+                height: 56,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF192F5D),
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF192F5D).withOpacity(0.3),
+                      blurRadius: 8,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.add_circle_outline, color: Colors.white, size: 24),
+                    SizedBox(width: 8),
+                    Text(
+                      'Create Project',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontFamily: 'Inter',
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          // Join Project Button
+          Expanded(
+            child: GestureDetector(
+              onTap: _showJoinProjectDialog,
+              child: Container(
+                height: 56,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: const Color(0xFF192F5D), width: 2),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 8,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.group_add, color: Color(0xFF192F5D), size: 24),
+                    SizedBox(width: 8),
+                    Text(
+                      'Join Project',
+                      style: TextStyle(
+                        color: Color(0xFF192F5D),
+                        fontSize: 16,
+                        fontFamily: 'Inter',
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
-        if (newProjectData != null && _currentUser != null) {
-          try {
-            final projectId = await FirebaseService.createProject(
-              {
-                'title': newProjectData['title'],
-                'description': newProjectData['description'],
-                'status': 'active',
-                'progress': 0.0,
-                'members': [],
-                'createdAt': FieldValue.serverTimestamp(),
-                'updatedAt': FieldValue.serverTimestamp(),
-                'ownerId': _currentUser!.uid,
-              },
-              userId: _currentUser!.uid,
-            );
+  void _showCreateProjectDialog() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => _buildCreateProjectModal(),
+    );
+  }
 
-            await FirebaseService.logActivity(
-              'project_created',
-              {
-                'projectId': projectId,
-                'projectTitle': newProjectData['title'],
-                'timestamp': FieldValue.serverTimestamp(),
-                'userId': _currentUser!.uid,
-              },
-            );
+  void _showJoinProjectDialog() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => _buildJoinProjectModal(),
+    );
+  }
 
-            if (mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Row(
+  Widget _buildCreateProjectModal() {
+    final titleController = TextEditingController();
+    final descriptionController = TextEditingController();
+    bool isPublic = false;
+    bool isLoading = false;
+
+    return StatefulBuilder(
+      builder: (context, setModalState) {
+        return Container(
+          height: MediaQuery.of(context).size.height * 0.8,
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+          child: Column(
+            children: [
+              // Header
+              Container(
+                padding: const EdgeInsets.all(20),
+                child: Row(
+                  children: [
+                    const Text(
+                      'Create New Project',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontFamily: 'Poppins',
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xFF192F5D),
+                      ),
+                    ),
+                    const Spacer(),
+                    IconButton(
+                      icon: const Icon(Icons.close, color: Color(0xFF192F5D)),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                  ],
+                ),
+              ),
+              
+              // Form
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Icon(Icons.check_circle, color: Colors.white),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text('New project "${newProjectData['title']}" created'),
+                      // Project Title
+                      const Text(
+                        'Project Title',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF192F5D),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      TextField(
+                        controller: titleController,
+                        decoration: InputDecoration(
+                          hintText: 'Enter project title',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: const BorderSide(color: Color(0x33192F5D)),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: const BorderSide(color: Color(0xFF192F5D), width: 2),
+                          ),
+                          filled: true,
+                          fillColor: const Color(0x0A192F5D),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      
+                      // Project Description
+                      const Text(
+                        'Description',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF192F5D),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      TextField(
+                        controller: descriptionController,
+                        maxLines: 4,
+                        decoration: InputDecoration(
+                          hintText: 'Describe your project...',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: const BorderSide(color: Color(0x33192F5D)),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: const BorderSide(color: Color(0xFF192F5D), width: 2),
+                          ),
+                          filled: true,
+                          fillColor: const Color(0x0A192F5D),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      
+                      // Public/Private Toggle
+                      Row(
+                        children: [
+                          const Text(
+                            'Make project public',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFF192F5D),
+                            ),
+                          ),
+                          const Spacer(),
+                          Switch(
+                            value: isPublic,
+                            onChanged: (value) {
+                              setModalState(() {
+                                isPublic = value;
+                              });
+                            },
+                            activeColor: const Color(0xFF192F5D),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        isPublic 
+                          ? 'Others can discover and join this project'
+                          : 'Only invited members can join this project',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey[600],
+                        ),
                       ),
                     ],
                   ),
-                  backgroundColor: const Color(0xFF187E0F),
-                  duration: const Duration(seconds: 3),
                 ),
-              );
-            }
-          } catch (e) {
-            if (mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('Error creating project: $e'),
-                  backgroundColor: Colors.red,
-                  duration: const Duration(seconds: 3),
+              ),
+              
+              // Action Buttons
+              Container(
+                padding: const EdgeInsets.all(20),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text(
+                          'Cancel',
+                          style: TextStyle(
+                            color: Colors.grey,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      flex: 2,
+                      child: ElevatedButton(
+                        onPressed: isLoading ? null : () => _createProject(
+                          titleController.text,
+                          descriptionController.text,
+                          isPublic,
+                          setModalState,
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF192F5D),
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: isLoading
+                          ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                              ),
+                            )
+                          : const Text(
+                              'Create Project',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                      ),
+                    ),
+                  ],
                 ),
-              );
-            }
-          }
-        }
+              ),
+            ],
+          ),
+        );
       },
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 24.0),
-        width: double.infinity,
+    );
+  }
+
+  Widget _buildJoinProjectModal() {
+    final inviteCodeController = TextEditingController();
+    bool isLoading = false;
+    List<Map<String, dynamic>> publicProjects = [];
+    bool isSearching = false;
+
+    return StatefulBuilder(
+      builder: (context, setModalState) {
+        return Container(
+          height: MediaQuery.of(context).size.height * 0.8,
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+          child: Column(
+            children: [
+              // Header
+              Container(
+                padding: const EdgeInsets.all(20),
+                child: Row(
+                  children: [
+                    const Text(
+                      'Join Project',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontFamily: 'Poppins',
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xFF192F5D),
+                      ),
+                    ),
+                    const Spacer(),
+                    IconButton(
+                      icon: const Icon(Icons.close, color: Color(0xFF192F5D)),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                  ],
+                ),
+              ),
+              
+              // Content
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Join by Invite Code
+                      const Text(
+                        'Join by Invite Code',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF192F5D),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              controller: inviteCodeController,
+                              decoration: InputDecoration(
+                                hintText: 'Enter invite code',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                  borderSide: const BorderSide(color: Color(0x33192F5D)),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                  borderSide: const BorderSide(color: Color(0xFF192F5D), width: 2),
+                                ),
+                                filled: true,
+                                fillColor: const Color(0x0A192F5D),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          ElevatedButton(
+                            onPressed: isLoading ? null : () => _joinProjectByCode(
+                              inviteCodeController.text,
+                              setModalState,
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF192F5D),
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            child: const Text('Join'),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 32),
+                      
+                      // Browse Public Projects
+                      Row(
+                        children: [
+                          const Text(
+                            'Browse Public Projects',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFF192F5D),
+                            ),
+                          ),
+                          const Spacer(),
+                          TextButton(
+                            onPressed: () => _loadPublicProjects(setModalState),
+                            child: const Text('Refresh'),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      
+                      // Public Projects List
+                      if (isSearching)
+                        const Center(
+                          child: Padding(
+                            padding: EdgeInsets.all(20),
+                            child: CircularProgressIndicator(color: Color(0xFF192F5D)),
+                          ),
+                        )
+                      else if (publicProjects.isEmpty)
+                        Container(
+                          padding: const EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                            color: Colors.grey[50],
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Column(
+                            children: [
+                              Icon(Icons.search_off, size: 48, color: Colors.grey[400]),
+                              const SizedBox(height: 12),
+                              Text(
+                                'No public projects available',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.grey[600],
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              TextButton(
+                                onPressed: () => _loadPublicProjects(setModalState),
+                                child: const Text('Search for projects'),
+                              ),
+                            ],
+                          ),
+                        )
+                      else
+                        ...publicProjects.map((project) => _buildPublicProjectCard(project, setModalState)),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildPublicProjectCard(Map<String, dynamic> project, StateSetter setModalState) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey[300]!),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  project['title'] ?? 'Untitled Project',
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF192F5D),
+                  ),
+                ),
+              ),
+              ElevatedButton(
+                onPressed: () => _joinProject(project['id'], setModalState),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF192F5D),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                child: const Text('Join'),
+              ),
+            ],
+          ),
+          if (project['description'] != null && project['description'].isNotEmpty) ...[
+            const SizedBox(height: 8),
+            Text(
+              project['description'],
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey[600],
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Icon(Icons.people, size: 16, color: Colors.grey[600]),
+              const SizedBox(width: 4),
+              Text(
+                '${project['memberCount'] ?? 0} members',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey[600],
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _createProject(String title, String description, bool isPublic, StateSetter setModalState) async {
+    if (title.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter a project title')),
+      );
+      return;
+    }
+
+    setModalState(() {
+      isLoading = true;
+    });
+
+    try {
+      final projectId = await FirebaseService.createProject(
+        {
+          'title': title.trim(),
+          'description': description.trim(),
+          'status': 'active',
+          'progress': 0.0,
+          'members': [_currentUser!.uid],
+          'memberCount': 1,
+          'isPublic': isPublic,
+          'isActive': true,
+          'inviteCode': _generateInviteCode(),
+        },
+        userId: _currentUser!.uid,
+      );
+
+      await FirebaseService.logActivity(
+        'project_created',
+        {
+          'projectId': projectId,
+          'projectTitle': title,
+          'isPublic': isPublic,
+        },
+      );
+
+      if (mounted) {
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                const Icon(Icons.check_circle, color: Colors.white),
+                const SizedBox(width: 8),
+                Expanded(child: Text('Project "$title" created successfully!')),
+              ],
+            ),
+            backgroundColor: const Color(0xFF187E0F),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error creating project: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      setModalState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _joinProjectByCode(String inviteCode, StateSetter setModalState) async {
+    if (inviteCode.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter an invite code')),
+      );
+      return;
+    }
+
+    setModalState(() {
+      isLoading = true;
+    });
+
+    try {
+      final project = await FirebaseService.getProjectByInviteCode(inviteCode.trim());
+      if (project == null) {
+        throw Exception('Invalid invite code');
+      }
+
+      final success = await FirebaseService.joinProject(
+        projectId: project['id'],
+        userId: _currentUser!.uid,
+      );
+
+      if (success && mounted) {
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                const Icon(Icons.check_circle, color: Colors.white),
+                const SizedBox(width: 8),
+                Expanded(child: Text('Successfully joined "${project['title']}"!')),
+              ],
+            ),
+            backgroundColor: const Color(0xFF187E0F),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error joining project: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      setModalState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _joinProject(String projectId, StateSetter setModalState) async {
+    setModalState(() {
+      isLoading = true;
+    });
+
+    try {
+      final success = await FirebaseService.joinProject(
+        projectId: projectId,
+        userId: _currentUser!.uid,
+      );
+
+      if (success && mounted) {
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Row(
+              children: [
+                Icon(Icons.check_circle, color: Colors.white),
+                SizedBox(width: 8),
+                Text('Successfully joined the project!'),
+              ],
+            ),
+            backgroundColor: Color(0xFF187E0F),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error joining project: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      setModalState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _loadPublicProjects(StateSetter setModalState) async {
+    setModalState(() {
+      isSearching = true;
+    });
+
+    try {
+      final projects = await FirebaseService.searchPublicProjects(limit: 10);
+      setModalState(() {
+        publicProjects = projects;
+        isSearching = false;
+      });
+    } catch (e) {
+      setModalState(() {
+        isSearching = false;
+      });
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error loading projects: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  String _generateInviteCode() {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    final random = DateTime.now().millisecondsSinceEpoch;
+    String code = '';
+    for (int i = 0; i < 6; i++) {
+      code += chars[(random + i) % chars.length];
+    }
+    return code;
+  }
         height: 56,
         decoration: ShapeDecoration(
           color: const Color(0xFF192F5D),
