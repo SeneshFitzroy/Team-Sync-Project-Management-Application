@@ -109,12 +109,12 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'TaskSync',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
-        colorScheme: ColorScheme.fromSeed(
+        primarySwatch: Colors.blue,        colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(0xFF1989BD),
           primary: const Color(0xFF1989BD),
           secondary: const Color(0xFF192F5D),
-        ),        useMaterial3: true,
+        ),
+        useMaterial3: true,
         visualDensity: VisualDensity.adaptivePlatformDensity,
         scaffoldBackgroundColor: Colors.white,
         appBarTheme: const AppBarTheme(
@@ -122,7 +122,8 @@ class MyApp extends StatelessWidget {
           foregroundColor: Colors.white,
           elevation: 0,
         ),
-      ),      debugShowCheckedModeBanner: false,
+      ),
+      debugShowCheckedModeBanner: false,
       home: const AuthWrapper(),
       routes: {
         '/welcome1': (context) => const WelcomePage1(),
