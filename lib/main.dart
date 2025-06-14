@@ -11,7 +11,7 @@ import 'Screens/login-page.dart';
 import 'Screens/create_account.dart';
 import 'Screens/Dashboard.dart';
 import 'Screens/ForgetPassword.dart';
-// import 'Screens/TaskManager.dart'; // Temporarily disabled
+import 'Screens/TaskManager.dart';
 import 'Screens/Profile.dart';
 import 'Screens/Calendar.dart';
 import 'Screens/Chat.dart';
