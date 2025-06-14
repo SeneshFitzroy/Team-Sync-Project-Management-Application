@@ -1132,7 +1132,6 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
       builder: (context) => _buildJoinProjectModal(),
     );
   }
-
   Widget _buildCreateProjectModal() {
     final titleController = TextEditingController();
     final descriptionController = TextEditingController();
@@ -1456,9 +1455,9 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
                       
                       // Public Projects List
                       if (isSearching)
-                        const Center(
-                          child: Padding(
-                            padding: EdgeInsets.all(20),
+                        const Padding(
+                          padding: EdgeInsets.all(20),
+                          child: Center(
                             child: CircularProgressIndicator(color: Color(0xFF192F5D)),
                           ),
                         )

@@ -15,17 +15,20 @@ class Calendar extends StatefulWidget {
 
 class _CalendarState extends State<Calendar> {
   DateTime _selectedMonth = DateTime.now();
+  DateTime? _selectedDate;
   final List<String> _weekDays = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
   int _currentIndex = 3; // Set to 3 for Calendar tab
   List<Map<String, dynamic>> _tasks = [];
+  List<Map<String, dynamic>> _selectedDateTasks = [];
   String _filterPriority = 'all';
   bool _isLoadingTasks = true;
   StreamSubscription<QuerySnapshot>? _tasksSubscription;
-
   @override
   void initState() {
     super.initState();
+    _selectedDate = DateTime.now();
     _loadTasks();
+    _loadSelectedDateTasks();
   }
 
   @override
@@ -39,22 +42,34 @@ class _CalendarState extends State<Calendar> {
       _isLoadingTasks = true;
     });
     
-    // Listen to Firebase tasks stream
-    _tasksSubscription = FirebaseService.getUserTasks().listen(
+    // Listen to Firebase tasks stream for the current month
+    final startOfMonth = DateTime(_selectedMonth.year, _selectedMonth.month, 1);
+    final endOfMonth = DateTime(_selectedMonth.year, _selectedMonth.month + 1, 0);
+    
+    _tasksSubscription?.cancel();
+    _tasksSubscription = FirebaseService.getTasksForDateRange(
+      startDate: startOfMonth,
+      endDate: endOfMonth,
+    ).listen(
       (snapshot) {
         if (mounted) {
           setState(() {
             _tasks = snapshot.docs.map((doc) {
               final data = doc.data() as Map<String, dynamic>;
               return {
-                'title': data['taskName'] ?? 'Untitled Task',
-                'time': _formatTaskTime(data['dueDate']),
-                'date': _formatTaskDate(data['dueDate']),
-                'priority': _mapPriority(data['priority']),
                 'id': doc.id,
+                'title': data['taskName'] ?? 'Untitled Task',
+                'time': _formatTaskTime(data['scheduledDate']),
+                'date': _formatTaskDate(data['scheduledDate']),
+                'priority': _mapPriority(data['priority']),
+                'status': data['status'] ?? 'To Do',
+                'scheduledDate': data['scheduledDate'],
+                'projectName': data['projectName'] ?? 'Personal',
+                ...data,
               };
             }).toList();
             _isLoadingTasks = false;
+            _loadSelectedDateTasks();
           });
         }
       },
@@ -68,6 +83,17 @@ class _CalendarState extends State<Calendar> {
         print('Error loading tasks: $e');
       },
     );
+  }
+
+  void _loadSelectedDateTasks() {
+    if (_selectedDate == null) return;
+    
+    final selectedDateStr = DateFormat('yyyy-MM-dd').format(_selectedDate!);
+    setState(() {
+      _selectedDateTasks = _tasks.where((task) {
+        return task['date'] == selectedDateStr;
+      }).toList();
+    });
   }
 
   String _formatTaskTime(dynamic dueDate) {
