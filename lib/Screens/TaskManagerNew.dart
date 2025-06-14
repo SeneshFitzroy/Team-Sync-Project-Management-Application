@@ -1045,3 +1045,4 @@ class _TaskManagerState extends State<TaskManager> {
       children: _filteredTasks.map((task) => _buildTaskCard(task)).toList(),
     );
   }
+}
