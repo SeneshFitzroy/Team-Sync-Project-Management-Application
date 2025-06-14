@@ -7,7 +7,7 @@ import 'ContactSupport.dart';  // Import the ContactSupport screen
 import 'welcome-page1.dart';  // Import the Welcome Page
 import 'package:firebase_auth/firebase_auth.dart';  // Import Firebase Auth for logout
 import 'package:shared_preferences/shared_preferences.dart';  // Import SharedPreferences
-import '../Services/firebase_service.dart';  // Import Firebase Service
+import 'package:fluttercomponenets/Services/firebase_service.dart';  // Import Firebase Service
 
 class ProfileScreen extends StatefulWidget {  // Changed to StatefulWidget
   const ProfileScreen({super.key});
