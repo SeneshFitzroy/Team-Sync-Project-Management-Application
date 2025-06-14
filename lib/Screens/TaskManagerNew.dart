@@ -352,85 +352,194 @@ class _TaskManagerState extends State<TaskManager> {
   }
 
   Widget _buildTaskCard(Task task) {
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      elevation: 2,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  width: 4,
-                  height: 40,
-                  color: task.priorityColor,
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        task.taskName,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 6),
+      child: GestureDetector(
+        onTap: () {
+          // Handle task tap
+        },
+        child: Container(
+          width: double.infinity,
+          height: 165,
+          decoration: ShapeDecoration(
+            color: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15),
+            ),
+            shadows: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Stack(
+            children: [
+              // Left accent bar
+              Positioned(
+                left: 0,
+                top: 0,
+                child: Container(
+                  width: 8,
+                  height: 165,
+                  decoration: ShapeDecoration(
+                    color: task.priorityColor,
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(15),
+                        bottomLeft: Radius.circular(15),
                       ),
-                      const SizedBox(height: 4),
-                      Text(
-                        task.projectName,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey[600],
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                 ),
-                Container(
+              ),
+              
+              // Task title
+              Positioned(
+                left: 24,
+                top: 24,
+                right: 24,
+                child: Text(
+                  task.taskName,
+                  style: const TextStyle(
+                    color: Colors.black,
+                    fontSize: 16,
+                    fontFamily: 'Poppins',
+                    fontWeight: FontWeight.w700,
+                    height: 1.50,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              
+              // Project name
+              Positioned(
+                left: 24,
+                top: 59,
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.folder_outlined,
+                      size: 16,
+                      color: Colors.black54,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      task.projectName,
+                      style: const TextStyle(
+                        color: Colors.black54,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                        height: 1.50,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              
+              // Status and priority
+              Positioned(
+                right: 24,
+                top: 24,
+                child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
                     color: task.statusColor.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
-                    task.status,
+                    task.status.toUpperCase(),
                     style: TextStyle(
-                      fontSize: 12,
+                      fontSize: 10,
                       color: task.statusColor,
-                      fontWeight: FontWeight.w500,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.5,
                     ),
                   ),
                 ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Icon(Icons.calendar_today, size: 16, color: Colors.grey[600]),
-                const SizedBox(width: 4),
-                Text(
-                  task.dueDate,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey[600],
+              ),
+              
+              // Due date
+              Positioned(
+                left: 24,
+                top: 101,
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.calendar_today,
+                      size: 16,
+                      color: Colors.grey[600],
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Due: ${task.dueDate}',
+                      style: TextStyle(
+                        color: Colors.grey[600],
+                        fontSize: 12,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              
+              // Priority indicator
+              Positioned(
+                right: 24,
+                top: 101,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: task.priorityColor.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    task.priority.toUpperCase(),
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: task.priorityColor,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 0.5,
+                    ),
                   ),
                 ),
-                const Spacer(),
-                Text(
-                  task.priority,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: task.priorityColor,
-                    fontWeight: FontWeight.w500,
-                  ),
+              ),
+              
+              // Assignee
+              Positioned(
+                left: 24,
+                bottom: 24,
+                child: Row(
+                  children: [
+                    Container(
+                      width: 20,
+                      height: 20,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: const Color(0xFF192F5D).withOpacity(0.1),
+                      ),
+                      child: const Icon(
+                        Icons.person,
+                        size: 12,
+                        color: Color(0xFF192F5D),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      task.assignee,
+                      style: const TextStyle(
+                        color: Colors.black54,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ],
+              ),
+            ],
+          ),
         ),
       ),
     );
