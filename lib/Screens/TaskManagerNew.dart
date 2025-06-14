@@ -242,108 +242,279 @@ class _TaskManagerState extends State<TaskManager> {
       builder: (BuildContext context) {
         return StatefulBuilder(
           builder: (context, setDialogState) {
-            return AlertDialog(
-              title: const Text('Add New Task'),
-              content: SingleChildScrollView(
+            return Dialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Container(
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    TextField(
-                      controller: titleController,
-                      decoration: const InputDecoration(
-                        labelText: 'Task Title',
-                        border: OutlineInputBorder(),
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Header
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Add New Task',
+                          style: TextStyle(
+                            color: Color(0xFF192F5D),
+                            fontSize: 24,
+                            fontFamily: 'Poppins',
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.close, color: Color(0xFF192F5D)),
+                          onPressed: () => Navigator.of(context).pop(),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+                    
+                    // Content
+                    SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          // Task Title
+                          TextField(
+                            controller: titleController,
+                            style: const TextStyle(
+                              fontFamily: 'Inter',
+                              fontSize: 16,
+                            ),
+                            decoration: InputDecoration(
+                              labelText: 'Task Title',
+                              labelStyle: const TextStyle(
+                                color: Color(0xFF192F5D),
+                                fontFamily: 'Inter',
+                                fontWeight: FontWeight.w500,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: const BorderSide(color: Color(0x33192F5D)),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: const BorderSide(color: Color(0xFF192F5D), width: 2),
+                              ),
+                              filled: true,
+                              fillColor: const Color(0x0A192F5D),
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          
+                          // Description
+                          TextField(
+                            controller: descriptionController,
+                            style: const TextStyle(
+                              fontFamily: 'Inter',
+                              fontSize: 16,
+                            ),
+                            decoration: InputDecoration(
+                              labelText: 'Description',
+                              labelStyle: const TextStyle(
+                                color: Color(0xFF192F5D),
+                                fontFamily: 'Inter',
+                                fontWeight: FontWeight.w500,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: const BorderSide(color: Color(0x33192F5D)),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: const BorderSide(color: Color(0xFF192F5D), width: 2),
+                              ),
+                              filled: true,
+                              fillColor: const Color(0x0A192F5D),
+                            ),
+                            maxLines: 3,
+                          ),
+                          const SizedBox(height: 16),
+                          
+                          // Priority Dropdown
+                          DropdownButtonFormField<String>(
+                            value: selectedPriority,
+                            style: const TextStyle(
+                              fontFamily: 'Inter',
+                              fontSize: 16,
+                              color: Colors.black87,
+                            ),
+                            decoration: InputDecoration(
+                              labelText: 'Priority',
+                              labelStyle: const TextStyle(
+                                color: Color(0xFF192F5D),
+                                fontFamily: 'Inter',
+                                fontWeight: FontWeight.w500,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: const BorderSide(color: Color(0x33192F5D)),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: const BorderSide(color: Color(0xFF192F5D), width: 2),
+                              ),
+                              filled: true,
+                              fillColor: const Color(0x0A192F5D),
+                            ),
+                            items: ['High', 'Medium', 'Low'].map((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
+                            onChanged: (String? newValue) {
+                              setDialogState(() {
+                                selectedPriority = newValue!;
+                              });
+                            },
+                          ),
+                          const SizedBox(height: 16),
+                          
+                          // Status Dropdown
+                          DropdownButtonFormField<String>(
+                            value: selectedStatus,
+                            style: const TextStyle(
+                              fontFamily: 'Inter',
+                              fontSize: 16,
+                              color: Colors.black87,
+                            ),
+                            decoration: InputDecoration(
+                              labelText: 'Status',
+                              labelStyle: const TextStyle(
+                                color: Color(0xFF192F5D),
+                                fontFamily: 'Inter',
+                                fontWeight: FontWeight.w500,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: const BorderSide(color: Color(0x33192F5D)),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: const BorderSide(color: Color(0xFF192F5D), width: 2),
+                              ),
+                              filled: true,
+                              fillColor: const Color(0x0A192F5D),
+                            ),
+                            items: ['To Do', 'In Progress', 'Completed'].map((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
+                            onChanged: (String? newValue) {
+                              setDialogState(() {
+                                selectedStatus = newValue!;
+                              });
+                            },
+                          ),
+                        ],
                       ),
                     ),
-                    const SizedBox(height: 16),
-                    TextField(
-                      controller: descriptionController,
-                      decoration: const InputDecoration(
-                        labelText: 'Description',
-                        border: OutlineInputBorder(),
-                      ),
-                      maxLines: 3,
-                    ),
-                    const SizedBox(height: 16),
-                    DropdownButtonFormField<String>(
-                      value: selectedPriority,
-                      decoration: const InputDecoration(
-                        labelText: 'Priority',
-                        border: OutlineInputBorder(),
-                      ),
-                      items: ['High', 'Medium', 'Low'].map((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
-                      onChanged: (String? newValue) {
-                        setDialogState(() {
-                          selectedPriority = newValue!;
-                        });
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    DropdownButtonFormField<String>(
-                      value: selectedStatus,
-                      decoration: const InputDecoration(
-                        labelText: 'Status',
-                        border: OutlineInputBorder(),
-                      ),
-                      items: ['To Do', 'In Progress', 'Completed'].map((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
-                      onChanged: (String? newValue) {
-                        setDialogState(() {
-                          selectedStatus = newValue!;
-                        });
-                      },
+                    
+                    const SizedBox(height: 32),
+                    
+                    // Action Buttons
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        TextButton(
+                          onPressed: () => Navigator.of(context).pop(),
+                          style: TextButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: const Text(
+                            'Cancel',
+                            style: TextStyle(
+                              color: Colors.grey,
+                              fontFamily: 'Inter',
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        ElevatedButton(
+                          onPressed: () async {
+                            if (titleController.text.isNotEmpty) {
+                              try {
+                                final task = Task(
+                                  projectName: selectedProject,
+                                  taskName: titleController.text,
+                                  status: selectedStatus,
+                                  dueDate: DateTime.now().add(const Duration(days: 7)).toString().split(' ')[0],
+                                  priority: selectedPriority,
+                                  priorityColor: Task._getPriorityColor(selectedPriority),
+                                  assignee: 'Me',
+                                  statusColor: Task._getStatusColor(selectedStatus),
+                                  category: selectedProject == 'Personal' ? 'personal' : null,
+                                );
+
+                                await FirebaseService.createTask(task.toMap());
+                                
+                                Navigator.of(context).pop();
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: const Text(
+                                      'Task created successfully!',
+                                      style: TextStyle(fontFamily: 'Inter'),
+                                    ),
+                                    backgroundColor: const Color(0xFF192F5D),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                  ),
+                                );
+                              } catch (e) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      'Error creating task: $e',
+                                      style: const TextStyle(fontFamily: 'Inter'),
+                                    ),
+                                    backgroundColor: Colors.red,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                  ),
+                                );
+                              }
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF192F5D),
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            elevation: 2,
+                          ),
+                          child: const Text(
+                            'Create Task',
+                            style: TextStyle(
+                              fontFamily: 'Inter',
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
               ),
-              actions: <Widget>[
-                TextButton(
-                  child: const Text('Cancel'),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-                ElevatedButton(
-                  onPressed: () async {
-                    if (titleController.text.isNotEmpty) {
-                      try {
-                        final task = Task(
-                          projectName: selectedProject,
-                          taskName: titleController.text,
-                          status: selectedStatus,
-                          dueDate: DateTime.now().add(const Duration(days: 7)).toString().split(' ')[0],
-                          priority: selectedPriority,
-                          priorityColor: Task._getPriorityColor(selectedPriority),
-                          assignee: 'Me',
-                          statusColor: Task._getStatusColor(selectedStatus),
-                          category: selectedProject == 'Personal' ? 'personal' : null,
-                        );
-
-                        await FirebaseService.createTask(task.toMap());
-                        
-                        Navigator.of(context).pop();
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Task created successfully!')),
-                        );
-                      } catch (e) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Error creating task: $e')),
-                        );
-                      }
-                    }
-                  },
-                  child: const Text('Create'),
-                ),
-              ],
             );
           },
         );
