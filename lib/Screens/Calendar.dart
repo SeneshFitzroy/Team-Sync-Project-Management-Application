@@ -95,15 +95,14 @@ class _CalendarState extends State<Calendar> {
       }).toList();
     });
   }
-
-  String _formatTaskTime(dynamic dueDate) {
-    if (dueDate == null) return 'No time set';
+  String _formatTaskTime(dynamic scheduledDate) {
+    if (scheduledDate == null) return 'No time set';
     try {
       DateTime date;
-      if (dueDate is Timestamp) {
-        date = dueDate.toDate();
-      } else if (dueDate is String) {
-        date = DateTime.parse(dueDate);
+      if (scheduledDate is Timestamp) {
+        date = scheduledDate.toDate();
+      } else if (scheduledDate is String) {
+        date = DateTime.parse(scheduledDate);
       } else {
         return 'No time set';
       }
@@ -113,14 +112,14 @@ class _CalendarState extends State<Calendar> {
     }
   }
 
-  String _formatTaskDate(dynamic dueDate) {
-    if (dueDate == null) return DateFormat('yyyy-MM-dd').format(DateTime.now());
+  String _formatTaskDate(dynamic scheduledDate) {
+    if (scheduledDate == null) return DateFormat('yyyy-MM-dd').format(DateTime.now());
     try {
       DateTime date;
-      if (dueDate is Timestamp) {
-        date = dueDate.toDate();
-      } else if (dueDate is String) {
-        date = DateTime.parse(dueDate);
+      if (scheduledDate is Timestamp) {
+        date = scheduledDate.toDate();
+      } else if (scheduledDate is String) {
+        date = DateTime.parse(scheduledDate);
       } else {
         return DateFormat('yyyy-MM-dd').format(DateTime.now());
       }
