@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../Services/firebase_service.dart';
+import 'package:fluttercomponenets/Services/firebase_service.dart';
 
 class EditProfile extends StatefulWidget {
   final String? name;

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'login-page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../Services/firebase_service.dart';
+import 'package:fluttercomponenets/Services/firebase_service.dart';
 
 class CreateAccount extends StatefulWidget {
   const CreateAccount({super.key});
