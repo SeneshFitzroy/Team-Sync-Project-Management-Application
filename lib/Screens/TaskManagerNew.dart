@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:async';
 import '../Components/nav_bar.dart';
 import '../Services/firebase_service.dart';
+import 'Profile.dart';
 
 // Enhanced Task model with Firebase ID support
 class Task {
