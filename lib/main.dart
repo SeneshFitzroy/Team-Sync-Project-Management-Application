@@ -11,7 +11,7 @@ import 'Screens/login-page.dart';
 import 'Screens/create_account.dart';
 import 'Screens/Dashboard.dart';
 import 'Screens/ForgetPassword.dart';
-// import 'Screens/TaskManager.dart'; // Temporarily disabled
+import 'Screens/TaskManager.dart';
 import 'Screens/Profile.dart';
 import 'Screens/Calendar.dart';
 import 'Screens/Chat.dart';
@@ -127,24 +127,9 @@ class MyApp extends StatelessWidget {
         '/welcome1': (context) => const WelcomePage1(),
         '/welcome2': (context) => const LoginPage(),
         '/login': (context) => const LoginPage(),
-        '/signup': (context) => const CreateAccount(),
-        '/dashboard': (context) => const Dashboard(),
-        '/forgot-password': (context) => const ForgetPasswordScreen(),        '/taskmanager': (context) => const Scaffold(
-          body: SafeArea(
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.task_alt, size: 64, color: Colors.blue),
-                  SizedBox(height: 16),
-                  Text('Task Manager', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-                  SizedBox(height: 8),
-                  Text('Coming Soon...', style: TextStyle(fontSize: 16, color: Colors.grey)),
-                ],
-              ),
-            ),
-          ),
-        ),
+        '/signup': (context) => const CreateAccount(),        '/dashboard': (context) => const Dashboard(),
+        '/forgot-password': (context) => const ForgetPasswordScreen(),
+        '/taskmanager': (context) => const TaskManager(),
         '/profile': (context) => const ProfileScreen(),
         '/calendar': (context) => const Calendar(),
         '/chat': (context) => const ChatScreen(),
