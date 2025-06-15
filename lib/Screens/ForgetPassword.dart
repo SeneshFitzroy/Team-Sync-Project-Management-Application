@@ -47,16 +47,12 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
       final email = _emailController.text.trim();
 
       // Send Firebase password reset email
-      await _auth.sendPasswordResetEmail(email: email);
-
-      if (mounted) {
-        // Navigate to confirmation screen
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ForgotPassword2(
-              email: email,
-            ),
+      await _auth.sendPasswordResetEmail(email: email);      if (mounted) {
+        // Show success message instead of navigating to missing screen
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Password reset email sent to $email'),
+            backgroundColor: Colors.green,
           ),
         );
       }
