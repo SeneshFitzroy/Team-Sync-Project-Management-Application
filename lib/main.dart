@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'Screens/welcome-page1.dart';
 import 'Screens/welcome-page2.dart';
 import 'Screens/login-page.dart';
@@ -15,16 +14,7 @@ import 'Screens/ChangePassword.dart';
 import 'Screens/ContactSupport.dart';
 import 'Screens/CreateaNewProject.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  
-  try {
-    await Firebase.initializeApp();
-  } catch (e) {
-    print('Firebase initialization error: $e');
-    // Continue without Firebase for demo mode
-  }
-  
+void main() {
   runApp(const MyApp());
 }
 
