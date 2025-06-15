@@ -59,6 +59,8 @@ class MyApp extends StatelessWidget {
       routes: {
         '/welcome2': (context) => const WelcomePage2(),
         '/login': (context) => const LoginPage(),
+        '/dashboard': (context) => const Dashboard(),
+        '/signup': (context) => const CreateAccount(),
       },
       debugShowCheckedModeBanner: false,
     );
