@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'Screens/welcome-page1.dart';
 
 void main() {
   runApp(const MyApp());
@@ -14,27 +15,10 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(),
-    );
-  }
-}
-
-class MyHomePage extends StatelessWidget {
-  const MyHomePage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Team Sync - Working'),
-        backgroundColor: Colors.blue,
-      ),
-      body: const Center(
-        child: Text(
-          'Team Sync App Running!',
-          style: TextStyle(fontSize: 24),
-        ),
-      ),
+      home: const WelcomePage1(),
+      routes: {
+        '/welcome': (context) => const WelcomePage1(),
+      },
     );
   }
 }
