@@ -216,7 +216,9 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                           ),
                           TextButton(
                             onPressed: () {
-                              Navigator.pushNamed(context, '/forget-password');
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Password recovery coming soon!')),
+                              );
                             },
                             child: const Text(
                               'Forgot Password?',

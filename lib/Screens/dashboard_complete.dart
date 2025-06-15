@@ -199,7 +199,9 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
         IconButton(
           icon: const Icon(Icons.notifications_outlined, color: Colors.white, size: 28),
           onPressed: () {
-            Navigator.pushNamed(context, '/notifications');
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Notifications coming soon!')),
+            );
           },
         ),
         IconButton(
@@ -585,7 +587,9 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
   Widget _buildFloatingActionButton() {
     return FloatingActionButton.extended(
       onPressed: () {
-        Navigator.pushNamed(context, '/create-project');
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Create project coming soon!')),
+        );
       },
       backgroundColor: Colors.white,
       foregroundColor: const Color(0xFF1A365D),
@@ -691,7 +695,9 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
   }
 
   void _openProjectDetails(Map<String, dynamic> project) {
-    Navigator.pushNamed(context, '/task-manager');
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Project details coming soon!')),
+    );
   }
 
   void _editProject(Map<String, dynamic> project) {
@@ -721,7 +727,9 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
               title: const Text('Manage Team'),
               onTap: () {
                 Navigator.pop(context);
-                Navigator.pushNamed(context, '/add-team-members');
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Team management coming soon!')),
+                );
               },
             ),
             ListTile(
