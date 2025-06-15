@@ -2,22 +2,7 @@ import 'package:flutter/material.dart';
 import 'Screens/welcome-page1.dart';
 import 'Screens/welcome-page2.dart';
 import 'Screens/login_working.dart';
-import 'Screens/create_account.dart';
 import 'Screens/dashboard_complete.dart';
-import 'Screens/TaskManagerNew.dart';
-import 'Screens/Profile.dart';
-import 'Screens/Calendar.dart';
-import 'Screens/CreateaNewProject.dart';
-import 'Screens/AddTeamMembers.dart';
-import 'Screens/Notifications.dart';
-import 'Screens/ContactSupport.dart';
-import 'Screens/EditProfile.dart';
-import 'Screens/ChangePassword.dart';
-import 'Screens/ForgetPassword.dart';
-import 'Screens/ForgetPassword2.dart';
-import 'Screens/ResetPassword.dart';
-import 'Screens/AboutTaskSync.dart';
-import 'Screens/Chat.dart';
 
 void main() {
   runApp(const MyApp());
@@ -56,22 +41,7 @@ class MyApp extends StatelessWidget {
         '/': (context) => const WelcomePage1(),
         '/welcome2': (context) => const WelcomePage2(),
         '/login': (context) => const LoginPage(),
-        '/create-account': (context) => const CreateAccount(),
         '/dashboard': (context) => const Dashboard(),
-        '/task-manager': (context) => const TaskManagerNew(),
-        '/profile': (context) => const Profile(),
-        '/calendar': (context) => const Calendar(),
-        '/create-project': (context) => const CreateaNewProject(),
-        '/add-team-members': (context) => const AddTeamMembers(),
-        '/notifications': (context) => const Notifications(),
-        '/contact-support': (context) => const ContactSupport(),
-        '/edit-profile': (context) => const EditProfile(),
-        '/change-password': (context) => const ChangePassword(),
-        '/forget-password': (context) => const ForgetPassword(),
-        '/forget-password2': (context) => const ForgetPassword2(),
-        '/reset-password': (context) => const ResetPassword(),
-        '/about': (context) => const AboutTaskSync(),
-        '/chat': (context) => const Chat(),
       },
       debugShowCheckedModeBanner: false,
     );

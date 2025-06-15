@@ -609,15 +609,57 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
 
   // Additional view builders
   Widget _buildTasksView() {
-    return const TaskManagerNew();
+    return const Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.task, size: 64, color: Colors.white70),
+          SizedBox(height: 16),
+          Text(
+            'Tasks',
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
+          ),
+          SizedBox(height: 8),
+          Text('Task management coming soon!', style: TextStyle(color: Colors.white70)),
+        ],
+      ),
+    );
   }
 
   Widget _buildChatView() {
-    return const Chat();
+    return const Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.chat, size: 64, color: Colors.white70),
+          SizedBox(height: 16),
+          Text(
+            'Chat',
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
+          ),
+          SizedBox(height: 8),
+          Text('Team chat coming soon!', style: TextStyle(color: Colors.white70)),
+        ],
+      ),
+    );
   }
 
   Widget _buildCalendarView() {
-    return const Calendar();
+    return const Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.calendar_today, size: 64, color: Colors.white70),
+          SizedBox(height: 16),
+          Text(
+            'Calendar',
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
+          ),
+          SizedBox(height: 8),
+          Text('Calendar view coming soon!', style: TextStyle(color: Colors.white70)),
+        ],
+      ),
+    );
   }
 
   // Helper methods
