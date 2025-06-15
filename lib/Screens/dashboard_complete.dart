@@ -19,7 +19,7 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
 
   // Filter states
   bool _showActiveOnly = false;
-  bool _showAtRiskOnly = false;
+  final bool _showAtRiskOnly = false;
   bool _showCompletedOnly = false;
   String _selectedSortOption = 'Progress (High to Low)';
   
@@ -87,7 +87,7 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
     },
   ];
   
-  bool _isLoading = false;
+  final bool _isLoading = false;
   String? _errorMessage;
 
   @override

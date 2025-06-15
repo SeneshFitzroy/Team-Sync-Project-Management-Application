@@ -396,7 +396,7 @@ class _DashboardState extends State<Dashboard> {
           
           const SizedBox(height: 40),
           
-          Container(
+          SizedBox(
             width: double.infinity,
             child: ElevatedButton(
               onPressed: () {

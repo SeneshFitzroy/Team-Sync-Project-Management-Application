@@ -234,7 +234,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                       const SizedBox(height: 40),
                       
                       // Login Button
-                      Container(
+                      SizedBox(
                         width: double.infinity,
                         height: 56,
                         child: ElevatedButton(
@@ -286,7 +286,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                       const SizedBox(height: 32),
                       
                       // Create Account Button
-                      Container(
+                      SizedBox(
                         width: double.infinity,
                         height: 56,
                         child: OutlinedButton(

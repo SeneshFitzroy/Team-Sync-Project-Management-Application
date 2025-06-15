@@ -5,6 +5,14 @@ import 'Screens/login-page.dart';
 import 'Screens/create_account.dart';
 import 'Screens/Dashboard.dart';
 import 'Screens/Profile.dart';
+import 'Screens/TaskManager.dart';
+import 'Screens/Calendar.dart';
+import 'Screens/Chat.dart';
+import 'Screens/Notifications.dart';
+import 'Screens/EditProfile.dart';
+import 'Screens/ChangePassword.dart';
+import 'Screens/ContactSupport.dart';
+import 'Screens/CreateaNewProject.dart';
 
 void main() {
   runApp(const MyApp());
@@ -62,6 +70,16 @@ class MyApp extends StatelessWidget {
         '/welcome2': (context) => const WelcomePage2(),
         '/login': (context) => const LoginPage(),
         '/create-account': (context) => const CreateAccount(),
+        '/dashboard': (context) => const Dashboard(),
+        '/profile': (context) => const ProfileScreen(),
+        '/tasks': (context) => const TaskManager(),
+        '/calendar': (context) => const Calendar(),
+        '/chat': (context) => const Chat(),
+        '/notifications': (context) => const NotificationsScreen(),
+        '/edit-profile': (context) => const EditProfile(),
+        '/change-password': (context) => const ChangePassword(),
+        '/contact-support': (context) => const ContactSupport(),
+        '/create-project': (context) => const CreateaNewProject(),
       },
       debugShowCheckedModeBanner: false,
     );
