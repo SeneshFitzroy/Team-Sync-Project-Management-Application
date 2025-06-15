@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'Screens/welcome-page1.dart';
 import 'Screens/welcome-page2.dart';
-import 'Screens/login-page.dart';
+import 'Screens/login_working.dart';
 import 'Screens/create_account.dart';
-import 'Screens/Dashboard.dart';
+import 'Screens/dashboard_complete.dart';
 import 'Screens/TaskManagerNew.dart';
 import 'Screens/Profile.dart';
 import 'Screens/Calendar.dart';
