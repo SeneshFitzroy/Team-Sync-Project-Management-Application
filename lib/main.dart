@@ -1,18 +1,9 @@
 import 'package:flutter/material.dart';
 import 'Screens/welcome-page1.dart';
 import 'Screens/welcome-page2.dart';
-import 'Screens/login-page.dart';
+import 'Screens/login_working.dart';
 import 'Screens/create_account.dart';
-import 'Screens/Dashboard.dart';
-import 'Screens/Profile.dart';
-import 'Screens/TaskManager.dart';
-import 'Screens/Calendar.dart';
-import 'Screens/Chat.dart';
-import 'Screens/Notifications.dart';
-import 'Screens/EditProfile.dart';
-import 'Screens/ChangePassword.dart';
-import 'Screens/ContactSupport.dart';
-import 'Screens/CreateaNewProject.dart';
+import 'Screens/dashboard_complete.dart';
 
 void main() {
   runApp(const MyApp());
