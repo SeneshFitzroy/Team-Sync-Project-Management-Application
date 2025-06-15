@@ -56,6 +56,7 @@ class MyApp extends StatelessWidget {
       home: const WelcomePage1(),
       routes: {
         '/welcome2': (context) => const WelcomePage2(),
+        '/login': (context) => const LoginPage(),
       },
       debugShowCheckedModeBanner: false,
     );
