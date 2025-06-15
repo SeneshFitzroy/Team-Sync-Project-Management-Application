@@ -38,63 +38,37 @@ import 'Screens/ChangePassword.dart';
 void main() async {
   // Ensure Flutter is initialized before calling Firebase
   WidgetsFlutterBinding.ensureInitialized();
-    try {
-    // Firebase initialization with error handling
+  
+  // Initialize Firebase with error handling - don't let it block the app
+  try {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
-    ).catchError((error) {
-      print("Firebase initialization error caught and handled: $error");
-      throw error; // Re-throw to be caught by outer try-catch
-    });
-    
-    print("Firebase initialized successfully");
-      // Basic tests to ensure Firebase Auth is working
-    try {
-      final auth = FirebaseAuth.instance;
-      print("Firebase Auth initialized: ${auth.app.name}");
-      
-      // Set up authentication state monitoring
-      if (kDebugMode) {
-        auth.authStateChanges().listen((User? user) {
-          if (user != null) {
-            print('🔐 User authenticated: ${user.email}');
-          } else {
-            print('🔐 User signed out');
-          }
-        });
-      }
-    } catch (e) {
-      print("Error accessing Firebase Auth: $e");
-    }
+    );
+    print("✅ Firebase initialized successfully");
   } catch (e) {
-    print("Firebase initialization error: $e");
+    print("⚠️ Firebase initialization failed: $e");
+    print("🔄 App will continue without Firebase features");
   }
-    // Set up global error handling for registerExtension and other errors
+  
+  // Set up basic error handling
   FlutterError.onError = (FlutterErrorDetails details) {
     final errorMessage = details.exception.toString();
     
-    // Handle registerExtension errors from dart:developer
+    // Handle common errors gracefully
     if (errorMessage.contains('registerExtension') || 
-        errorMessage.contains('developer event method hooks')) {
-      if (kDebugMode) {
-        print('🛠️ Debug extension error (safe to ignore in production): ${details.exception}');
-      }
-      return; // Don't crash the app
-    }
-    
-    // Handle Firebase Pigeon errors
-    if (errorMessage.contains('PigeonUserDetails') || 
+        errorMessage.contains('developer event method hooks') ||
+        errorMessage.contains('PigeonUserDetails') || 
         errorMessage.contains('List<Object?>') ||
         errorMessage.contains('PigeonUserInfo')) {
-      print('🔧 Firebase Pigeon error (handled gracefully): ${details.exception}');
-      return; // Don't crash the app
+      if (kDebugMode) {
+        print('🛠️ Non-critical error (handled): ${details.exception}');
+      }
+      return;
     }
-      // Handle other errors normally
+    
+    // Handle other errors normally
     if (kDebugMode) {
       FlutterError.presentError(details);
-    } else {
-      // In production, log errors but don't crash
-      print('⚠️ Production error (logged): ${details.exception}');
     }
   };
   
@@ -123,7 +97,7 @@ class MyApp extends StatelessWidget {
           elevation: 0,
         ),
       ),      debugShowCheckedModeBanner: false,
-      home: const WelcomePage1(), // Simplified to show welcome page directly
+      home: const WelcomePage1(), // Back to WelcomePage1
       routes: {
         '/welcome1': (context) => const WelcomePage1(),
         '/welcome2': (context) => const LoginPage(),
