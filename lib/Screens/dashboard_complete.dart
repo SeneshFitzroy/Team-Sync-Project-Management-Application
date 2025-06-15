@@ -1,15 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:fluttercomponenets/Services/firebase_service.dart';
 import '../Components/nav_bar.dart';
-import '../Components/search_bar.dart';
-import '../Components/task_box.dart';
-import '../Components/add_button.dart';
-import 'Profile.dart';
-import 'TaskManagerNew.dart';
-import 'Calendar.dart';
-import 'Chat.dart';
-import 'CreateaNewProject.dart';
-import 'Notifications.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
