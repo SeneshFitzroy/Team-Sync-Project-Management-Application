@@ -1,11 +1,6 @@
 import 'package:flutter/material.dart';
 import 'Screens/welcome-page1.dart';
 import 'Screens/welcome-page2.dart';
-import 'Screens/login-page.dart';
-import 'Screens/Dashboard.dart';
-import 'Screens/create_account.dart';
-import 'Screens/Profile.dart';
-import 'Screens/Notifications.dart';
 
 void main() {
   runApp(const MyApp());
@@ -57,14 +52,10 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      home: const WelcomePage1(),
+      initialRoute: '/',
       routes: {
+        '/': (context) => const WelcomePage1(),
         '/welcome2': (context) => const WelcomePage2(),
-        '/login': (context) => const LoginPage(),
-        '/dashboard': (context) => const Dashboard(),
-        '/signup': (context) => const CreateAccount(),
-        '/profile': (context) => const ProfileScreen(),
-        '/notifications': (context) => const NotificationsScreen(),
       },
       debugShowCheckedModeBanner: false,
     );
