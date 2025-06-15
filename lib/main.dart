@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'Screens/welcome-page1.dart';
 import 'Screens/welcome-page2.dart';
+import 'Screens/login-page.dart';
+import 'Screens/create_account.dart';
 
 void main() {
   runApp(const MyApp());
