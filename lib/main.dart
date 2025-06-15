@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'Screens/welcome-page1.dart';
 import 'Screens/welcome-page2.dart';
 import 'Screens/login_simple.dart';
-import 'Screens/Dashboard.dart';
+import 'Screens/dashboard_simple.dart';
 
 void main() {
   runApp(const MyApp());
