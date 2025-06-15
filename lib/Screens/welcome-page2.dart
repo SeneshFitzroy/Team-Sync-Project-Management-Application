@@ -18,14 +18,10 @@ class LoginScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
+    return Scaffold(      body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-
             colors: [Color(0xFF1A365D), Color(0xFF4A90E2)],
-
-            colors: [Color(0xFF1989BD), Color(0xFF192F5D)],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
