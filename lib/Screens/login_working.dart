@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:fluttercomponenets/Services/firebase_service.dart';
 // import 'create_account.dart'; // Moved to backup
-import 'ForgetPassword.dart';
 // import 'Dashboard.dart'; // Moved to backup
 
 class LoginPage extends StatefulWidget {
