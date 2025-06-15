@@ -3,7 +3,7 @@ import 'lib/Screens/TaskManager.dart';
 
 // TaskManager wrapper class to ensure proper initialization
 class TaskManagerWrapper extends StatelessWidget {
-  const TaskManagerWrapper({Key? key}) : super(key: key);
+  const TaskManagerWrapper({super.key});
   
   @override
   Widget build(BuildContext context) {
