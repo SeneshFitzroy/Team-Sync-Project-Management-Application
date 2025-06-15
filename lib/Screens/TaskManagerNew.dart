@@ -112,7 +112,7 @@ class _TaskManagerState extends State<TaskManager> {
   List<Task> _myTasks = [];
   List<Task> _filteredTasks = [];
   bool _showProjectTasks = false;
-  String _searchQuery = "";
+  final String _searchQuery = "";
   bool _isLoading = true;
   int _currentIndex = 1;
 
