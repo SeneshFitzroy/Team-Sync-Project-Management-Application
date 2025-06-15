@@ -1,10 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'Screens/welcome-page1.dart';
 import 'Screens/welcome-page2.dart';
-import 'Screens/login_working.dart';
-import 'Screens/dashboard_complete.dart';
+import 'Screens/login-page.dart';
+import 'Screens/create_account.dart';
+import 'Screens/Dashboard.dart';
+import 'Screens/Profile.dart';
+import 'Screens/TaskManager.dart';
+import 'Screens/Calendar.dart';
+import 'Screens/Chat.dart';
+import 'Screens/Notifications.dart';
+import 'Screens/EditProfile.dart';
+import 'Screens/ChangePassword.dart';
+import 'Screens/ContactSupport.dart';
+import 'Screens/CreateaNewProject.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  try {
+    await Firebase.initializeApp();
+  } catch (e) {
+    print('Firebase initialization error: $e');
+    // Continue without Firebase for demo mode
+  }
+  
   runApp(const MyApp());
 }
 
@@ -35,13 +55,41 @@ class MyApp extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 16),
           ),
         ),
+        cardTheme: CardTheme(
+          elevation: 4,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+        inputDecorationTheme: InputDecorationTheme(
+          filled: true,
+          fillColor: Colors.grey[50],
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide.none,
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: Color(0xFF4A90E2), width: 2),
+          ),
+        ),
       ),
       initialRoute: '/',
       routes: {
         '/': (context) => const WelcomePage1(),
         '/welcome2': (context) => const WelcomePage2(),
         '/login': (context) => const LoginPage(),
+        '/create-account': (context) => const CreateAccount(),
         '/dashboard': (context) => const Dashboard(),
+        '/profile': (context) => const ProfileScreen(),
+        '/tasks': (context) => const TaskManager(),
+        '/calendar': (context) => const Calendar(),
+        '/chat': (context) => const Chat(),
+        '/notifications': (context) => const NotificationsScreen(),
+        '/edit-profile': (context) => const EditProfile(),
+        '/change-password': (context) => const ChangePassword(),
+        '/contact-support': (context) => const ContactSupport(),
+        '/create-project': (context) => const CreateaNewProject(),
       },
       debugShowCheckedModeBanner: false,
     );
