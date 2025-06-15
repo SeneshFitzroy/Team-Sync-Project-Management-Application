@@ -4,6 +4,8 @@ import 'Screens/welcome-page2.dart';
 import 'Screens/login-page.dart';
 import 'Screens/Dashboard.dart';
 import 'Screens/create_account.dart';
+import 'Screens/Profile.dart';
+import 'Screens/Notifications.dart';
 
 void main() {
   runApp(const MyApp());
