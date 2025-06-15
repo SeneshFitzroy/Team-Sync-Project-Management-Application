@@ -122,8 +122,9 @@ class MyApp extends StatelessWidget {
           foregroundColor: Colors.white,
           elevation: 0,
         ),
-      ),      debugShowCheckedModeBanner: false,
-      home: const WelcomePage1(), // Simplified to show welcome page directly
+      ),
+      debugShowCheckedModeBanner: false,
+      home: const AuthWrapper(),
       routes: {
         '/welcome1': (context) => const WelcomePage1(),
         '/welcome2': (context) => const LoginPage(),
