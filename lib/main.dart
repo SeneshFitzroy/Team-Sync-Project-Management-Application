@@ -3,6 +3,8 @@ import 'Screens/welcome-page1.dart';
 import 'Screens/welcome-page2.dart';
 import 'Screens/login-page.dart';
 import 'Screens/create_account.dart';
+import 'Screens/Dashboard.dart';
+import 'Screens/Profile.dart';
 
 void main() {
   runApp(const MyApp());
@@ -58,6 +60,8 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => const WelcomePage1(),
         '/welcome2': (context) => const WelcomePage2(),
+        '/login': (context) => const LoginPage(),
+        '/create-account': (context) => const CreateAccount(),
       },
       debugShowCheckedModeBanner: false,
     );
