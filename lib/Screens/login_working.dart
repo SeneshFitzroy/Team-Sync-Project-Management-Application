@@ -291,7 +291,9 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                         height: 56,
                         child: OutlinedButton(
                           onPressed: () {
-                            Navigator.pushNamed(context, '/create-account');
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Create account coming soon!')),
+                            );
                           },
                           style: OutlinedButton.styleFrom(
                             side: const BorderSide(color: Colors.white, width: 2),
