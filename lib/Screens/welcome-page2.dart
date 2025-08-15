@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart'; // Import FirebaseAuth
 import 'create account.dart'; // Import the CreateAccount screen
 import 'login-page.dart'; // Import the LoginPage screen
 
@@ -96,19 +95,15 @@ class LoginScreen extends StatelessWidget {
                   color: Colors.white,
                   textColor: const Color(0xFF192F5D),
                   onPressed: () {
-                    // Manually sign out any existing session first
-                    FirebaseAuth.instance.signOut().then((_) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const LoginPage(checkExistingLogin: false),
-                        ),
-                      );
-                    }).catchError((error) {
-                      print("Error signing out: $error");
-                      // Continue to login page anyway
-                      Navigator.push(
-                        context,
+                    // Navigate directly to login page
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const LoginPage(),
+                      ),
+                    );
+                  },
+                ),
                         MaterialPageRoute(
                           builder: (context) => const LoginPage(checkExistingLogin: false),
                         ),
