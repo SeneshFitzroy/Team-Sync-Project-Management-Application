@@ -13,7 +13,6 @@ class AppTheme {
 
   static ThemeData get lightTheme {
     return ThemeData(
-      fontFamily: 'Inter',
       primaryColor: primaryBlue,
       scaffoldBackgroundColor: white,
       colorScheme: const ColorScheme.light(
@@ -32,7 +31,6 @@ class AppTheme {
           color: darkText,
           fontSize: 18,
           fontWeight: FontWeight.w600,
-          fontFamily: 'Inter',
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
