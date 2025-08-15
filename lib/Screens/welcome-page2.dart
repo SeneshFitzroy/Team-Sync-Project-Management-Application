@@ -2,29 +2,8 @@ import 'package:flutter/material.dart';
 import 'create account.dart'; // Import the CreateAccount screen
 import 'login-page.dart'; // Import the LoginPage screen
 
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF1989BD)),
-        useMaterial3: true,
-        scaffoldBackgroundColor: Colors.white,
-      ),
-      home: const LoginScreen(),
-      debugShowCheckedModeBanner: false,
-    );
-  }
-}
-
-class LoginScreen extends StatelessWidget {
-  const LoginScreen({super.key});
+class WelcomePage2 extends StatelessWidget {
+  const WelcomePage2({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -104,13 +83,6 @@ class LoginScreen extends StatelessWidget {
                     );
                   },
                 ),
-                        MaterialPageRoute(
-                          builder: (context) => const LoginPage(checkExistingLogin: false),
-                        ),
-                      );
-                    });
-                  },
-                ),
 
                 const SizedBox(height: 16),
 
@@ -172,135 +144,6 @@ class LoginScreen extends StatelessWidget {
           style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w600,
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class WelcomePage2 extends StatelessWidget {
-  const WelcomePage2({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFF192F5D), Color(0xFF1989BD)],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
-        child: SingleChildScrollView(
-          child: SizedBox(
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height,
-            child: Stack(
-              children: [
-                // Logo Image
-                Positioned(
-                  left: -65,
-                  top: 97,
-                  child: Image.asset(
-                    'assets/images/Logo.png',
-                    width: 523,
-                    height: 523,
-                    fit: BoxFit.contain,
-                  ),
-                ),
-
-                // Login Button
-                _buildPositionedButton(
-                  context,
-                  top: 620,
-                  text: 'Log in',
-                  color: Colors.white,
-                  textColor: const Color(0xFF192F5D),
-                  onPressed: () {
-                    // Manually sign out any existing session first
-                    FirebaseAuth.instance.signOut().then((_) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const LoginPage(checkExistingLogin: false),
-                        ),
-                      );
-                    }).catchError((error) {
-                      print("Error signing out: $error");
-                      // Continue to login page anyway
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const LoginPage(checkExistingLogin: false),
-                        ),
-                      );
-                    });
-                  },
-                ),
-
-                // Create Account Button
-                _buildPositionedButton(
-                  context,
-                  top: 690,
-                  text: 'Create account',
-                  color: Colors.transparent,
-                  textColor: Colors.white,
-                  borderColor: Colors.white,
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => CreateAccount()),
-                    );
-                  },
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPositionedButton(
-    BuildContext context, {
-    required double top,
-    required String text,
-    required Color color,
-    required Color textColor,
-    Color? borderColor,
-    required VoidCallback onPressed,
-  }) {
-    return Positioned(
-      left: 20,
-      top: top,
-      child: GestureDetector(
-        onTap: onPressed,
-        child: Container(
-          width: 353,
-          height: 54,
-          decoration: ShapeDecoration(
-            color: color,
-            shape: RoundedRectangleBorder(
-              side: borderColor != null
-                  ? BorderSide(color: borderColor, width: 1)
-                  : BorderSide.none,
-              borderRadius: BorderRadius.circular(10),
-            ),
-          ),
-          child: Center(
-            child: Text(
-              text,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: textColor,
-                fontSize: 18,
-                fontFamily: 'Inter',
-                fontWeight: FontWeight.w600,
-                height: 1.25,
-              ),
-            ),
           ),
         ),
       ),
