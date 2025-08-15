@@ -112,32 +112,31 @@ class _ChatScreenState extends State<ChatScreen> with SingleTickerProviderStateM
                   ),
                   const Spacer(),
                   GestureDetector(
-            onTap: () {
-              // Navigate to Profile page when user icon is tapped
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const ProfileScreen()),
-              );
-            },
-            child: CircleAvatar(
-              backgroundColor: Colors.grey[200],
-              child: const Icon(Icons.person, color: Color(0xFF192F5D)),
+                    onTap: () {
+                      // Navigate to Profile page when user icon is tapped
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const ProfileScreen()),
+                      );
+                    },
+                    child: CircleAvatar(
+                      backgroundColor: Colors.grey[200],
+                      child: const Icon(Icons.person, color: Color(0xFF2D62ED)),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-          const SizedBox(width: 16),
-        ],
-      ),
-      body: Column(
-        children: [
-          // Search bar with functionality
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: TextField(
-              controller: _searchController,
-              onChanged: _onSearchChanged,
-              decoration: InputDecoration(
-                prefixIcon: const Icon(Icons.search, color: Color(0xFF999999)),
-                hintText: 'Search...',
+            
+            // Search bar with functionality
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: TextField(
+                controller: _searchController,
+                onChanged: _onSearchChanged,
+                decoration: InputDecoration(
+                  prefixIcon: const Icon(Icons.search, color: Color(0xFF999999)),
+                  hintText: 'Search...',
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
