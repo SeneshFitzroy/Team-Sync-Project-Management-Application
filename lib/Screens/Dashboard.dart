@@ -202,9 +202,17 @@ class _DashboardState extends State<Dashboard> {
     return Container(
       padding: const EdgeInsets.all(15),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.1),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: Colors.white.withOpacity(0.2)),
+        border: Border.all(color: Colors.grey.shade200),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            spreadRadius: 1,
+            blurRadius: 5,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         children: [
@@ -213,7 +221,7 @@ class _DashboardState extends State<Dashboard> {
           Text(
             value,
             style: const TextStyle(
-              color: Colors.white,
+              color: Color(0xFF2D62ED),
               fontSize: 24,
               fontWeight: FontWeight.bold,
             ),
@@ -222,7 +230,7 @@ class _DashboardState extends State<Dashboard> {
           Text(
             title,
             style: const TextStyle(
-              color: Colors.white70,
+              color: Colors.grey,
               fontSize: 12,
             ),
             textAlign: TextAlign.center,
@@ -235,11 +243,19 @@ class _DashboardState extends State<Dashboard> {
   Widget _buildProjectCard(Project project) {
     return Container(
       margin: const EdgeInsets.only(bottom: 15),
-      padding: const EdgeInsets.all(15),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.1),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: Colors.white.withOpacity(0.2)),
+        border: Border.all(color: Colors.grey.shade200),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            spreadRadius: 1,
+            blurRadius: 5,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
