@@ -93,21 +93,25 @@ class _ChatScreenState extends State<ChatScreen> with SingleTickerProviderStateM
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        automaticallyImplyLeading: false, // Remove the back button
-        backgroundColor: Colors.white,
-        elevation: 0,
-        title: const Text(
-          'Chat',
-          style: TextStyle(
-            color: Color(0xFF192F5D),
-            fontSize: 20,
-            fontFamily: 'Inter',
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-        actions: [
-          GestureDetector(
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Header
+            Container(
+              padding: const EdgeInsets.all(20.0),
+              child: Row(
+                children: [
+                  const Text(
+                    'Chat',
+                    style: TextStyle(
+                      color: Color(0xFF2D62ED),
+                      fontSize: 24,
+                      fontFamily: 'Inter',
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const Spacer(),
+                  GestureDetector(
             onTap: () {
               // Navigate to Profile page when user icon is tapped
               Navigator.push(
