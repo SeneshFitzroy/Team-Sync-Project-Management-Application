@@ -6,21 +6,22 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFF1A365D), Color(0xFF4A90E2)],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              children: [
-                // Header
-                Row(
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Header
+            Container(
+              decoration: const BoxDecoration(
+                color: Color(0xFF2D62ED),
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(30),
+                  bottomRight: Radius.circular(30),
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Row(
                   children: [
                     IconButton(
                       icon: const Icon(Icons.arrow_back, color: Colors.white),
@@ -40,13 +41,16 @@ class ProfileScreen extends StatelessWidget {
                     IconButton(
                       icon: const Icon(Icons.edit, color: Colors.white),
                       onPressed: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Edit profile feature coming soon!')),
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const EditProfilePage()),
                         );
                       },
                     ),
                   ],
                 ),
+              ),
+            ),
                 
                 const SizedBox(height: 30),
                 
