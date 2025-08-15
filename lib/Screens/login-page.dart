@@ -85,11 +85,11 @@ class _LoginPageState extends State<LoginPage> {
       final password = _passwordController.text;
 
       if (email.isNotEmpty && password.isNotEmpty) {
-        // Navigate to dashboard
+        // Navigate to main app navigator
         if (mounted) {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => const Dashboard()),
+            MaterialPageRoute(builder: (context) => const MainAppNavigator()),
           );
         }
       } else {
