@@ -1,12 +1,7 @@
 import 'package:flutter/material.dart';
 import 'login-page.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:cloud_firestore/cloud_firestore.dart'; // Add Firestore for user data
-import 'package:flutter/foundation.dart';
-import '../firebase_options.dart'; // Import Firebase options
 
-// Simple user model to replace PigeonUserDetails and avoid casting issues
+// Simple user model
 class UserData {
   final String displayName;
   final String email;
