@@ -1,13 +1,1 @@
-import 'package:flutter/material.dart';
-
-class ChatListScreen extends StatelessWidget {
-  const ChatListScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Chat List')),
-      body: const Center(child: Text('Chat List - Under Construction')),
-    );
-  }
-}
+import 'package:flutter/material.dart'; class chat_list_screenScreen extends StatelessWidget { const chat_list_screenScreen({super.key}); @override Widget build(BuildContext context) { return Scaffold(appBar: AppBar(title: Text('chat_list_screen')), body: Center(child: Text('chat_list_screen - Under Construction'))); }} 

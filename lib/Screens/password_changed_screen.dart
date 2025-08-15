@@ -1,12 +1,1 @@
-import 'package:flutter/material.dart';
-
-class PasswordChangedScreen extends StatelessWidget {
-  const PasswordChangedScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: const Center(child: Text('Password Changed - Under Construction')),
-    );
-  }
-}
+import 'package:flutter/material.dart'; class password_changed_screenScreen extends StatelessWidget { const password_changed_screenScreen({super.key}); @override Widget build(BuildContext context) { return Scaffold(appBar: AppBar(title: Text('password_changed_screen')), body: Center(child: Text('password_changed_screen - Under Construction'))); }} 

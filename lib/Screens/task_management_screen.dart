@@ -1,14 +1,1 @@
-import 'package:flutter/material.dart';
-
-class TaskManagementScreen extends StatelessWidget {
-  final String projectId;
-  const TaskManagementScreen({super.key, required this.projectId});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Task Management')),
-      body: const Center(child: Text('Task Management - Under Construction')),
-    );
-  }
-}
+import 'package:flutter/material.dart'; class task_management_screenScreen extends StatelessWidget { const task_management_screenScreen({super.key}); @override Widget build(BuildContext context) { return Scaffold(appBar: AppBar(title: Text('task_management_screen')), body: Center(child: Text('task_management_screen - Under Construction'))); }} 

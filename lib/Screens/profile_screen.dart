@@ -1,13 +1,1 @@
-import 'package:flutter/material.dart';
-
-class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Profile')),
-      body: const Center(child: Text('Profile - Under Construction')),
-    );
-  }
-}
+import 'package:flutter/material.dart'; class profile_screenScreen extends StatelessWidget { const profile_screenScreen({super.key}); @override Widget build(BuildContext context) { return Scaffold(appBar: AppBar(title: Text('profile_screen')), body: Center(child: Text('profile_screen - Under Construction'))); }} 

@@ -1,16 +1,1 @@
-import 'package:flutter/material.dart';
-
-class OTPVerificationScreen extends StatelessWidget {
-  final String email;
-  const OTPVerificationScreen({super.key, required this.email});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Please check your email')),
-      body: Center(
-        child: Text('OTP Verification for $email - Under Construction'),
-      ),
-    );
-  }
-}
+import 'package:flutter/material.dart'; class otp_verification_screenScreen extends StatelessWidget { const otp_verification_screenScreen({super.key}); @override Widget build(BuildContext context) { return Scaffold(appBar: AppBar(title: Text('otp_verification_screen')), body: Center(child: Text('otp_verification_screen - Under Construction'))); }} 

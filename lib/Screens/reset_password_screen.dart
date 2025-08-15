@@ -1,13 +1,1 @@
-import 'package:flutter/material.dart';
-
-class ResetPasswordScreen extends StatelessWidget {
-  const ResetPasswordScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Reset password')),
-      body: const Center(child: Text('Reset Password - Under Construction')),
-    );
-  }
-}
+import 'package:flutter/material.dart'; class reset_password_screenScreen extends StatelessWidget { const reset_password_screenScreen({super.key}); @override Widget build(BuildContext context) { return Scaffold(appBar: AppBar(title: Text('reset_password_screen')), body: Center(child: Text('reset_password_screen - Under Construction'))); }} 

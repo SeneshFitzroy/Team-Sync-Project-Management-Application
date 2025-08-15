@@ -1,5 +1,5 @@
-name: tasksync
-description: "TaskSync - A comprehensive project management application"
+name: fluttercomponenets
+description: "A new Flutter project."
 publish_to: 'none'
 version: 1.0.0+1
 
@@ -10,45 +10,24 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.8
-  intl: ^0.20.0
+  intl: ^0.18.1
   
-  # Updated Firebase plugins for better Windows compatibility
-  firebase_core: ^3.6.0
-  firebase_auth: ^5.3.1
-  cloud_firestore: ^5.4.3
-  firebase_storage: ^12.3.2
-  google_sign_in: ^6.2.1
+  # Use these specific versions known to work without the PigeonUserDetails error
+  firebase_core: ^2.26.0  # Downgrade from ^3.x.x
+  firebase_auth: ^4.17.7  # Downgrade from ^5.x.x
+  cloud_firestore: ^4.8.0  # Adjust version to match core/auth
+  firebase_storage: ^11.7.0  # If you're using Firebase Storage
+  google_sign_in: ^6.1.4  # If you're using Google Sign-In
   
-  # State management and navigation
-  flutter_bloc: ^8.1.6
-  go_router: ^14.3.0
-  
-  # Storage and preferences
-  shared_preferences: ^2.3.2
-  flutter_secure_storage: ^9.2.2
-  
-  # UI and animations
-  animations: ^2.0.11
-  flutter_staggered_animations: ^1.1.1
-  
-  # Date handling
-  table_calendar: ^3.1.2
-  
-  # Image handling
-  image_picker: ^1.1.2
-  
-  # HTTP requests
-  http: ^1.2.2
-  
-  # Utils
-  uuid: ^4.5.1
+  shared_preferences: ^2.2.0
+  flutter_secure_storage: ^8.0.0  # Add this line
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^6.0.0
+  flutter_lints: ^5.0.0
 
 flutter:
   uses-material-design: true
   assets:
-    - assets/images/
+    - assets/images/Logo.png
