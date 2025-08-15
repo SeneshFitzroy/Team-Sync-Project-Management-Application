@@ -266,7 +266,7 @@ class _DashboardState extends State<Dashboard> {
                 child: Text(
                   project.name,
                   style: const TextStyle(
-                    color: Colors.white,
+                    color: Color(0xFF2D62ED),
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                   ),
@@ -279,7 +279,7 @@ class _DashboardState extends State<Dashboard> {
           Text(
             project.description,
             style: const TextStyle(
-              color: Colors.white70,
+              color: Colors.grey,
               fontSize: 14,
             ),
           ),
@@ -292,12 +292,12 @@ class _DashboardState extends State<Dashboard> {
                   children: [
                     Text(
                       'Progress: ${(project.progress * 100).toInt()}%',
-                      style: const TextStyle(color: Colors.white70, fontSize: 12),
+                      style: const TextStyle(color: Colors.grey, fontSize: 12),
                     ),
                     const SizedBox(height: 5),
                     LinearProgressIndicator(
                       value: project.progress,
-                      backgroundColor: Colors.white.withOpacity(0.2),
+                      backgroundColor: Colors.grey.shade200,
                       valueColor: AlwaysStoppedAnimation<Color>(
                         _getProgressColor(project.progress),
                       ),
@@ -308,7 +308,7 @@ class _DashboardState extends State<Dashboard> {
               const SizedBox(width: 15),
               Text(
                 'Due: ${_formatDate(project.dueDate)}',
-                style: const TextStyle(color: Colors.white70, fontSize: 12),
+                style: const TextStyle(color: Colors.grey, fontSize: 12),
               ),
             ],
           ),
