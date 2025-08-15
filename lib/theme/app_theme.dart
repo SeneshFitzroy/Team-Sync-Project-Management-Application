@@ -44,7 +44,6 @@ class AppTheme {
           textStyle: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
-            fontFamily: 'Inter',
           ),
         ),
       ),
@@ -59,7 +58,6 @@ class AppTheme {
           textStyle: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
-            fontFamily: 'Inter',
           ),
         ),
       ),
@@ -82,81 +80,6 @@ class AppTheme {
         hintStyle: const TextStyle(
           color: grayText,
           fontSize: 16,
-          fontFamily: 'Inter',
-        ),
-      ),
-      textTheme: const TextTheme(
-        displayLarge: TextStyle(
-          fontSize: 32,
-          fontWeight: FontWeight.bold,
-          color: darkText,
-          fontFamily: 'Inter',
-        ),
-        displayMedium: TextStyle(
-          fontSize: 28,
-          fontWeight: FontWeight.bold,
-          color: darkText,
-          fontFamily: 'Inter',
-        ),
-        displaySmall: TextStyle(
-          fontSize: 24,
-          fontWeight: FontWeight.w600,
-          color: darkText,
-          fontFamily: 'Inter',
-        ),
-        headlineLarge: TextStyle(
-          fontSize: 22,
-          fontWeight: FontWeight.w600,
-          color: darkText,
-          fontFamily: 'Inter',
-        ),
-        headlineMedium: TextStyle(
-          fontSize: 20,
-          fontWeight: FontWeight.w600,
-          color: darkText,
-          fontFamily: 'Inter',
-        ),
-        headlineSmall: TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.w600,
-          color: darkText,
-          fontFamily: 'Inter',
-        ),
-        titleLarge: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.w600,
-          color: darkText,
-          fontFamily: 'Inter',
-        ),
-        titleMedium: TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.w500,
-          color: darkText,
-          fontFamily: 'Inter',
-        ),
-        titleSmall: TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w500,
-          color: grayText,
-          fontFamily: 'Inter',
-        ),
-        bodyLarge: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.normal,
-          color: darkText,
-          fontFamily: 'Inter',
-        ),
-        bodyMedium: TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.normal,
-          color: grayText,
-          fontFamily: 'Inter',
-        ),
-        bodySmall: TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.normal,
-          color: grayText,
-          fontFamily: 'Inter',
         ),
       ),
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
@@ -168,12 +91,10 @@ class AppTheme {
         selectedLabelStyle: TextStyle(
           fontSize: 12,
           fontWeight: FontWeight.w600,
-          fontFamily: 'Inter',
         ),
         unselectedLabelStyle: TextStyle(
           fontSize: 12,
           fontWeight: FontWeight.normal,
-          fontFamily: 'Inter',
         ),
       ),
     );
