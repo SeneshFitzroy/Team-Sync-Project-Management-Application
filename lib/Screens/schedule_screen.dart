@@ -1,0 +1,1 @@
+import 'package:flutter/material.dart'; class schedule_screenScreen extends StatelessWidget { const schedule_screenScreen({super.key}); @override Widget build(BuildContext context) { return Scaffold(appBar: AppBar(title: Text('schedule_screen')), body: Center(child: Text('schedule_screen - Under Construction'))); }} 

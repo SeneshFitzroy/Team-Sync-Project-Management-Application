@@ -1,0 +1,1 @@
+import 'package:flutter/material.dart'; class chat_screenScreen extends StatelessWidget { const chat_screenScreen({super.key}); @override Widget build(BuildContext context) { return Scaffold(appBar: AppBar(title: Text('chat_screen')), body: Center(child: Text('chat_screen - Under Construction'))); }} 

@@ -1,0 +1,1 @@
+import 'package:flutter/material.dart'; class kanban_board_screenScreen extends StatelessWidget { const kanban_board_screenScreen({super.key}); @override Widget build(BuildContext context) { return Scaffold(appBar: AppBar(title: Text('kanban_board_screen')), body: Center(child: Text('kanban_board_screen - Under Construction'))); }} 
