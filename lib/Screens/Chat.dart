@@ -1,8 +1,4 @@
 import 'package:flutter/material.dart';
-import '../Components/nav_bar.dart';
-import './Dashboard.dart';
-import './TaskManager.dart';
-import './Calendar.dart';
 import './Profile.dart'; // Add this import
 
 class ChatScreen extends StatefulWidget {
@@ -344,10 +340,6 @@ class _ChatScreenState extends State<ChatScreen> with SingleTickerProviderStateM
           ),
           */
         ],
-      ),
-      bottomNavigationBar: NavBar(
-        selectedIndex: _currentIndex,
-        onTap: _onNavBarTap,
       ),
     );
   }
