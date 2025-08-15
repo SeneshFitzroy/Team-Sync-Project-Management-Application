@@ -13,7 +13,6 @@ class _ChatScreenState extends State<ChatScreen> with SingleTickerProviderStateM
   final TextEditingController _messageController = TextEditingController();
   final TextEditingController _searchController = TextEditingController();
   bool _isTeamsTab = true;
-  int _currentIndex = 2; // Set to 2 for Chat tab
   final List<String> _teams = ['Product Launch Team', 'Marketing Team', 'Development Team'];
   final List<String> _members = ['Alice', 'Bob', 'Charlie', 'David', 'Eve'];
   String _searchQuery = '';
@@ -35,36 +34,6 @@ class _ChatScreenState extends State<ChatScreen> with SingleTickerProviderStateM
     _messageController.dispose();
     _searchController.dispose();
     super.dispose();
-  }
-
-  void _onNavBarTap(int index) {
-    setState(() {
-      _currentIndex = index;
-    });
-    
-    // Navigate to the appropriate screen based on index
-    if (index != 2) { // If not Chat tab (since we're already in Chat)
-      switch (index) {
-        case 0: // Dashboard
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const Dashboard()),
-          );
-          break;
-        case 1: // Tasks
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const TaskManager()),
-          );
-          break;
-        case 3: // Calendar
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const Calendar()),
-          );
-          break;
-      }
-    }
   }
 
   void _onSearchChanged(String query) {
@@ -341,59 +310,6 @@ class _ChatScreenState extends State<ChatScreen> with SingleTickerProviderStateM
           */
         ],
       ),
-    );
-  }
-
-  Widget _buildNavItem(IconData icon, String label, bool isSelected, {int? badgeCount}) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Stack(
-          clipBehavior: Clip.none,
-          children: [
-            Icon(
-              icon,
-              color: isSelected ? const Color(0xFF150303) : const Color(0xFF666666),
-            ),
-            if (badgeCount != null)
-              Positioned(
-                right: -10,
-                top: -5,
-                child: Container(
-                  padding: const EdgeInsets.all(4),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFFF1212),
-                    shape: BoxShape.circle,
-                  ),
-                  constraints: const BoxConstraints(
-                    minWidth: 16,
-                    minHeight: 16,
-                  ),
-                  child: Center(
-                    child: Text(
-                      badgeCount.toString(),
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-          ],
-        ),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: TextStyle(
-            color: isSelected ? const Color(0xFF150303) : const Color(0xFF666666),
-            fontSize: 12,
-            fontFamily: 'Inter',
-            fontWeight: FontWeight.w400,
-          ),
-        ),
-      ],
     );
   }
 }
