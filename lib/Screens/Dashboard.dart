@@ -38,25 +38,26 @@ class _DashboardState extends State<Dashboard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFF1A365D), Color(0xFF4A90E2)],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
-        child: SafeArea(
-          child: Column(
-            children: [
-              // Header
-              Padding(
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Header
+            Container(
+              decoration: const BoxDecoration(
+                color: Color(0xFF2D62ED),
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(30),
+                  bottomRight: Radius.circular(30),
+                ),
+              ),
+              child: Padding(
                 padding: const EdgeInsets.all(20.0),
                 child: Row(
                   children: [
                     const CircleAvatar(
                       backgroundColor: Colors.white,
-                      child: Icon(Icons.person, color: Color(0xFF1A365D)),
+                      child: Icon(Icons.person, color: Color(0xFF2D62ED)),
                     ),
                     const SizedBox(width: 15),
                     const Expanded(
@@ -98,22 +99,23 @@ class _DashboardState extends State<Dashboard> {
                   ],
                 ),
               ),
-              
-              // Dashboard title
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20.0),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Dashboard',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                    ),
+            ),
+            
+            // Dashboard title
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'Dashboard',
+                  style: TextStyle(
+                    color: Color(0xFF2D62ED),
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
+            ),
               
               const SizedBox(height: 20),
               
@@ -162,7 +164,7 @@ class _DashboardState extends State<Dashboard> {
                   child: Text(
                     'Recent Projects',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: Color(0xFF2D62ED),
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                     ),
@@ -192,8 +194,8 @@ class _DashboardState extends State<Dashboard> {
             const SnackBar(content: Text('Add new project feature coming soon!')),
           );
         },
-        backgroundColor: Colors.white,
-        foregroundColor: const Color(0xFF1A365D),
+        backgroundColor: const Color(0xFF2D62ED),
+        foregroundColor: Colors.white,
         child: const Icon(Icons.add),
       ),
     );
