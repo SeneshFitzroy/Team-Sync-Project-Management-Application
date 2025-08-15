@@ -42,7 +42,7 @@ class _DashboardState extends State<Dashboard> {
       body: SafeArea(
         child: Column(
           children: [
-            // Header
+            // Header with blue background
             Container(
               decoration: const BoxDecoration(
                 color: Color(0xFF2D62ED),
@@ -116,76 +116,73 @@ class _DashboardState extends State<Dashboard> {
                 ),
               ),
             ),
-              
-              const SizedBox(height: 20),
-              
-              // Stats cards
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: _buildStatCard(
-                        'Active Projects',
-                        _projects.where((p) => p.status == ProjectStatus.inProgress).length.toString(),
-                        Icons.work,
-                        Colors.orange,
-                      ),
+            
+            // Stats cards
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: _buildStatCard(
+                      'Active Projects',
+                      _projects.where((p) => p.status == ProjectStatus.inProgress).length.toString(),
+                      Icons.work,
+                      Colors.orange,
                     ),
-                    const SizedBox(width: 15),
-                    Expanded(
-                      child: _buildStatCard(
-                        'Completed',
-                        '8',
-                        Icons.check_circle,
-                        Colors.green,
-                      ),
+                  ),
+                  const SizedBox(width: 15),
+                  Expanded(
+                    child: _buildStatCard(
+                      'Completed',
+                      '8',
+                      Icons.check_circle,
+                      Colors.green,
                     ),
-                    const SizedBox(width: 15),
-                    Expanded(
-                      child: _buildStatCard(
-                        'Pending',
-                        _projects.where((p) => p.status == ProjectStatus.planning).length.toString(),
-                        Icons.pending,
-                        Colors.blue,
-                      ),
+                  ),
+                  const SizedBox(width: 15),
+                  Expanded(
+                    child: _buildStatCard(
+                      'Pending',
+                      _projects.where((p) => p.status == ProjectStatus.planning).length.toString(),
+                      Icons.pending,
+                      Colors.blue,
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-              
-              const SizedBox(height: 30),
-              
-              // Projects section
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20.0),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Recent Projects',
-                    style: TextStyle(
-                      color: Color(0xFF2D62ED),
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
+            ),
+            
+            const SizedBox(height: 30),
+            
+            // Projects section
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20.0),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'Recent Projects',
+                  style: TextStyle(
+                    color: Color(0xFF2D62ED),
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
-              
-              const SizedBox(height: 15),
-              
-              // Projects list
-              Expanded(
-                child: ListView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                  itemCount: _projects.length,
-                  itemBuilder: (context, index) {
-                    return _buildProjectCard(_projects[index]);
-                  },
-                ),
+            ),
+            
+            const SizedBox(height: 15),
+            
+            // Projects list
+            Expanded(
+              child: ListView.builder(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                itemCount: _projects.length,
+                itemBuilder: (context, index) {
+                  return _buildProjectCard(_projects[index]);
+                },
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
