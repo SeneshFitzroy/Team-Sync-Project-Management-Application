@@ -43,35 +43,6 @@ class _DashboardState extends State<Dashboard> {
     }
   }
 
-  Future<void> _seedSampleData() async {
-    try {
-      await DataSeeder.seedSampleData();
-      _loadTaskStatistics(); // Refresh stats after seeding
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Sample data created successfully!',
-              style: TextStyle(fontFamily: 'Poppins'),
-            ),
-            backgroundColor: Colors.green,
-          ),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Error creating sample data: $e',
-              style: TextStyle(fontFamily: 'Poppins'),
-            ),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    }
-  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -98,11 +69,6 @@ class _DashboardState extends State<Dashboard> {
                     ),
                     Row(
                       children: [
-                        IconButton(
-                          icon: const Icon(Icons.data_array, color: AppTheme.primaryBlue),
-                          onPressed: _seedSampleData,
-                          tooltip: 'Add Sample Data',
-                        ),
                         IconButton(
                           icon: const Icon(Icons.notifications, color: AppTheme.primaryBlue),
                           onPressed: () {
