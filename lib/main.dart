@@ -4,8 +4,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'theme/app_theme.dart';
 
-// Import welcome screen
-import 'Screens/welcome-page1.dart';
+// Import auth wrapper
+import 'widgets/auth_wrapper.dart';
 
 void main() async {
   // Ensure Flutter is initialized
