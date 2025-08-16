@@ -87,7 +87,7 @@ class _TaskManagerState extends State<TaskManager> {
         status: 'Not Started',
         dueDate: '2024-03-05',
         priority: 'Low',
-        priorityColor: const AppTheme.primaryBlue,
+        priorityColor: AppTheme.primaryBlue,
         assignee: 'Team Lead',
         statusColor: const Color(0xFFCCCCCC),
       ),
@@ -112,7 +112,7 @@ class _TaskManagerState extends State<TaskManager> {
         priority: 'Medium',
         priorityColor: const Color(0xFF187E0F),
         assignee: 'Me',
-        statusColor: const AppTheme.primaryBlue,
+        statusColor: AppTheme.primaryBlue,
       ),
     ];
 
