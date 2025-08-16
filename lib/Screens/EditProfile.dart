@@ -109,7 +109,7 @@ class _EditProfileState extends State<EditProfile> {
                       width: 30,
                       height: 30,
                       decoration: BoxDecoration(
-                        color: const Color(0xFF192F5D),
+                        color: AppTheme.primaryBlue,
                         borderRadius: BorderRadius.circular(15),
                       ),
                       child: IconButton(
@@ -183,7 +183,7 @@ class _EditProfileState extends State<EditProfile> {
                 );
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF192F5D),
+                backgroundColor: AppTheme.primaryBlue,
                 minimumSize: const Size(double.infinity, 50),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
@@ -194,7 +194,7 @@ class _EditProfileState extends State<EditProfile> {
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 18,
-                  fontFamily: 'Poppins',
+                  fontFamily: AppTheme.fontFamily,
                   fontWeight: FontWeight.w600,
                 ),
               ),

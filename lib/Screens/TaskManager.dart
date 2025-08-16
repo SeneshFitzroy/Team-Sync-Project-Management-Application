@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../theme/app_theme.dart';
 // Import other screens that we'll navigate to
 import './Profile.dart'; // Make sure this points to the right file
 
