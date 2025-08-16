@@ -87,8 +87,9 @@ class _DashboardState extends State<Dashboard> {
                     IconButton(
                       icon: const Icon(Icons.notifications, color: Colors.white),
                       onPressed: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('No new notifications')),
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const NotificationsScreen()),
                         );
                       },
                     ),
