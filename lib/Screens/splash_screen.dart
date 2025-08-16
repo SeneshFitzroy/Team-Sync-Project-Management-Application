@@ -189,7 +189,7 @@ class _SplashScreenState extends State<SplashScreen>
                 return SlideTransition(
                   position: _textSlideAnimation,
                   child: FadeTransition(
-                    opacity: AlwaysStoppedAnimation(_textFadeAnimation.value.clamp(0.0, 1.0)),
+                    opacity: AlwaysStoppedAnimation(_safeOpacity(_textFadeAnimation.value)),
                     child: Column(
                       children: [
                         // App Name with animated icon
