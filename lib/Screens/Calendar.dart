@@ -196,6 +196,33 @@ class _CalendarState extends State<Calendar> {
                 ),
               ),
               
+              const SizedBox(height: 20),
+              
+              // Add Task for Selected Date Button
+              Container(
+                width: double.infinity,
+                margin: const EdgeInsets.symmetric(horizontal: 4),
+                child: ElevatedButton.icon(
+                  onPressed: () => _showAddTaskDialog(),
+                  icon: Icon(Icons.add_task, color: Colors.white),
+                  label: Text(
+                    'Add Task for ${DateFormat('MMM dd').format(_selectedDate)}',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFF2D62ED),
+                    padding: EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+              ),
+              
               const SizedBox(height: 24),
               
               // Upcoming Tasks section with filter
