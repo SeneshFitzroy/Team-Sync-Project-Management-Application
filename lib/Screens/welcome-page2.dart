@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'create account.dart'; // Import the CreateAccount screen
 import 'login-page.dart'; // Import the LoginPage screen
+import '../widgets/TickLogo.dart';
 
 class WelcomePage2 extends StatelessWidget {
   const WelcomePage2({super.key});
@@ -25,10 +26,10 @@ class WelcomePage2 extends StatelessWidget {
                 const Spacer(flex: 2),
 
                 // TaskSync Logo
-                Image.asset(
-                  'assets/images/Logo.png',
-                  height: 250,
-                  fit: BoxFit.contain,
+                const TickLogoLarge(
+                  size: 250,
+                  tickColor: Colors.white,
+                  backgroundColor: Color(0xFF2D62ED),
                 ),
 
                 const SizedBox(height: 16),
