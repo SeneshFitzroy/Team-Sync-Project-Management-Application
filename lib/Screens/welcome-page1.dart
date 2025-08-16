@@ -65,7 +65,7 @@ class WelcomePage1 extends StatelessWidget {
                   'Improve your team efficiency with powerful project management tools',
                   textAlign: TextAlign.center,
                   style: AppTheme.bodyLarge.copyWith(
-                    color: Colors.white.withOpacity(0.9),
+                    color: Colors.white.withValues(alpha: 0.9),
                     fontSize: 15,
                     height: 1.4,
                   ),
@@ -151,7 +151,7 @@ class WelcomePage1 extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.2),
+            color: Colors.white.withValues(alpha: 0.2),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Icon(
