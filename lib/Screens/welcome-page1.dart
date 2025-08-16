@@ -271,12 +271,12 @@ class _WelcomePage1State extends State<WelcomePage1>
                 child: SlideTransition(
                   position: _slideAnimation,
                   child: FadeTransition(
-                    opacity: AlwaysStoppedAnimation(_fadeAnimation.value.clamp(0.0, 1.0)),
+                    opacity: AlwaysStoppedAnimation(_safeOpacity(_fadeAnimation.value)),
                     child: AnimatedBuilder(
                       animation: _scaleController,
                       builder: (context, child) {
                         return Transform.scale(
-                          scale: _scaleAnimation.value.clamp(0.0, double.infinity),
+                          scale: _safeScale(_scaleAnimation.value),
                           child: Container(
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(16),
