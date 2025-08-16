@@ -146,11 +146,11 @@ class _CreateAccountState extends State<CreateAccount> {
                   const SizedBox(height: 20),
                   
                   // Logo
-                  Center(
-                    child: Image.asset(
-                      'assets/images/Logo.png',
-                      height: 100,
-                      fit: BoxFit.contain,
+                  const Center(
+                    child: TickLogo(
+                      size: 100,
+                      color: Colors.white,
+                      backgroundColor: Color(0xFF2D62ED),
                     ),
                   ),
                   
