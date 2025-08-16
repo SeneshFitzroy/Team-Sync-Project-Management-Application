@@ -144,11 +144,12 @@ class ProfileScreen extends StatelessWidget {
                   ],
                 ),
               ),
-          ],
-        ), // Close SingleChildScrollView
-      ),
-    );
-  }
+          ], // Close Column children
+        ), // Close Column
+      ), // Close SingleChildScrollView
+    ), // Close SafeArea
+  ); // Close Scaffold
+}
 
   Widget _buildProfileOption(BuildContext context, IconData icon, String title, String subtitle, VoidCallback onTap) {
     return Container(
