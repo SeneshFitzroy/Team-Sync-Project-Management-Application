@@ -82,11 +82,11 @@ class _CreateAccountState extends State<CreateAccount> {
       await Future.delayed(const Duration(seconds: 2));
       
       if (mounted) {
-        // Navigate to login page with the email
+        // Navigate to login page
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => LoginPage(initialEmail: _emailController.text.trim()),
+            builder: (context) => const LoginPage(),
           ),
         );
         

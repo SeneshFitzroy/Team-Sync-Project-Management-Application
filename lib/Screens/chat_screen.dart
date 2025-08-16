@@ -308,7 +308,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.error_outline,
                           size: 48,
                           color: AppTheme.error,
@@ -337,7 +337,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.chat_bubble_outline,
                           size: 48,
                           color: AppTheme.textLight,
@@ -378,7 +378,7 @@ class _ChatScreenState extends State<ChatScreen> {
               color: AppTheme.backgroundWhite,
               border: Border(
                 top: BorderSide(
-                  color: AppTheme.textLight.withOpacity(0.3),
+                  color: AppTheme.textLight.withValues(alpha: 0.3),
                   width: 1,
                 ),
               ),
@@ -397,13 +397,13 @@ class _ChatScreenState extends State<ChatScreen> {
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(24),
                         borderSide: BorderSide(
-                          color: AppTheme.textLight.withOpacity(0.3),
+                          color: AppTheme.textLight.withValues(alpha: 0.3),
                         ),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(24),
                         borderSide: BorderSide(
-                          color: AppTheme.textLight.withOpacity(0.3),
+                          color: AppTheme.textLight.withValues(alpha: 0.3),
                         ),
                       ),
                       focusedBorder: OutlineInputBorder(
@@ -418,7 +418,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         vertical: 12,
                       ),
                     ),
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontFamily: AppTheme.fontFamily,
                       fontSize: 16,
                     ),
