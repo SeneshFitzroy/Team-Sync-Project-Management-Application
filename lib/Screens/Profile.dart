@@ -259,29 +259,38 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _buildLogoutOption(BuildContext context) {
     return Container(
+      margin: const EdgeInsets.only(bottom: 15),
       decoration: BoxDecoration(
-        color: Colors.red.shade50,
+        color: AppTheme.backgroundWhite,
         borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: Colors.red.shade200),
+        border: Border.all(color: Colors.grey.shade200),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            spreadRadius: 1,
+            blurRadius: 5,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: ListTile(
         leading: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: Colors.red.withOpacity(0.1),
+            color: AppTheme.error.withOpacity(0.1),
             borderRadius: BorderRadius.circular(10),
           ),
-          child: const Icon(Icons.logout, color: Colors.red),
+          child: const Icon(Icons.logout, color: AppTheme.error),
         ),
         title: const Text(
           'Logout',
           style: TextStyle(
             fontWeight: FontWeight.bold,
-            fontFamily: 'Poppins',
-            color: Colors.red,
+            fontFamily: AppTheme.fontFamily,
+            color: AppTheme.error,
           ),
         ),
-        trailing: const Icon(Icons.arrow_forward_ios, color: Colors.red, size: 16),
+        trailing: const Icon(Icons.arrow_forward_ios, color: AppTheme.error, size: 16),
         onTap: () {
           showDialog(
             context: context,
@@ -289,13 +298,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
               title: const Text(
                 'Logout',
                 style: TextStyle(
-                  fontFamily: 'Poppins',
+                  fontFamily: AppTheme.fontFamily,
                 ),
               ),
               content: const Text(
                 'Are you sure you want to logout?',
                 style: TextStyle(
-                  fontFamily: 'Poppins',
+                  fontFamily: AppTheme.fontFamily,
                 ),
               ),
               actions: [
@@ -304,19 +313,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   child: const Text(
                     'Cancel',
                     style: TextStyle(
-                      fontFamily: 'Poppins',
+                      fontFamily: AppTheme.fontFamily,
                     ),
                   ),
                 ),
                 TextButton(
-                  onPressed: () {
-                    Navigator.popUntil(context, (route) => route.isFirst);
+                  onPressed: () async {
+                    try {
+                      await AuthService.signOut();
+                      if (context.mounted) {
+                        Navigator.popUntil(context, (route) => route.isFirst);
+                      }
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Error logging out: $e')),
+                      );
+                    }
                   },
                   child: const Text(
                     'Logout',
                     style: TextStyle(
-                      color: Colors.red,
-                      fontFamily: 'Poppins',
+                      color: AppTheme.error,
+                      fontFamily: AppTheme.fontFamily,
                     ),
                   ),
                 ),
