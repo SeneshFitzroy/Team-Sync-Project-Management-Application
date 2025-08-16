@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
-import '../Components/nav_bar.dart';
 // Import other screens that we'll navigate to
-import './Dashboard.dart';
-import './Chat.dart';
-import './Calendar.dart';
 import './Profile.dart'; // Make sure this points to the right file
 
 // Simplified Task model with essential properties
