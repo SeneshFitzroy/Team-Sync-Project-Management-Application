@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../theme/app_theme.dart';
 import './Profile.dart'; // Add this import
 import './IndividualChat.dart'; // Add this import
 
@@ -124,9 +125,9 @@ class _ChatScreenState extends State<ChatScreen> with SingleTickerProviderStateM
                       height: 52,
                       decoration: BoxDecoration(
                         color: _isTeamsTab 
-                            ? const Color(0xFF192F5D) 
+                            ? AppTheme.primaryBlue 
                             : Colors.white,
-                        border: Border.all(color: const Color(0xFF192F5D)),
+                        border: Border.all(color: AppTheme.primaryBlue),
                         borderRadius: BorderRadius.circular(50),
                       ),
                       child: Center(
@@ -135,7 +136,7 @@ class _ChatScreenState extends State<ChatScreen> with SingleTickerProviderStateM
                           style: TextStyle(
                             color: _isTeamsTab 
                                 ? Colors.white 
-                                : const Color(0xFF192F5D),
+                                : AppTheme.primaryBlue,
                             fontSize: 16,
                             fontFamily: 'Inter',
                             fontWeight: FontWeight.w700,
@@ -155,9 +156,9 @@ class _ChatScreenState extends State<ChatScreen> with SingleTickerProviderStateM
                       height: 52,
                       decoration: BoxDecoration(
                         color: !_isTeamsTab 
-                            ? const Color(0xFF192F5D) 
+                            ? AppTheme.primaryBlue 
                             : Colors.white,
-                        border: Border.all(color: const Color(0xFF192F5D)),
+                        border: Border.all(color: AppTheme.primaryBlue),
                         borderRadius: BorderRadius.circular(50),
                       ),
                       child: Center(
@@ -166,7 +167,7 @@ class _ChatScreenState extends State<ChatScreen> with SingleTickerProviderStateM
                           style: TextStyle(
                             color: !_isTeamsTab 
                                 ? Colors.white 
-                                : const Color(0xFF192F5D),
+                                : AppTheme.primaryBlue,
                             fontSize: 16,
                             fontFamily: 'Inter',
                             fontWeight: FontWeight.w700,
@@ -357,7 +358,7 @@ class _ChatScreenState extends State<ChatScreen> with SingleTickerProviderStateM
                   ),
                 ),
                 IconButton(
-                  icon: Icon(Icons.send, color: Color(0xFF192F5D)),
+                  icon: Icon(Icons.send, color: AppTheme.primaryBlue),
                   onPressed: () {
                     // Send message logic
                     if (_messageController.text.isNotEmpty) {
