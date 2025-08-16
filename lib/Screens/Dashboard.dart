@@ -42,27 +42,85 @@ class _DashboardState extends State<Dashboard> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: Column(
-          children: [
-            // Header with blue background
-            Container(
-              decoration: const BoxDecoration(
-                color: Color(0xFF2D62ED),
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(30),
-                  bottomRight: Radius.circular(30),
-                ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              // Header with title and profile (consistent with Calendar)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Dashboard',
+                    style: TextStyle(
+                      color: const Color(0xFF192F5D),
+                      fontSize: 22,
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  Row(
+                    children: [
+                      // Notification icon
+                      IconButton(
+                        icon: const Icon(
+                          Icons.notifications_outlined, 
+                          color: Color(0xFF2D62ED),
+                          size: 28,
+                        ),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const NotificationsPage()),
+                          );
+                        },
+                      ),
+                      const SizedBox(width: 8),
+                      // Profile avatar
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const ProfileScreen()),
+                          );
+                        },
+                        child: CircleAvatar(
+                          radius: 20,
+                          backgroundColor: const Color(0xFF2D62ED),
+                          child: Icon(Icons.person, color: Colors.white, size: 24),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
-              child: Padding(
-                padding: const EdgeInsets.all(20.0),
+              
+              const SizedBox(height: 24),
+              
+              // Welcome Section with consistent styling
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF2D62ED),
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.1),
+                      spreadRadius: 2,
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
                 child: Row(
                   children: [
-                    const CircleAvatar(
+                    CircleAvatar(
+                      radius: 25,
                       backgroundColor: Colors.white,
-                      child: Icon(Icons.person, color: Color(0xFF2D62ED)),
+                      child: Icon(Icons.person, color: Color(0xFF2D62ED), size: 28),
                     ),
-                    const SizedBox(width: 15),
-                    const Expanded(
+                    const SizedBox(width: 16),
+                    Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -71,18 +129,33 @@ class _DashboardState extends State<Dashboard> {
                             style: TextStyle(
                               color: Colors.white70,
                               fontSize: 14,
+                              fontFamily: 'Poppins',
+                              fontWeight: FontWeight.w400,
                             ),
                           ),
+                          const SizedBox(height: 4),
                           Text(
                             'John Doe',
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 18,
-                              fontWeight: FontWeight.bold,
+                              fontFamily: 'Poppins',
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ],
                       ),
+                    ),
+                  ],
+                ),
+              ),
+              
+              const SizedBox(height: 24),
+              
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
                     ),
                     IconButton(
                       icon: const Icon(Icons.notifications, color: Colors.white),
