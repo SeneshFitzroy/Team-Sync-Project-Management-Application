@@ -372,7 +372,7 @@ class _WelcomePage1State extends State<WelcomePage1>
           tween: Tween(begin: 0.0, end: 1.0),
           curve: Curves.easeOutBack,
           builder: (context, value, child) {
-            final clampedValue = value.clamp(0.0, 1.0);
+            final clampedValue = _safeOpacity(value);
             return Transform.translate(
               offset: Offset(0, (1 - clampedValue) * 30),
               child: Opacity(
