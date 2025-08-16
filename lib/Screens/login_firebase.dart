@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../Services/auth_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/TickLogo.dart';
-import 'create_account.dart';
+import 'create account.dart';
 import 'ForgetPassword.dart';
 import 'Dashboard.dart';
 
