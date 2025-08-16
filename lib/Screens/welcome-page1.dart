@@ -10,7 +10,7 @@ class WelcomePage1 extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
             colors: [AppTheme.primaryDark, AppTheme.primaryBlue],
             begin: Alignment.topCenter,
