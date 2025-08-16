@@ -24,7 +24,6 @@ class _TaskManagerState extends State<TaskManager> {
   String _searchQuery = '';
   
   Stream<List<Task>>? _tasksStream;
-  String? _currentUserId;
   List<Task> _filteredTasks = [];
   List<Task> _projectTasks = [];
   List<Task> _myTasks = [];
@@ -216,73 +215,6 @@ class _TaskManagerState extends State<TaskManager> {
               ],
             );
           },
-        );
-      },
-    );
-  }
-
-  void _startNewChat() {
-    Navigator.pushNamed(context, '/chat_list');
-  }
-
-  void _showChatbot() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Row(
-            children: [
-              Icon(Icons.smart_toy, color: AppTheme.info),
-              const SizedBox(width: 8),
-              const Text('AI Assistant'),
-            ],
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text('Hello! I\'m your AI assistant. How can I help you with your tasks today?'),
-              const SizedBox(height: 16),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    _showAddTaskDialog();
-                  },
-                  icon: const Icon(Icons.add_task, size: 16),
-                  label: const Text('Create Task'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.primaryBlue,
-                    foregroundColor: AppTheme.textWhite,
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 8),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    _startNewChat();
-                  },
-                  icon: const Icon(Icons.chat, size: 16),
-                  label: const Text('Start Chat'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.success,
-                    foregroundColor: AppTheme.textWhite,
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Close'),
-            ),
-          ],
         );
       },
     );
