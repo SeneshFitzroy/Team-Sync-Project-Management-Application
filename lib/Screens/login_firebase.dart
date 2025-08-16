@@ -124,7 +124,7 @@ class _LoginPageState extends State<LoginPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ForgetPassword(),
+        builder: (context) => const ForgetPasswordPage(),
       ),
     );
   }
@@ -151,7 +151,7 @@ class _LoginPageState extends State<LoginPage> {
                   children: [
                     // Logo
                     const TickLogo(
-                      tickColor: AppTheme.textWhite,
+                      color: AppTheme.textWhite,
                       backgroundColor: AppTheme.primaryBlue,
                     ),
                     
