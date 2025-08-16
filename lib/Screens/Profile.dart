@@ -43,6 +43,7 @@ class ProfileScreen extends StatelessWidget {
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 20,
+                              fontFamily: 'Poppins',
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -82,6 +83,7 @@ class ProfileScreen extends StatelessWidget {
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 24,
+                        fontFamily: 'Poppins',
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -90,6 +92,7 @@ class ProfileScreen extends StatelessWidget {
                       style: TextStyle(
                         color: Colors.white70,
                         fontSize: 16,
+                        fontFamily: 'Poppins',
                       ),
                     ),
                   ],
@@ -180,12 +183,16 @@ class ProfileScreen extends StatelessWidget {
           title,
           style: const TextStyle(
             fontWeight: FontWeight.bold,
+            fontFamily: 'Poppins',
             color: Color(0xFF2D62ED),
           ),
         ),
         subtitle: Text(
           subtitle,
-          style: const TextStyle(color: Colors.grey),
+          style: const TextStyle(
+            color: Colors.grey,
+            fontFamily: 'Poppins',
+          ),
         ),
         trailing: const Icon(Icons.arrow_forward_ios, color: Colors.grey, size: 16),
         onTap: onTap,
@@ -213,6 +220,7 @@ class ProfileScreen extends StatelessWidget {
           'Logout',
           style: TextStyle(
             fontWeight: FontWeight.bold,
+            fontFamily: 'Poppins',
             color: Colors.red,
           ),
         ),
