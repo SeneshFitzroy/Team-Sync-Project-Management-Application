@@ -135,6 +135,7 @@ class ProfileScreen extends StatelessWidget {
             ),
           ],
         ),
+        ), // Close SingleChildScrollView
       ),
     );
   }
