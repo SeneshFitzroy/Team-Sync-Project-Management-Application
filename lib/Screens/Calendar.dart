@@ -23,12 +23,6 @@ class _CalendarState extends State<Calendar> {
     });
   }
 
-  void _selectDate(DateTime date) {
-    setState(() {
-      _selectedDate = date;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

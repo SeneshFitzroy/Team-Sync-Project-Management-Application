@@ -4,7 +4,6 @@ import './Profile.dart';
 import './add_task_screen.dart';
 import '../Services/task_service.dart';
 import '../Services/project_service.dart';
-import '../models/task.dart';
 import '../models/project.dart';
 
 class Dashboard extends StatefulWidget {
