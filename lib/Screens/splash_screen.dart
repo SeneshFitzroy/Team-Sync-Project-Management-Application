@@ -379,7 +379,7 @@ class _SplashScreenState extends State<SplashScreen>
           height: 6,
           decoration: BoxDecoration(
             color: AppTheme.primaryBlue.withValues(
-              alpha: 0.3 + (0.7 * _progressAnimation.value),
+              alpha: (0.3 + (0.7 * _progressAnimation.value)).clamp(0.0, 1.0),
             ),
             shape: BoxShape.circle,
           ),
