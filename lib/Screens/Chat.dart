@@ -1,53 +1,16 @@
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
-import './Profile.dart'; // Add this import
-import './IndividualChat.dart'; // Add this import
+import './chat_list_screen.dart';
 
-class ChatScreen extends StatefulWidget {
+class ChatScreen extends StatelessWidget {
   const ChatScreen({super.key});
 
   @override
-  State<ChatScreen> createState() => _ChatScreenState();
+  Widget build(BuildContext context) {
+    // Redirect to the real Firebase chat implementation
+    return const ChatListScreen();
+  }
 }
-
-class _ChatScreenState extends State<ChatScreen> with SingleTickerProviderStateMixin {
-  late TabController _tabController;
-  final TextEditingController _messageController = TextEditingController();
-  final TextEditingController _searchController = TextEditingController();
-  bool _isTeamsTab = true;
-  final List<String> _teams = ['Product Launch Team', 'Marketing Team', 'Development Team'];
-  final List<String> _members = ['Alice', 'Bob', 'Charlie', 'David', 'Eve'];
-  String _searchQuery = '';
-
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(length: 2, vsync: this);
-    _tabController.addListener(() {
-      setState(() {
-        _isTeamsTab = _tabController.index == 0;
-      });
-    });
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    _messageController.dispose();
-    _searchController.dispose();
-    super.dispose();
-  }
-
-  void _onSearchChanged(String query) {
-    setState(() {
-      _searchQuery = query.toLowerCase();
-    });
-  }
-
-  List<String> _getFilteredTeams() {
-    return _teams
-        .where((team) => team.toLowerCase().contains(_searchQuery))
-        .toList();
   }
 
   List<String> _getFilteredMembers() {
