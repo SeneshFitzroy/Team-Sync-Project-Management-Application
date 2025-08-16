@@ -328,7 +328,7 @@ class _SplashScreenState extends State<SplashScreen>
             Padding(
               padding: const EdgeInsets.only(bottom: 40),
               child: FadeTransition(
-                opacity: AlwaysStoppedAnimation(_textFadeAnimation.value.clamp(0.0, 1.0)),
+                opacity: AlwaysStoppedAnimation(_safeOpacity(_textFadeAnimation.value)),
                 child: Column(
                   children: [
                     Text(
