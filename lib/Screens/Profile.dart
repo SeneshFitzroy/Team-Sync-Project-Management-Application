@@ -229,18 +229,39 @@ class ProfileScreen extends StatelessWidget {
           showDialog(
             context: context,
             builder: (context) => AlertDialog(
-              title: const Text('Logout'),
-              content: const Text('Are you sure you want to logout?'),
+              title: const Text(
+                'Logout',
+                style: TextStyle(
+                  fontFamily: 'Poppins',
+                ),
+              ),
+              content: const Text(
+                'Are you sure you want to logout?',
+                style: TextStyle(
+                  fontFamily: 'Poppins',
+                ),
+              ),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text('Cancel'),
+                  child: const Text(
+                    'Cancel',
+                    style: TextStyle(
+                      fontFamily: 'Poppins',
+                    ),
+                  ),
                 ),
                 TextButton(
                   onPressed: () {
                     Navigator.popUntil(context, (route) => route.isFirst);
                   },
-                  child: const Text('Logout', style: TextStyle(color: Colors.red)),
+                  child: const Text(
+                    'Logout',
+                    style: TextStyle(
+                      color: Colors.red,
+                      fontFamily: 'Poppins',
+                    ),
+                  ),
                 ),
               ],
             ),
