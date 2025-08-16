@@ -261,7 +261,7 @@ class _SplashScreenState extends State<SplashScreen>
                   children: [
                     // Loading text
                     FadeTransition(
-                      opacity: AlwaysStoppedAnimation(_textFadeAnimation.value.clamp(0.0, 1.0)),
+                      opacity: AlwaysStoppedAnimation(_safeOpacity(_textFadeAnimation.value)),
                       child: Text(
                         'Loading...',
                         style: AppTheme.bodyMedium.copyWith(
