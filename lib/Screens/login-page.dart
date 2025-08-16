@@ -4,6 +4,7 @@ import 'ForgetPassword.dart';
 import 'create account.dart';
 import 'MainAppNavigator.dart'; // Updated import for dashboard
 import '../widgets/TickLogo.dart';
+import '../theme/app_theme.dart';
 
 class LoginPage extends StatefulWidget {
   final String? initialEmail;
@@ -149,55 +150,57 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFF1A365D), Color(0xFF4A90E2)],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
-        child: SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24.0),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const SizedBox(height: 40),
-                  
-                  // Logo
-                  const Center(
-                    child: TickLogo(
-                      size: 120,
-                      color: Colors.white,
-                      backgroundColor: Color(0xFF2D62ED),
-                    ),
+      backgroundColor: AppTheme.backgroundWhite,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const SizedBox(height: 40),
+                
+                // Logo
+                Center(
+                  child: TickLogo(
+                    size: 100,
+                    color: AppTheme.primaryBlue,
+                    backgroundColor: AppTheme.backgroundLight,
                   ),
-                  
-                  const SizedBox(height: 20),
-                  
-                  const Text(
-                    'Welcome Back!',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
+                ),
+                
+                const SizedBox(height: 24),
+                
+                Text(
+                  'Welcome Back!',
+                  textAlign: TextAlign.center,
+                  style: AppTheme.headingLarge.copyWith(
+                    color: AppTheme.textPrimary,
                   ),
-                  
-                  const SizedBox(height: 40),
-                  
-                  // Email field
-                  TextFormField(
-                    controller: _emailController,
-                    keyboardType: TextInputType.emailAddress,
-                    validator: _validateEmail,
-                    decoration: InputDecoration(
-                      labelText: 'Email',
-                      labelStyle: const TextStyle(color: Colors.white70),
+                ),
+                
+                const SizedBox(height: 8),
+                
+                Text(
+                  'Sign in to continue to TaskSync',
+                  textAlign: TextAlign.center,
+                  style: AppTheme.bodyMedium.copyWith(
+                    color: AppTheme.textSecondary,
+                  ),
+                ),
+                
+                const SizedBox(height: 40),
+                
+                // Email field
+                TextFormField(
+                  controller: _emailController,
+                  keyboardType: TextInputType.emailAddress,
+                  validator: _validateEmail,
+                  style: AppTheme.bodyLarge,
+                  decoration: InputDecoration(
+                    labelText: 'Email',
+                    prefixIcon: Icon(Icons.email_outlined, color: AppTheme.textSecondary),
                       prefixIcon: const Icon(Icons.email, color: Colors.white70),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
