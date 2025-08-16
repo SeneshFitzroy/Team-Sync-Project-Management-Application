@@ -141,7 +141,7 @@ class _LoginPageState extends State<LoginPage> {
                 const SizedBox(height: 40),
                 
                 // Logo
-                Center(
+                const Center(
                   child: TickLogo(
                     size: 100,
                     color: AppTheme.primaryBlue,
@@ -179,7 +179,7 @@ class _LoginPageState extends State<LoginPage> {
                   style: AppTheme.bodyLarge,
                   decoration: InputDecoration(
                     labelText: 'Email',
-                    prefixIcon: Icon(Icons.email_outlined, color: AppTheme.textSecondary),
+                    prefixIcon: const Icon(Icons.email_outlined, color: AppTheme.textSecondary),
                   ),
                 ),
                 
