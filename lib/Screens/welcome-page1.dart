@@ -22,30 +22,30 @@ class WelcomePage1 extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 24.0),
             child: Column(
               children: [
-                const SizedBox(height: 60),
+                const SizedBox(height: 40),
                 
                 // TaskSync Logo
                 const Center(
                   child: TickLogoLarge(
-                    size: 100,
+                    size: 80,
                     tickColor: Colors.white,
                     backgroundColor: AppTheme.primaryBlue,
                   ),
                 ),
                 
-                const SizedBox(height: 20),
+                const SizedBox(height: 16),
                 
                 // App Name
                 Text(
                   'TaskSync',
                   style: AppTheme.headingLarge.copyWith(
                     color: Colors.white,
-                    fontSize: 32,
+                    fontSize: 28,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 
-                const SizedBox(height: 40),
+                const SizedBox(height: 32),
                 
                 // Main Heading
                 Text(
@@ -53,12 +53,12 @@ class WelcomePage1 extends StatelessWidget {
                   textAlign: TextAlign.center,
                   style: AppTheme.headingMedium.copyWith(
                     color: Colors.white,
-                    fontSize: 24,
-                    height: 1.3,
+                    fontSize: 22,
+                    height: 1.2,
                   ),
                 ),
                 
-                const SizedBox(height: 30),
+                const SizedBox(height: 20),
                 
                 // Subheading
                 Text(
@@ -66,22 +66,22 @@ class WelcomePage1 extends StatelessWidget {
                   textAlign: TextAlign.center,
                   style: AppTheme.bodyLarge.copyWith(
                     color: Colors.white.withOpacity(0.9),
-                    fontSize: 16,
-                    height: 1.5,
+                    fontSize: 15,
+                    height: 1.4,
                   ),
                 ),
                 
-                const Spacer(),
+                const SizedBox(height: 40),
                 
                 // Features List
                 Container(
-                  padding: const EdgeInsets.all(20),
+                  padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
                   child: Column(
                     children: [
                       _buildFeatureItem(Icons.task_alt, 'Task Management'),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 10),
                       _buildFeatureItem(Icons.people, 'Team Collaboration'),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 10),
                       _buildFeatureItem(Icons.schedule, 'Smart Scheduling'),
                     ],
                   ),
@@ -92,7 +92,7 @@ class WelcomePage1 extends StatelessWidget {
                 // Get Started Button
                 Container(
                   width: double.infinity,
-                  margin: const EdgeInsets.only(bottom: 40),
+                  margin: const EdgeInsets.only(bottom: 32),
                   child: ElevatedButton(
                     onPressed: () {
                       Navigator.push(
