@@ -4,8 +4,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'theme/app_theme.dart';
 
-// Import auth wrapper
-import 'widgets/auth_wrapper.dart';
+// Import splash screen
+import 'Screens/splash_screen.dart';
 
 void main() async {
   // Ensure Flutter is initialized
@@ -36,7 +36,7 @@ class MyApp extends StatelessWidget {
       title: '✓ TaskSync',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
-      home: const AuthWrapper(),
+      home: const SplashScreen(),
     );
   }
 }
