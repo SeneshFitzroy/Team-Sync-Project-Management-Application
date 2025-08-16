@@ -6,7 +6,13 @@ import 'MainAppNavigator.dart';
 import '../widgets/TickLogo.dart';
 import '../theme/app_theme.dart';
 
-class LoginPage extends StatefulWidget {
+c                    ) : const CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation<Color>(AppTheme.textWhite),
+                          )
+                        : const Text(
+                            'Login',
+                            style: AppTheme.buttonText,
+                          ),ginPage extends StatefulWidget {
   final String? initialEmail;
 
   const LoginPage({
@@ -193,7 +199,7 @@ class _LoginPageState extends State<LoginPage> {
                   style: AppTheme.bodyLarge,
                   decoration: InputDecoration(
                     labelText: 'Password',
-                    prefixIcon: Icon(Icons.lock_outlined, color: AppTheme.textSecondary),
+                    prefixIcon: const Icon(Icons.lock_outlined, color: AppTheme.textSecondary),
                     suffixIcon: IconButton(
                       icon: Icon(
                         _obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
