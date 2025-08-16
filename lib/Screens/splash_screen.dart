@@ -22,6 +22,16 @@ class _SplashScreenState extends State<SplashScreen>
   late Animation<Offset> _textSlideAnimation;
   late Animation<double> _progressAnimation;
 
+  // Helper method to safely clamp opacity values
+  double _safeOpacity(double value) {
+    return value.clamp(0.0, 1.0);
+  }
+
+  // Helper method to safely clamp scale values
+  double _safeScale(double value) {
+    return value.clamp(0.0, double.infinity);
+  }
+
   @override
   void initState() {
     super.initState();
