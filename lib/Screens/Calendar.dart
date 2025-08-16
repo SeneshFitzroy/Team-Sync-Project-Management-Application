@@ -219,25 +219,81 @@ class _CalendarState extends State<Calendar> {
               
               const SizedBox(height: 12),
               
-              // Task items
-              Column(
-                children: List.generate(
-                  _getFilteredTasks().length,
-                  (index) {
-                    final task = _getFilteredTasks()[index];
-                    return _buildTaskCard(
-                      task['title'],
-                      task['time'],
-                      task['date'],
-                      task['priority'],
-                      task['priority'] == 'urgent'
-                          ? const Color(0xFFFF1212)
-                          : task['priority'] == 'pending'
-                              ? const Color(0xFF4318D1)
-                              : const Color(0xFFF59E0B),
+              // Task items from Firebase
+              StreamBuilder<List<Task>>(
+                stream: TaskService.getTasksForDate(_selectedDate),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  
+                  if (snapshot.hasError) {
+                    return Center(
+                      child: Text(
+                        'Error loading tasks',
+                        style: TextStyle(
+                          color: Colors.red,
+                          fontFamily: 'Poppins',
+                        ),
+                      ),
                     );
-                  },
-                ),
+                  }
+                  
+                  List<Task> tasks = snapshot.data ?? [];
+                  
+                  // Filter by priority if needed
+                  if (_filterPriority != 'all') {
+                    tasks = tasks.where((task) => task.priority == _filterPriority).toList();
+                  }
+                  
+                  if (tasks.isEmpty) {
+                    return Container(
+                      padding: const EdgeInsets.all(32),
+                      child: Column(
+                        children: [
+                          Icon(Icons.task_alt, color: Colors.grey[400], size: 48),
+                          const SizedBox(height: 12),
+                          Text(
+                            'No tasks for this date',
+                            style: TextStyle(
+                              color: Colors.grey[600],
+                              fontFamily: 'Poppins',
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+                  
+                  return Column(
+                    children: tasks.map((task) {
+                      Color priorityColor;
+                      switch (task.priority.toLowerCase()) {
+                        case 'urgent':
+                          priorityColor = const Color(0xFFFF1212);
+                          break;
+                        case 'high':
+                          priorityColor = const Color(0xFFF59E0B);
+                          break;
+                        case 'medium':
+                          priorityColor = const Color(0xFF4318D1);
+                          break;
+                        default:
+                          priorityColor = const Color(0xFF4CAF50);
+                      }
+                      
+                      return _buildTaskCard(
+                        task.title,
+                        DateFormat('HH:mm').format(task.dueDate),
+                        DateFormat('yyyy-MM-dd').format(task.dueDate),
+                        task.priority,
+                        priorityColor,
+                      );
+                    }).toList(),
+                  );
+                },
+              ),
               ),
             ],
           ), // Close Column
