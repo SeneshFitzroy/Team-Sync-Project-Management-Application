@@ -118,7 +118,7 @@ class WelcomePage2 extends StatelessWidget {
     return Container(
       width: 40,
       height: 2,
-      color: Colors.white,
+      color: AppTheme.textSecondary,
     );
   }
 
