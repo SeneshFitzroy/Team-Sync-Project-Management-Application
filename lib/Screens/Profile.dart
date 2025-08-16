@@ -17,7 +17,6 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  final AuthService _authService = AuthService();
   UserModel? _currentUser;
   bool _isLoading = true;
 
@@ -29,19 +28,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> _loadUserData() async {
     try {
-      final user = _authService.getCurrentUser();
+      final user = AuthService.currentUser;
       if (user != null) {
         // Create a basic UserModel from Firebase User
         setState(() {
           _currentUser = UserModel(
             uid: user.uid,
             email: user.email ?? '',
-            firstName: user.displayName?.split(' ').first ?? 'User',
-            lastName: user.displayName?.split(' ').skip(1).join(' ') ?? '',
+            fullName: user.displayName ?? 'Unknown User',
             photoURL: user.photoURL,
             phoneNumber: user.phoneNumber,
-            lastSeen: DateTime.now(),
-            isOnline: true,
           );
         });
       }
