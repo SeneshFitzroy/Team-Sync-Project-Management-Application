@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'login-page.dart';
+import '../widgets/TickLogo.dart';
 
 class CreateAccount extends StatefulWidget {
   @override
