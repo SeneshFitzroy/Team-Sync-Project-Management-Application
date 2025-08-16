@@ -44,13 +44,24 @@ class AboutPage extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             
-            const Text(
-              'TaskSync',
-              style: TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF2D62ED),
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(
+                  Icons.check_circle,
+                  color: Color(0xFF2D62ED),
+                  size: 24,
+                ),
+                const SizedBox(width: 8),
+                const Text(
+                  'TaskSync',
+                  style: TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF2D62ED),
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 8),
             

@@ -35,13 +35,24 @@ class WelcomePage2 extends StatelessWidget {
                 const SizedBox(height: 16),
 
                 // TaskSync Text Logo
-                const Text(
-                  'TaskSync',
-                  style: TextStyle(
-                    fontSize: 36,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.check_circle,
+                      color: Colors.white,
+                      size: 28,
+                    ),
+                    const SizedBox(width: 8),
+                    const Text(
+                      'TaskSync',
+                      style: TextStyle(
+                        fontSize: 36,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
                 ),
 
                 const SizedBox(height: 8),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'welcome-page2.dart';
+import '../widgets/TickLogo.dart';
 
 class WelcomePage1 extends StatelessWidget {
   const WelcomePage1({super.key});
@@ -22,7 +23,14 @@ class WelcomePage1 extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 40),
-                // Removed the logo image
+                // TaskSync Logo
+                const Center(
+                  child: TickLogoLarge(
+                    size: 120,
+                    tickColor: Colors.white,
+                    backgroundColor: Color(0xFF2D62ED),
+                  ),
+                ),
                 const SizedBox(height: 40),
                 const Text(
                   'Manage your projects in a smarter way',
