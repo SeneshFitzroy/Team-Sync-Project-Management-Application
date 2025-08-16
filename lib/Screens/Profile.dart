@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import '../theme/app_theme.dart';
+import '../Services/auth_service.dart';
+import '../models/user_model.dart';
 import 'EditProfile.dart';
 import 'PersonalInformation.dart';
 import 'SecuritySettings.dart';
@@ -6,13 +9,56 @@ import 'NotificationSettings.dart';
 import 'HelpSupport.dart';
 import 'About.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
   @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  final AuthService _authService = AuthService();
+  UserModel? _currentUser;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  Future<void> _loadUserData() async {
+    try {
+      final userData = await _authService.getCurrentUserData();
+      if (userData != null) {
+        setState(() {
+          _currentUser = userData;
+        });
+      }
+    } catch (e) {
+      debugPrint('Error loading user data: $e');
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return Scaffold(
+        backgroundColor: AppTheme.backgroundWhite,
+        body: const Center(
+          child: CircularProgressIndicator(
+            color: AppTheme.primaryBlue,
+          ),
+        ),
+      );
+    }
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppTheme.backgroundWhite,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
@@ -20,7 +66,7 @@ class ProfileScreen extends StatelessWidget {
             // Header
             Container(
               decoration: const BoxDecoration(
-                color: Color(0xFF2D62ED),
+                color: AppTheme.primaryBlue,
                 borderRadius: BorderRadius.only(
                   bottomLeft: Radius.circular(30),
                   bottomRight: Radius.circular(30),
@@ -33,7 +79,7 @@ class ProfileScreen extends StatelessWidget {
                     Row(
                       children: [
                         IconButton(
-                          icon: const Icon(Icons.arrow_back, color: Colors.white),
+                          icon: const Icon(Icons.arrow_back, color: AppTheme.textWhite),
                           onPressed: () => Navigator.pop(context),
                         ),
                         const Expanded(
@@ -41,26 +87,26 @@ class ProfileScreen extends StatelessWidget {
                             'Profile',
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                              color: Colors.white,
+                              color: AppTheme.textWhite,
                               fontSize: 20,
-                              fontFamily: 'Poppins',
+                              fontFamily: AppTheme.fontFamily,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                         ),
                         IconButton(
-                          icon: const Icon(Icons.edit, color: Colors.white),
+                          icon: const Icon(Icons.edit, color: AppTheme.textWhite),
                           onPressed: () {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                        builder: (context) => const EditProfile(
-                          name: "John Doe",
-                          username: "johndoe",
-                          email: "john.doe@email.com",
-                          phoneNumber: "+1 234 567 8900",
-                        ),
-                      ),
+                                builder: (context) => EditProfile(
+                                  name: _currentUser?.fullName ?? "Unknown User",
+                                  username: _currentUser?.displayName ?? "unknown",
+                                  email: _currentUser?.email ?? "No email",
+                                  phoneNumber: _currentUser?.phoneNumber ?? "+1 234 567 8900",
+                                ),
+                              ),
                             );
                           },
                         ),
@@ -68,31 +114,36 @@ class ProfileScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 20),
                     // Profile Avatar
-                    const CircleAvatar(
+                    CircleAvatar(
                       radius: 50,
-                      backgroundColor: Colors.white,
-                      child: Icon(
-                        Icons.person,
-                        size: 60,
-                        color: Color(0xFF2D62ED),
-                      ),
+                      backgroundColor: AppTheme.textWhite,
+                      backgroundImage: _currentUser?.hasProfilePhoto == true 
+                        ? NetworkImage(_currentUser!.photoURL!) 
+                        : null,
+                      child: _currentUser?.hasProfilePhoto != true
+                        ? const Icon(
+                            Icons.person,
+                            size: 60,
+                            color: AppTheme.primaryBlue,
+                          )
+                        : null,
                     ),
                     const SizedBox(height: 15),
-                    const Text(
-                      'John Doe',
-                      style: TextStyle(
-                        color: Colors.white,
+                    Text(
+                      _currentUser?.fullName ?? 'Unknown User',
+                      style: const TextStyle(
+                        color: AppTheme.textWhite,
                         fontSize: 24,
-                        fontFamily: 'Poppins',
+                        fontFamily: AppTheme.fontFamily,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const Text(
-                      'john.doe@example.com',
-                      style: TextStyle(
+                    Text(
+                      _currentUser?.email ?? 'No email available',
+                      style: const TextStyle(
                         color: Colors.white70,
                         fontSize: 16,
-                        fontFamily: 'Poppins',
+                        fontFamily: AppTheme.fontFamily,
                       ),
                     ),
                   ],
