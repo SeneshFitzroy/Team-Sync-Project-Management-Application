@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'CreateNewProjectPage.dart';
 import 'Notifications.dart';
+import 'Profile.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
