@@ -36,7 +36,7 @@ class MyApp extends StatelessWidget {
       title: '✓ TaskSync',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
-      home: const WelcomePage1(),
+      home: const AuthWrapper(),
     );
   }
 }
