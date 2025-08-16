@@ -32,7 +32,15 @@ class _TaskManagerState extends State<TaskManager> {
   @override
   void initState() {
     super.initState();
+    _loadCurrentUser();
     _initializeStreams();
+  }
+
+  void _loadCurrentUser() {
+    final user = AuthService.currentUser;
+    if (user != null) {
+      _currentUserId = user.uid;
+    }
   }
 
   void _initializeStreams() {
@@ -43,7 +51,6 @@ class _TaskManagerState extends State<TaskManager> {
     } else {
       _tasksStream = TaskService.getAllTasks();
     }
-    _projectsStream = ProjectService.getAllProjects();
   }
 
   void _onSearchChanged(String query) {
@@ -509,7 +516,6 @@ class _TaskManagerState extends State<TaskManager> {
                   }
 
                   final tasks = snapshot.data ?? [];
-                  _allTasks = tasks;
 
                   // Filter tasks based on current user and project
                   final currentUser = AuthService.currentUserId;
