@@ -121,9 +121,9 @@ class _WelcomePage1State extends State<WelcomePage1>
                 animation: _scaleController,
                 builder: (context, child) {
                   return ScaleTransition(
-                    scale: _scaleAnimation,
+                    scale: AlwaysStoppedAnimation(_scaleAnimation.value.clamp(0.0, double.infinity)),
                     child: FadeTransition(
-                      opacity: _fadeAnimation,
+                      opacity: AlwaysStoppedAnimation(_fadeAnimation.value.clamp(0.0, 1.0)),
                       child: Container(
                         padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
@@ -162,7 +162,7 @@ class _WelcomePage1State extends State<WelcomePage1>
               SlideTransition(
                 position: _slideAnimation,
                 child: FadeTransition(
-                  opacity: _fadeAnimation,
+                  opacity: AlwaysStoppedAnimation(_fadeAnimation.value.clamp(0.0, 1.0)),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -200,7 +200,7 @@ class _WelcomePage1State extends State<WelcomePage1>
               SlideTransition(
                 position: _slideAnimation,
                 child: FadeTransition(
-                  opacity: _fadeAnimation,
+                  opacity: AlwaysStoppedAnimation(_fadeAnimation.value.clamp(0.0, 1.0)),
                   child: Column(
                     children: [
                       Text(
@@ -237,7 +237,7 @@ class _WelcomePage1State extends State<WelcomePage1>
                 child: SlideTransition(
                   position: _slideAnimation,
                   child: FadeTransition(
-                    opacity: _fadeAnimation,
+                    opacity: AlwaysStoppedAnimation(_fadeAnimation.value.clamp(0.0, 1.0)),
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
                       child: Column(
@@ -261,12 +261,12 @@ class _WelcomePage1State extends State<WelcomePage1>
                 child: SlideTransition(
                   position: _slideAnimation,
                   child: FadeTransition(
-                    opacity: _fadeAnimation,
+                    opacity: AlwaysStoppedAnimation(_fadeAnimation.value.clamp(0.0, 1.0)),
                     child: AnimatedBuilder(
                       animation: _scaleController,
                       builder: (context, child) {
                         return Transform.scale(
-                          scale: _scaleAnimation.value,
+                          scale: _scaleAnimation.value.clamp(0.0, double.infinity),
                           child: Container(
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(16),
@@ -362,10 +362,11 @@ class _WelcomePage1State extends State<WelcomePage1>
           tween: Tween(begin: 0.0, end: 1.0),
           curve: Curves.easeOutBack,
           builder: (context, value, child) {
+            final clampedValue = value.clamp(0.0, 1.0);
             return Transform.translate(
-              offset: Offset(0, (1 - value) * 30),
+              offset: Offset(0, (1 - clampedValue) * 30),
               child: Opacity(
-                opacity: value,
+                opacity: clampedValue,
                 child: Container(
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
@@ -380,7 +381,7 @@ class _WelcomePage1State extends State<WelcomePage1>
                         color: AppTheme.primaryBlue.withValues(alpha: 0.08),
                         spreadRadius: 0,
                         blurRadius: 15,
-                        offset: const Offset(0, 4),
+                        offset: const Offset(4, 4),
                       ),
                     ],
                   ),

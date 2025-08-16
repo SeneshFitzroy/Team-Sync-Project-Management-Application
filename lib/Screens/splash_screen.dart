@@ -143,9 +143,9 @@ class _SplashScreenState extends State<SplashScreen>
               animation: _logoController,
               builder: (context, child) {
                 return FadeTransition(
-                  opacity: _logoFadeAnimation,
+                  opacity: AlwaysStoppedAnimation(_logoFadeAnimation.value.clamp(0.0, 1.0)),
                   child: ScaleTransition(
-                    scale: _logoScaleAnimation,
+                    scale: AlwaysStoppedAnimation(_logoScaleAnimation.value.clamp(0.0, double.infinity)),
                     child: Container(
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
@@ -179,7 +179,7 @@ class _SplashScreenState extends State<SplashScreen>
                 return SlideTransition(
                   position: _textSlideAnimation,
                   child: FadeTransition(
-                    opacity: _textFadeAnimation,
+                    opacity: AlwaysStoppedAnimation(_textFadeAnimation.value.clamp(0.0, 1.0)),
                     child: Column(
                       children: [
                         // App Name with animated icon
@@ -251,7 +251,7 @@ class _SplashScreenState extends State<SplashScreen>
                   children: [
                     // Loading text
                     FadeTransition(
-                      opacity: _textFadeAnimation,
+                      opacity: AlwaysStoppedAnimation(_textFadeAnimation.value.clamp(0.0, 1.0)),
                       child: Text(
                         'Loading...',
                         style: AppTheme.bodyMedium.copyWith(
@@ -318,7 +318,7 @@ class _SplashScreenState extends State<SplashScreen>
             Padding(
               padding: const EdgeInsets.only(bottom: 40),
               child: FadeTransition(
-                opacity: _textFadeAnimation,
+                opacity: AlwaysStoppedAnimation(_textFadeAnimation.value.clamp(0.0, 1.0)),
                 child: Column(
                   children: [
                     Text(
