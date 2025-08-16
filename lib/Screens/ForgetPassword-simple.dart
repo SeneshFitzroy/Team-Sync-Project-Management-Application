@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/TickLogo.dart';
 
 class ForgetPasswordPage extends StatefulWidget {
   const ForgetPasswordPage({super.key});
@@ -101,11 +102,11 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
                   const SizedBox(height: 40),
                   
                   // Logo
-                  Center(
-                    child: Image.asset(
-                      'assets/images/Logo.png',
-                      height: 120,
-                      fit: BoxFit.contain,
+                  const Center(
+                    child: TickLogo(
+                      size: 120,
+                      color: Colors.white,
+                      backgroundColor: Color(0xFF2D62ED),
                     ),
                   ),
                   
