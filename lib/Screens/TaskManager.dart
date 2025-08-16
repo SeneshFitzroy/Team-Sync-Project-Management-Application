@@ -24,9 +24,8 @@ class _TaskManagerState extends State<TaskManager> {
   String _searchQuery = '';
   
   Stream<List<Task>>? _tasksStream;
-  Stream<List<Project>>? _projectsStream;
+  String? _currentUserId;
   List<Task> _filteredTasks = [];
-  List<Task> _allTasks = [];
   List<Task> _projectTasks = [];
   List<Task> _myTasks = [];
 
