@@ -210,7 +210,7 @@ class _TaskManagerState extends State<TaskManager> {
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: widget.projectColor?.withOpacity(0.3) ??
-              const AppTheme.primaryBlue.withOpacity(0.3),
+              AppTheme.primaryBlue.withOpacity(0.3),
           width: 1,
         ),
       ),
@@ -691,7 +691,7 @@ class _TaskManagerState extends State<TaskManager> {
             height: 50,
             decoration: ShapeDecoration(
               color: _showProjectTasks
-                  ? const AppTheme.primaryBlue
+                  ? AppTheme.primaryBlue
                   : Colors.transparent,
               shape: RoundedRectangleBorder(
                 side: const BorderSide(
@@ -727,7 +727,7 @@ class _TaskManagerState extends State<TaskManager> {
             height: 50,
             decoration: ShapeDecoration(
               color: !_showProjectTasks
-                  ? const AppTheme.primaryBlue
+                  ? AppTheme.primaryBlue
                   : const Color(0xFFFCFDFF),
               shape: RoundedRectangleBorder(
                 side: const BorderSide(
@@ -806,7 +806,7 @@ class _TaskManagerState extends State<TaskManager> {
           width: 205,
           height: 56,
           decoration: ShapeDecoration(
-            color: const AppTheme.primaryBlue,
+            color: AppTheme.primaryBlue,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(50),
             ),
@@ -927,7 +927,7 @@ class _TaskManagerState extends State<TaskManager> {
             } else if (status == 'Pending') {
               statusColor = const Color(0xFFD14318);
             } else if (status == 'Completed') {
-              statusColor = const AppTheme.primaryBlue;
+              statusColor = AppTheme.primaryBlue;
             } else {
               statusColor = const Color(0xFFCCCCCC);
             }
@@ -942,7 +942,7 @@ class _TaskManagerState extends State<TaskManager> {
                   ? const Color(0xFFD14318)
                   : priority == 'Medium'
                       ? const Color(0xFF187E0F)
-                      : const AppTheme.primaryBlue,
+                      : AppTheme.primaryBlue,
               assignee: _showProjectTasks 
                   ? (assigneeController.text.isEmpty ? 'Unassigned' : assigneeController.text)
                   : 'Me',
@@ -1076,7 +1076,7 @@ class _TaskManagerState extends State<TaskManager> {
                             const SizedBox(height: 6),
                             Container(
                               decoration: BoxDecoration(
-                                border: Border.all(color: const AppTheme.primaryBlue),
+                                border: Border.all(color: AppTheme.primaryBlue),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: DropdownButtonHideUnderline(
@@ -1142,7 +1142,7 @@ class _TaskManagerState extends State<TaskManager> {
                               child: Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                                 decoration: BoxDecoration(
-                                  border: Border.all(color: const AppTheme.primaryBlue),
+                                  border: Border.all(color: AppTheme.primaryBlue),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Row(
@@ -1177,7 +1177,7 @@ class _TaskManagerState extends State<TaskManager> {
                                       const SizedBox(height: 6),
                                       Container(
                                         decoration: BoxDecoration(
-                                          border: Border.all(color: const AppTheme.primaryBlue),
+                                          border: Border.all(color: AppTheme.primaryBlue),
                                           borderRadius: BorderRadius.circular(8),
                                         ),
                                         child: DropdownButtonHideUnderline(
@@ -1265,7 +1265,7 @@ class _TaskManagerState extends State<TaskManager> {
                                       const SizedBox(height: 6),
                                       Container(
                                         decoration: BoxDecoration(
-                                          border: Border.all(color: const AppTheme.primaryBlue),
+                                          border: Border.all(color: AppTheme.primaryBlue),
                                           borderRadius: BorderRadius.circular(8),
                                         ),
                                         child: DropdownButtonHideUnderline(
@@ -1392,7 +1392,7 @@ class _TaskManagerState extends State<TaskManager> {
                                     icon: const Icon(Icons.add_circle, size: 18),
                                     label: const Text('Add Task'),
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: const AppTheme.primaryBlue,
+                                      backgroundColor: AppTheme.primaryBlue,
                                       foregroundColor: Colors.white,
                                       padding: const EdgeInsets.symmetric(vertical: 12),
                                       shape: RoundedRectangleBorder(
@@ -1555,7 +1555,7 @@ class _TaskManagerState extends State<TaskManager> {
                                       const SizedBox(height: 6),
                                       Container(
                                         decoration: BoxDecoration(
-                                          border: Border.all(color: const AppTheme.primaryBlue),
+                                          border: Border.all(color: AppTheme.primaryBlue),
                                           borderRadius: BorderRadius.circular(8),
                                         ),
                                         child: DropdownButtonHideUnderline(
@@ -1643,7 +1643,7 @@ class _TaskManagerState extends State<TaskManager> {
                                       const SizedBox(height: 6),
                                       Container(
                                         decoration: BoxDecoration(
-                                          border: Border.all(color: const AppTheme.primaryBlue),
+                                          border: Border.all(color: AppTheme.primaryBlue),
                                           borderRadius: BorderRadius.circular(8),
                                         ),
                                         child: DropdownButtonHideUnderline(
@@ -1745,7 +1745,7 @@ class _TaskManagerState extends State<TaskManager> {
                                   ? const Color(0xFFD14318)
                                   : priority == 'Medium'
                                       ? const Color(0xFF187E0F)
-                                      : const AppTheme.primaryBlue;
+                                      : AppTheme.primaryBlue;
                                       
                               // Update status color
                               if (status == 'In Progress') {
@@ -1759,7 +1759,7 @@ class _TaskManagerState extends State<TaskManager> {
                             Navigator.pop(context);
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const AppTheme.primaryBlue,
+                            backgroundColor: AppTheme.primaryBlue,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
