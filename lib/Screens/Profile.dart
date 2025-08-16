@@ -240,8 +240,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
           title,
           style: const TextStyle(
             fontWeight: FontWeight.bold,
-            fontFamily: 'Poppins',
-            color: Color(0xFF2D62ED),
+            fontFamily: AppTheme.fontFamily,
+            color: AppTheme.textPrimary,
           ),
         ),
         subtitle: Text(
