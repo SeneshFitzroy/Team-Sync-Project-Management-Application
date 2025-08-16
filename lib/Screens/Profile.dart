@@ -1,4 +1,10 @@
 import 'package:flutter/material.dart';
+import 'EditProfile.dart';
+import 'PersonalInformation.dart';
+import 'SecuritySettings.dart';
+import 'NotificationSettings.dart';
+import 'HelpSupport.dart';
+import 'About.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
