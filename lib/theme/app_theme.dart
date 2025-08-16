@@ -104,11 +104,9 @@ class AppTheme {
         primary: primaryBlue,
         secondary: primaryLight,
         surface: backgroundWhite,
-        background: backgroundWhite,
         onPrimary: textWhite,
         onSecondary: textWhite,
         onSurface: textPrimary,
-        onBackground: textPrimary,
         error: error,
       ),
       
@@ -133,7 +131,7 @@ class AppTheme {
           backgroundColor: primaryBlue,
           foregroundColor: textWhite,
           elevation: 2,
-          shadowColor: primaryBlue.withOpacity(0.3),
+          shadowColor: primaryBlue.withValues(alpha: 0.3),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
@@ -149,11 +147,11 @@ class AppTheme {
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: textLight.withOpacity(0.3)),
+          borderSide: BorderSide(color: textLight.withValues(alpha: 0.3)),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: textLight.withOpacity(0.3)),
+          borderSide: BorderSide(color: textLight.withValues(alpha: 0.3)),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -180,7 +178,7 @@ class AppTheme {
       // Card Theme
       cardTheme: CardThemeData(
         elevation: 2,
-        shadowColor: textPrimary.withOpacity(0.1),
+        shadowColor: textPrimary.withValues(alpha: 0.1),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
