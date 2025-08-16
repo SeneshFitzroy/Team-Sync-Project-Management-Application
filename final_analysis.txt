@@ -1,0 +1,575 @@
+Analyzing Team-Sync-Project-Management-Application...           
+
+   info - The imported package 'firebase_data_connect' isn't a dependency of the importing package - dataconnect-generated\dart\default_connector\default.dart:2:8 - depend_on_referenced_packages
+  error - Target of URI doesn't exist: 'package:firebase_data_connect/firebase_data_connect.dart' - dataconnect-generated\dart\default_connector\default.dart:2:8 - uri_does_not_exist
+  error - Undefined class 'ConnectorConfig' - dataconnect-generated\dart\default_connector\default.dart:14:10 - undefined_class
+  error - The method 'ConnectorConfig' isn't defined for the type 'DefaultConnector' - dataconnect-generated\dart\default_connector\default.dart:14:44 - undefined_method
+  error - Undefined name 'FirebaseDataConnect' - dataconnect-generated\dart\default_connector\default.dart:23:22 - undefined_identifier
+  error - Undefined name 'CallerSDKType' - dataconnect-generated\dart\default_connector\default.dart:25:22 - undefined_identifier
+  error - Undefined class 'FirebaseDataConnect' - dataconnect-generated\dart\default_connector\default.dart:28:3 - undefined_class
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Components\nav_bar.dart:20:33 - deprecated_member_use
+   info - Use 'const' with the constructor to improve performance - lib\Components\profile_header.dart:25:11 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Components\profile_header.dart:28:20 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Components\profile_header.dart:30:22 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Components\profile_header.dart:51:27 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Components\profile_header.dart:66:32 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Components\profile_header.dart:67:32 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Components\profile_header.dart:85:22 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Components\profile_header.dart:101:22 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Components\profile_header.dart:102:24 - prefer_const_constructors
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Components\profile_icon.dart:48:43 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Components\task_box.dart:90:33 - deprecated_member_use
+   info - Use 'const' with the constructor to improve performance - lib\Components\task_box.dart:214:11 - prefer_const_constructors
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Components\task_box.dart:312:53 - deprecated_member_use
+   info - The file name 'About.dart' isn't a lower_case_with_underscores identifier - lib\Screens\About.dart:1:1 - file_names
+   info - Use 'const' with the constructor to improve performance - lib\Screens\About.dart:18:16 - prefer_const_constructors
+   info - Use 'const' literals as arguments to constructors of '@immutable' classes - lib\Screens\About.dart:20:21 - prefer_const_literals_to_create_immutables
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\About.dart:43:48 - deprecated_member_use
+   info - Use 'const' with the constructor to improve performance - lib\Screens\About.dart:54:13 - prefer_const_constructors
+   info - Use 'const' literals as arguments to constructors of '@immutable' classes - lib\Screens\About.dart:56:25 - prefer_const_literals_to_create_immutables
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\About.dart:112:55 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\About.dart:145:55 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\About.dart:177:48 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\About.dart:252:47 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\About.dart:259:46 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\About.dart:329:47 - deprecated_member_use
+   info - The file name 'AboutTaskSync.dart' isn't a lower_case_with_underscores identifier - lib\Screens\AboutTaskSync.dart:1:1 - file_names
+   info - Use 'const' with the constructor to improve performance - lib\Screens\AboutTaskSync.dart:53:11 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\AboutTaskSync.dart:88:14 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\AboutTaskSync.dart:239:14 - prefer_const_constructors
+   info - The file name 'AddTeamMembers.dart' isn't a lower_case_with_underscores identifier - lib\Screens\AddTeamMembers.dart:1:1 - file_names
+   info - Invalid use of a private type in a public API - lib\Screens\AddTeamMembers.dart:33:3 - library_private_types_in_public_api
+   info - The file name 'Calendar.dart' isn't a lower_case_with_underscores identifier - lib\Screens\Calendar.dart:1:1 - file_names
+warning - Unused import: '../theme/app_theme.dart' - lib\Screens\Calendar.dart:7:8 - unused_import
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Calendar.dart:40:20 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Calendar.dart:41:22 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Calendar.dart:59:17 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Calendar.dart:70:17 - prefer_const_constructors
+   info - Use 'const' literals as arguments to constructors of '@immutable' classes - lib\Screens\Calendar.dart:79:26 - prefer_const_literals_to_create_immutables
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Calendar.dart:80:21 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Calendar.dart:80:59 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Calendar.dart:81:21 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Calendar.dart:81:62 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Calendar.dart:82:21 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Calendar.dart:82:60 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Calendar.dart:83:21 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Calendar.dart:83:62 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Calendar.dart:91:17 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Calendar.dart:93:28 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Calendar.dart:93:59 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Calendar.dart:113:22 - prefer_const_constructors
+   info - Don't use 'BuildContext's across async gaps - lib\Screens\Calendar.dart:139:35 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\Screens\Calendar.dart:141:42 - use_build_context_synchronously
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Calendar.dart:144:42 - prefer_const_constructors
+   info - Don't use 'BuildContext's across async gaps - lib\Screens\Calendar.dart:148:42 - use_build_context_synchronously
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Calendar.dart:158:34 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Calendar.dart:160:22 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Calendar.dart:160:46 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Calendar.dart:183:19 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Calendar.dart:185:28 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Calendar.dart:226:34 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Calendar.dart:236:37 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Calendar.dart:240:37 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Calendar.dart:258:34 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Calendar.dart:273:32 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Calendar.dart:274:37 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Calendar.dart:309:37 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Calendar.dart:311:51 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Calendar.dart:312:48 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Calendar.dart:315:55 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Calendar.dart:326:58 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Calendar.dart:326:78 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Calendar.dart:329:37 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Calendar.dart:347:25 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Calendar.dart:350:28 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Calendar.dart:357:38 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Calendar.dart:358:30 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Calendar.dart:372:19 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Calendar.dart:374:28 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Calendar.dart:409:28 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Calendar.dart:410:30 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Calendar.dart:412:32 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Calendar.dart:485:15 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Calendar.dart:513:28 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Calendar.dart:523:23 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Calendar.dart:523:64 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Calendar.dart:524:23 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Calendar.dart:527:32 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Calendar.dart:532:23 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Calendar.dart:533:23 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Calendar.dart:533:67 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Calendar.dart:534:23 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Calendar.dart:537:32 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Calendar.dart:550:24 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Calendar.dart:558:24 - prefer_const_constructors
+   info - The file name 'ChangePassword.dart' isn't a lower_case_with_underscores identifier - lib\Screens\ChangePassword.dart:1:1 - file_names
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\ChangePassword.dart:125:43 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\ChangePassword.dart:181:43 - deprecated_member_use
+   info - The file name 'Chat.dart' isn't a lower_case_with_underscores identifier - lib\Screens\Chat.dart:1:1 - file_names
+   info - The file name 'Chat_Clean.dart' isn't a lower_case_with_underscores identifier - lib\Screens\Chat_Clean.dart:1:1 - file_names
+   info - The file name 'Chat_Real.dart' isn't a lower_case_with_underscores identifier - lib\Screens\Chat_Real.dart:1:1 - file_names
+warning - Unused import: '../theme/app_theme.dart' - lib\Screens\Chat_Real.dart:2:8 - unused_import
+   info - The file name 'ContactSupport.dart' isn't a lower_case_with_underscores identifier - lib\Screens\ContactSupport.dart:1:1 - file_names
+   info - Invalid use of a private type in a public API - lib\Screens\ContactSupport.dart:7:3 - library_private_types_in_public_api
+   info - The file name 'CreateNewProjectPage.dart' isn't a lower_case_with_underscores identifier - lib\Screens\CreateNewProjectPage.dart:1:1 - file_names
+   info - The file name 'CreateaNewProject.dart' isn't a lower_case_with_underscores identifier - lib\Screens\CreateaNewProject.dart:1:1 - file_names
+   info - Don't use 'BuildContext's across async gaps - lib\Screens\CreateaNewProject.dart:66:28 - use_build_context_synchronously
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\CreateaNewProject.dart:246:49 - deprecated_member_use
+   info - The file name 'Dashboard-simple.dart' isn't a lower_case_with_underscores identifier - lib\Screens\Dashboard-simple.dart:1:1 - file_names
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\Dashboard-simple.dart:206:29 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\Dashboard-simple.dart:208:48 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\Dashboard-simple.dart:241:29 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\Dashboard-simple.dart:243:48 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\Dashboard-simple.dart:285:53 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\Dashboard-simple.dart:326:22 - deprecated_member_use
+   info - The file name 'Dashboard.dart' isn't a lower_case_with_underscores identifier - lib\Screens\Dashboard.dart:1:1 - file_names
+warning - Unused import: '../Services/auth_service.dart' - lib\Screens\Dashboard.dart:8:8 - unused_import
+warning - Unused import: '../models/user_model.dart' - lib\Screens\Dashboard.dart:10:8 - unused_import
+   info - Don't invoke 'print' in production code - lib\Screens\Dashboard.dart:42:7 - avoid_print
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Dashboard.dart:61:21 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Dashboard.dart:63:30 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Dashboard.dart:114:26 - prefer_const_constructors
+   info - Use 'const' literals as arguments to constructors of '@immutable' classes - lib\Screens\Dashboard.dart:116:31 - prefer_const_literals_to_create_immutables
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Dashboard.dart:117:23 - prefer_const_constructors
+   info - Use 'const' literals as arguments to constructors of '@immutable' classes - lib\Screens\Dashboard.dart:118:35 - prefer_const_literals_to_create_immutables
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Dashboard.dart:121:27 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Dashboard.dart:123:36 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Dashboard.dart:133:23 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Dashboard.dart:135:32 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Dashboard.dart:142:23 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Dashboard.dart:144:32 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Dashboard.dart:207:17 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Dashboard.dart:209:26 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Dashboard.dart:228:30 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Dashboard.dart:229:32 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Dashboard.dart:231:34 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Dashboard.dart:307:17 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Dashboard.dart:309:26 - prefer_const_constructors
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\Dashboard.dart:378:32 - deprecated_member_use
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Dashboard.dart:394:24 - prefer_const_constructors
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\Dashboard.dart:426:32 - deprecated_member_use
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Dashboard.dart:453:30 - prefer_const_constructors
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\Dashboard.dart:500:24 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\Dashboard.dart:502:43 - deprecated_member_use
+   info - The file name 'Dashboard_backup.dart' isn't a lower_case_with_underscores identifier - lib\Screens\Dashboard_backup.dart:1:1 - file_names
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Dashboard_backup.dart:54:19 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Dashboard_backup.dart:56:28 - prefer_const_constructors
+  error - The name 'NotificationsPage' isn't a class - lib\Screens\Dashboard_backup.dart:75:75 - creation_with_non_type
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Dashboard_backup.dart:88:32 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Dashboard_backup.dart:91:34 - prefer_const_constructors
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\Dashboard_backup.dart:109:42 - deprecated_member_use
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Dashboard_backup.dart:116:24 - prefer_const_constructors
+   info - Use 'const' literals as arguments to constructors of '@immutable' classes - lib\Screens\Dashboard_backup.dart:117:29 - prefer_const_literals_to_create_immutables
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Dashboard_backup.dart:118:21 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Dashboard_backup.dart:121:30 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Dashboard_backup.dart:121:56 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Dashboard_backup.dart:124:21 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Dashboard_backup.dart:125:30 - prefer_const_constructors
+   info - Use 'const' literals as arguments to constructors of '@immutable' classes - lib\Screens\Dashboard_backup.dart:127:35 - prefer_const_literals_to_create_immutables
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Dashboard_backup.dart:128:27 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Dashboard_backup.dart:130:36 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Dashboard_backup.dart:138:27 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Dashboard_backup.dart:140:36 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Dashboard_backup.dart:158:26 - prefer_const_constructors
+   info - Use 'const' literals as arguments to constructors of '@immutable' classes - lib\Screens\Dashboard_backup.dart:159:31 - prefer_const_literals_to_create_immutables
+  error - Expected to find ']' - lib\Screens\Dashboard_backup.dart:160:21 - expected_token
+  error - Too many positional arguments: 0 expected, but 2 found - lib\Screens\Dashboard_backup.dart:161:21 - extra_positional_arguments_could_be_named
+  error - Expected to find ')' - lib\Screens\Dashboard_backup.dart:176:19 - expected_token
+  error - Expected an identifier - lib\Screens\Dashboard_backup.dart:262:11 - missing_identifier
+  error - Expected to find ')' - lib\Screens\Dashboard_backup.dart:262:11 - expected_token
+  error - Expected to find ';' - lib\Screens\Dashboard_backup.dart:263:9 - expected_token
+warning - Dead code - lib\Screens\Dashboard_backup.dart:263:10 - dead_code
+  error - Expected an identifier - lib\Screens\Dashboard_backup.dart:263:10 - missing_identifier
+  error - Expected to find ';' - lib\Screens\Dashboard_backup.dart:263:10 - expected_token
+  error - Unexpected text ';' - lib\Screens\Dashboard_backup.dart:263:10 - unexpected_token
+  error - Expected an identifier - lib\Screens\Dashboard_backup.dart:264:7 - missing_identifier
+  error - Expected to find ';' - lib\Screens\Dashboard_backup.dart:264:7 - expected_token
+  error - Unexpected text ';' - lib\Screens\Dashboard_backup.dart:264:7 - unexpected_token
+  error - Expected an identifier - lib\Screens\Dashboard_backup.dart:264:8 - missing_identifier
+  error - Unexpected text ';' - lib\Screens\Dashboard_backup.dart:264:8 - unexpected_token
+warning - The label 'floatingActionButton' isn't used - lib\Screens\Dashboard_backup.dart:265:7 - unused_label
+  error - Expected to find ';' - lib\Screens\Dashboard_backup.dart:275:7 - expected_token
+  error - Expected an identifier - lib\Screens\Dashboard_backup.dart:275:8 - missing_identifier
+  error - Expected to find ';' - lib\Screens\Dashboard_backup.dart:275:8 - expected_token
+  error - Unexpected text ';' - lib\Screens\Dashboard_backup.dart:275:8 - unexpected_token
+  error - Expected an identifier - lib\Screens\Dashboard_backup.dart:276:5 - missing_identifier
+  error - Unexpected text ';' - lib\Screens\Dashboard_backup.dart:276:5 - unexpected_token
+   info - Unnecessary empty statement - lib\Screens\Dashboard_backup.dart:276:6 - empty_statements
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\Dashboard_backup.dart:288:32 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\Dashboard_backup.dart:331:32 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\Dashboard_backup.dart:419:22 - deprecated_member_use
+   info - The file name 'EditProfile.dart' isn't a lower_case_with_underscores identifier - lib\Screens\EditProfile.dart:1:1 - file_names
+   info - The file name 'ForgetPassword-old.dart' isn't a lower_case_with_underscores identifier - lib\Screens\ForgetPassword-old.dart:1:1 - file_names
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\ForgetPassword-old.dart:163:47 - deprecated_member_use
+   info - The file name 'ForgetPassword-simple.dart' isn't a lower_case_with_underscores identifier - lib\Screens\ForgetPassword-simple.dart:1:1 - file_names
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\ForgetPassword-simple.dart:164:47 - deprecated_member_use
+   info - The file name 'ForgetPassword.dart' isn't a lower_case_with_underscores identifier - lib\Screens\ForgetPassword.dart:1:1 - file_names
+   info - Use 'const' with the constructor to improve performance - lib\Screens\ForgetPassword.dart:46:11 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\ForgetPassword.dart:91:29 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\ForgetPassword.dart:101:17 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\ForgetPassword.dart:102:26 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\ForgetPassword.dart:138:31 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\ForgetPassword.dart:140:33 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\ForgetPassword.dart:159:27 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\ForgetPassword.dart:160:41 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\ForgetPassword.dart:162:27 - prefer_const_constructors
+   info - The file name 'ForgetPassword2-simple.dart' isn't a lower_case_with_underscores identifier - lib\Screens\ForgetPassword2-simple.dart:1:1 - file_names
+   info - The file name 'ForgetPassword2.dart' isn't a lower_case_with_underscores identifier - lib\Screens\ForgetPassword2.dart:1:1 - file_names
+   info - The file name 'HelpSupport.dart' isn't a lower_case_with_underscores identifier - lib\Screens\HelpSupport.dart:1:1 - file_names
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\HelpSupport.dart:184:49 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\HelpSupport.dart:191:48 - deprecated_member_use
+   info - The file name 'IndividualChat.dart' isn't a lower_case_with_underscores identifier - lib\Screens\IndividualChat.dart:1:1 - file_names
+   info - The file name 'IndividualChat_New.dart' isn't a lower_case_with_underscores identifier - lib\Screens\IndividualChat_New.dart:1:1 - file_names
+   info - Don't use 'BuildContext's across async gaps - lib\Screens\IndividualChat_New.dart:42:30 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\Screens\IndividualChat_New.dart:81:28 - use_build_context_synchronously
+   info - Use 'const' with the constructor to improve performance - lib\Screens\IndividualChat_New.dart:157:18 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\IndividualChat_New.dart:159:20 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\IndividualChat_New.dart:183:18 - prefer_const_constructors
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\IndividualChat_New.dart:309:52 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\IndividualChat_New.dart:325:67 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\IndividualChat_New.dart:329:67 - deprecated_member_use
+   info - The file name 'IndividualChat_Real.dart' isn't a lower_case_with_underscores identifier - lib\Screens\IndividualChat_Real.dart:1:1 - file_names
+   info - Don't use 'BuildContext's across async gaps - lib\Screens\IndividualChat_Real.dart:42:30 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\Screens\IndividualChat_Real.dart:81:28 - use_build_context_synchronously
+   info - Use 'const' with the constructor to improve performance - lib\Screens\IndividualChat_Real.dart:157:18 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\IndividualChat_Real.dart:159:20 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\IndividualChat_Real.dart:183:18 - prefer_const_constructors
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\IndividualChat_Real.dart:309:52 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\IndividualChat_Real.dart:325:67 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\IndividualChat_Real.dart:329:67 - deprecated_member_use
+   info - The file name 'MainAppNavigator.dart' isn't a lower_case_with_underscores identifier - lib\Screens\MainAppNavigator.dart:1:1 - file_names
+   info - The file name 'NotificationSettings.dart' isn't a lower_case_with_underscores identifier - lib\Screens\NotificationSettings.dart:1:1 - file_names
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\NotificationSettings.dart:217:47 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\NotificationSettings.dart:224:46 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\NotificationSettings.dart:275:49 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\NotificationSettings.dart:282:48 - deprecated_member_use
+   info - The file name 'Notifications.dart' isn't a lower_case_with_underscores identifier - lib\Screens\Notifications.dart:1:1 - file_names
+   info - The file name 'PasswordChanged.dart' isn't a lower_case_with_underscores identifier - lib\Screens\PasswordChanged.dart:1:1 - file_names
+   info - The file name 'PersonalInformation.dart' isn't a lower_case_with_underscores identifier - lib\Screens\PersonalInformation.dart:1:1 - file_names
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\PersonalInformation.dart:150:47 - deprecated_member_use
+   info - The file name 'Profile-simple.dart' isn't a lower_case_with_underscores identifier - lib\Screens\Profile-simple.dart:1:1 - file_names
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\Profile-simple.dart:195:29 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\Profile-simple.dart:197:48 - deprecated_member_use
+   info - The file name 'Profile.dart' isn't a lower_case_with_underscores identifier - lib\Screens\Profile.dart:1:1 - file_names
+   info - Use 'const' with the constructor to improve performance - lib\Screens\Profile.dart:56:14 - prefer_const_constructors
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\Profile.dart:223:32 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\Profile.dart:234:41 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\Profile.dart:269:32 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\Profile.dart:280:35 - deprecated_member_use
+   info - Don't use 'BuildContext's across async gaps - lib\Screens\Profile.dart:328:44 - use_build_context_synchronously
+   info - The file name 'ResetPassword.dart' isn't a lower_case_with_underscores identifier - lib\Screens\ResetPassword.dart:1:1 - file_names
+   info - Invalid use of a private type in a public API - lib\Screens\ResetPassword.dart:14:3 - library_private_types_in_public_api
+warning - The value of the field '_auth' isn't used - lib\Screens\ResetPassword.dart:20:22 - unused_field
+warning - The value of the field '_actionCode' isn't used - lib\Screens\ResetPassword.dart:24:11 - unused_field
+   info - Don't use 'BuildContext's across async gaps - lib\Screens\ResetPassword.dart:84:28 - use_build_context_synchronously
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\ResetPassword.dart:167:39 - deprecated_member_use
+   info - The file name 'SecuritySettings.dart' isn't a lower_case_with_underscores identifier - lib\Screens\SecuritySettings.dart:1:1 - file_names
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\SecuritySettings.dart:159:49 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\SecuritySettings.dart:166:48 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\SecuritySettings.dart:213:47 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\SecuritySettings.dart:220:46 - deprecated_member_use
+   info - The file name 'TaskManager.dart' isn't a lower_case_with_underscores identifier - lib\Screens\TaskManager.dart:1:1 - file_names
+   info - Don't use 'BuildContext's across async gaps - lib\Screens\TaskManager.dart:188:38 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\Screens\TaskManager.dart:189:46 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\Screens\TaskManager.dart:196:46 - use_build_context_synchronously
+   info - Use 'const' with the constructor to improve performance - lib\Screens\TaskManager.dart:241:36 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\TaskManager.dart:243:38 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\TaskManager.dart:277:35 - prefer_const_constructors
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\TaskManager.dart:280:74 - deprecated_member_use
+   info - Use 'const' with the constructor to improve performance - lib\Screens\TaskManager.dart:340:31 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\TaskManager.dart:342:31 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\TaskManager.dart:369:31 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\TaskManager.dart:376:31 - prefer_const_constructors
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\TaskManager.dart:432:61 - deprecated_member_use
+   info - Use 'const' with the constructor to improve performance - lib\Screens\TaskManager.dart:464:21 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\TaskManager.dart:473:19 - prefer_const_constructors
+   info - Use 'const' literals as arguments to constructors of '@immutable' classes - lib\Screens\TaskManager.dart:474:31 - prefer_const_literals_to_create_immutables
+   info - Use 'const' with the constructor to improve performance - lib\Screens\TaskManager.dart:475:23 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\TaskManager.dart:477:23 - prefer_const_constructors
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\TaskManager.dart:487:57 - deprecated_member_use
+   info - The file name 'TaskManager_New_Fixed.dart' isn't a lower_case_with_underscores identifier - lib\Screens\TaskManager_New_Fixed.dart:1:1 - file_names
+warning - Unused import: '../Services/project_service.dart' - lib\Screens\TaskManager_New_Fixed.dart:4:8 - unused_import
+warning - Unused import: '../models/project.dart' - lib\Screens\TaskManager_New_Fixed.dart:7:8 - unused_import
+warning - The value of the field '_allTasks' isn't used - lib\Screens\TaskManager_New_Fixed.dart:30:14 - unused_field
+   info - Don't use 'BuildContext's across async gaps - lib\Screens\TaskManager_New_Fixed.dart:192:38 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\Screens\TaskManager_New_Fixed.dart:193:46 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\Screens\TaskManager_New_Fixed.dart:200:46 - use_build_context_synchronously
+   info - Use 'const' with the constructor to improve performance - lib\Screens\TaskManager_New_Fixed.dart:228:18 - prefer_const_constructors
+   info - Use 'const' literals as arguments to constructors of '@immutable' classes - lib\Screens\TaskManager_New_Fixed.dart:229:23 - prefer_const_literals_to_create_immutables
+   info - Use 'const' with the constructor to improve performance - lib\Screens\TaskManager_New_Fixed.dart:230:15 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\TaskManager_New_Fixed.dart:314:36 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\TaskManager_New_Fixed.dart:316:38 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\TaskManager_New_Fixed.dart:366:35 - prefer_const_constructors
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\TaskManager_New_Fixed.dart:369:74 - deprecated_member_use
+   info - Use 'const' with the constructor to improve performance - lib\Screens\TaskManager_New_Fixed.dart:429:31 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\TaskManager_New_Fixed.dart:431:31 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\TaskManager_New_Fixed.dart:459:31 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\TaskManager_New_Fixed.dart:466:31 - prefer_const_constructors
+   info - The 'child' argument should be last in widget constructor invocations - lib\Screens\TaskManager_New_Fixed.dart:498:13 - sort_child_properties_last
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\TaskManager_New_Fixed.dart:536:61 - deprecated_member_use
+   info - Use 'const' with the constructor to improve performance - lib\Screens\TaskManager_New_Fixed.dart:568:21 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\TaskManager_New_Fixed.dart:577:19 - prefer_const_constructors
+   info - Use 'const' literals as arguments to constructors of '@immutable' classes - lib\Screens\TaskManager_New_Fixed.dart:578:31 - prefer_const_literals_to_create_immutables
+   info - Use 'const' with the constructor to improve performance - lib\Screens\TaskManager_New_Fixed.dart:579:23 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\TaskManager_New_Fixed.dart:581:23 - prefer_const_constructors
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\TaskManager_New_Fixed.dart:591:57 - deprecated_member_use
+   info - The file name 'TaskManager_Real.dart' isn't a lower_case_with_underscores identifier - lib\Screens\TaskManager_Real.dart:1:1 - file_names
+warning - The value of the field '_projectsStream' isn't used - lib\Screens\TaskManager_Real.dart:29:26 - unused_field
+   info - Use 'const' with the constructor to improve performance - lib\Screens\TaskManager_Real.dart:202:25 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\TaskManager_Real.dart:230:25 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\TaskManager_Real.dart:243:25 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\TaskManager_Real.dart:267:25 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\TaskManager_Real.dart:280:25 - prefer_const_constructors
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\TaskManager_Real.dart:332:69 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\TaskManager_Real.dart:361:65 - deprecated_member_use
+   info - Use 'const' with the constructor to improve performance - lib\Screens\TaskManager_Real.dart:375:17 - prefer_const_constructors
+   info - Don't use 'BuildContext's across async gaps - lib\Screens\TaskManager_Real.dart:432:30 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\Screens\TaskManager_Real.dart:440:28 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\Screens\TaskManager_Real.dart:471:30 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\Screens\TaskManager_Real.dart:478:30 - use_build_context_synchronously
+   info - The type name 'about_tasksync_screenScreen' isn't an UpperCamelCase identifier - lib\Screens\about_tasksync_screen.dart:1:47 - camel_case_types
+   info - Use 'const' with the constructor to improve performance - lib\Screens\about_tasksync_screen.dart:1:234 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\about_tasksync_screen.dart:1:272 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\about_tasksync_screen.dart:1:286 - prefer_const_constructors
+   info - The type name 'add_task_screenScreen' isn't an UpperCamelCase identifier - lib\Screens\add_task_screen.dart:5:7 - camel_case_types
+   info - The type name '_add_task_screenScreenState' isn't an UpperCamelCase identifier - lib\Screens\add_task_screen.dart:12:7 - camel_case_types
+   info - Use 'const' with the constructor to improve performance - lib\Screens\add_task_screen.dart:67:11 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\add_task_screen.dart:68:22 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\add_task_screen.dart:70:22 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\add_task_screen.dart:83:22 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\add_task_screen.dart:103:16 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\add_task_screen.dart:105:18 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\add_task_screen.dart:124:17 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\add_task_screen.dart:126:26 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\add_task_screen.dart:138:32 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\add_task_screen.dart:147:26 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\add_task_screen.dart:159:17 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\add_task_screen.dart:161:26 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\add_task_screen.dart:174:32 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\add_task_screen.dart:183:26 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\add_task_screen.dart:195:17 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\add_task_screen.dart:197:26 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\add_task_screen.dart:216:26 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\add_task_screen.dart:225:32 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\add_task_screen.dart:239:17 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\add_task_screen.dart:241:26 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\add_task_screen.dart:260:26 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\add_task_screen.dart:269:32 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\add_task_screen.dart:283:17 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\add_task_screen.dart:285:26 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\add_task_screen.dart:306:34 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\add_task_screen.dart:334:27 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\add_task_screen.dart:336:36 - prefer_const_constructors
+   info - The type name 'add_team_members_screenScreen' isn't an UpperCamelCase identifier - lib\Screens\add_team_members_screen.dart:1:47 - camel_case_types
+   info - Use 'const' with the constructor to improve performance - lib\Screens\add_team_members_screen.dart:1:238 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\add_team_members_screen.dart:1:278 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\add_team_members_screen.dart:1:292 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\chat_list_screen.dart:116:18 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\chat_list_screen.dart:124:18 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\chat_list_screen.dart:138:24 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\chat_list_screen.dart:204:18 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\chat_list_screen.dart:212:18 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\chat_list_screen.dart:276:30 - prefer_const_constructors
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\chat_list_screen.dart:287:49 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\chat_list_screen.dart:293:49 - deprecated_member_use
+   info - Use 'const' with the constructor to improve performance - lib\Screens\chat_list_screen.dart:304:24 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\chat_list_screen.dart:316:27 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\chat_list_screen.dart:356:27 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\chat_list_screen.dart:387:27 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\chat_list_screen.dart:400:27 - prefer_const_constructors
+warning - Unused import: '../models/user_model.dart' - lib\Screens\chat_screen.dart:5:8 - unused_import
+   info - Don't invoke 'print' in production code - lib\Screens\chat_screen.dart:46:7 - avoid_print
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\chat_screen.dart:161:55 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\chat_screen.dart:162:59 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\chat_screen.dart:174:55 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\chat_screen.dart:242:49 - deprecated_member_use
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\Screens\chat_screen.dart:271:45 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\Screens\chat_screen.dart:275:52 - use_build_context_synchronously
+   info - Use 'const' with the constructor to improve performance - lib\Screens\chat_screen.dart:393:34 - prefer_const_constructors
+   info - The type name 'contact_support_screenScreen' isn't an UpperCamelCase identifier - lib\Screens\contact_support_screen.dart:1:47 - camel_case_types
+   info - Use 'const' with the constructor to improve performance - lib\Screens\contact_support_screen.dart:1:236 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\contact_support_screen.dart:1:275 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\contact_support_screen.dart:1:289 - prefer_const_constructors
+   info - The file name 'create account-old.dart' isn't a lower_case_with_underscores identifier - lib\Screens\create account-old.dart:1:1 - file_names
+   info - Constructors for public widgets should have a named 'key' parameter - lib\Screens\create account-old.dart:5:7 - use_key_in_widget_constructors
+   info - Invalid use of a private type in a public API - lib\Screens\create account-old.dart:7:3 - library_private_types_in_public_api
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\create account-old.dart:196:47 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\create account-old.dart:229:47 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\create account-old.dart:273:47 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\create account-old.dart:317:47 - deprecated_member_use
+   info - The file name 'create account-simple.dart' isn't a lower_case_with_underscores identifier - lib\Screens\create account-simple.dart:1:1 - file_names
+   info - Constructors for public widgets should have a named 'key' parameter - lib\Screens\create account-simple.dart:5:7 - use_key_in_widget_constructors
+   info - Invalid use of a private type in a public API - lib\Screens\create account-simple.dart:7:3 - library_private_types_in_public_api
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\create account-simple.dart:196:47 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\create account-simple.dart:229:47 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\create account-simple.dart:273:47 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\create account-simple.dart:317:47 - deprecated_member_use
+   info - The file name 'create account.dart' isn't a lower_case_with_underscores identifier - lib\Screens\create account.dart:1:1 - file_names
+   info - Invalid use of a private type in a public API - lib\Screens\create account.dart:10:3 - library_private_types_in_public_api
+   info - Use 'const' with the constructor to improve performance - lib\Screens\create account.dart:94:11 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\create account.dart:136:29 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\create account.dart:146:17 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\create account.dart:147:26 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\create account.dart:181:31 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\create account.dart:183:33 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\create account.dart:195:31 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\create account.dart:197:33 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\create account.dart:211:33 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\create account.dart:236:33 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\create account.dart:266:27 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\create account.dart:267:41 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\create account.dart:269:27 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\create account.dart:282:21 - prefer_const_constructors
+   info - The type name 'create_project_screenScreen' isn't an UpperCamelCase identifier - lib\Screens\create_project_screen.dart:1:47 - camel_case_types
+   info - Use 'const' with the constructor to improve performance - lib\Screens\create_project_screen.dart:1:234 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\create_project_screen.dart:1:272 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\create_project_screen.dart:1:286 - prefer_const_constructors
+   info - The type name 'dashboard_screenScreen' isn't an UpperCamelCase identifier - lib\Screens\dashboard_screen.dart:1:47 - camel_case_types
+   info - Use 'const' with the constructor to improve performance - lib\Screens\dashboard_screen.dart:1:224 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\dashboard_screen.dart:1:257 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\dashboard_screen.dart:1:271 - prefer_const_constructors
+   info - The type name 'forgot_password_screenScreen' isn't an UpperCamelCase identifier - lib\Screens\forgot_password_screen.dart:1:47 - camel_case_types
+   info - Use 'const' with the constructor to improve performance - lib\Screens\forgot_password_screen.dart:1:236 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\forgot_password_screen.dart:1:275 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\forgot_password_screen.dart:1:289 - prefer_const_constructors
+   info - The type name 'kanban_board_screenScreen' isn't an UpperCamelCase identifier - lib\Screens\kanban_board_screen.dart:1:47 - camel_case_types
+   info - Use 'const' with the constructor to improve performance - lib\Screens\kanban_board_screen.dart:1:230 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\kanban_board_screen.dart:1:266 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\kanban_board_screen.dart:1:280 - prefer_const_constructors
+   info - The file name 'login-page-old.dart' isn't a lower_case_with_underscores identifier - lib\Screens\login-page-old.dart:1:1 - file_names
+   info - Don't invoke 'print' in production code - lib\Screens\login-page-old.dart:52:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\Screens\login-page-old.dart:67:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\Screens\login-page-old.dart:101:7 - avoid_print
+   info - Use 'const' with the constructor to improve performance - lib\Screens\login-page-old.dart:165:17 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\login-page-old.dart:166:26 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\login-page-old.dart:203:33 - prefer_const_constructors
+  error - The argument for the named parameter 'prefixIcon' was already specified - lib\Screens\login-page-old.dart:204:23 - duplicate_named_argument
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\login-page-old.dart:222:47 - deprecated_member_use
+  error - The argument for the named parameter 'style' was already specified - lib\Screens\login-page-old.dart:224:21 - duplicate_named_argument
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\login-page-old.dart:266:47 - deprecated_member_use
+   info - 'MaterialStateProperty' is deprecated and shouldn't be used. Use WidgetStateProperty instead. Moved to the Widgets layer to make code available outside of Material. This feature was deprecated after v3.19.0-0.3.pre - lib\Screens\login-page-old.dart:283:36 - deprecated_member_use
+   info - Use 'const' with the constructor to improve performance - lib\Screens\login-page-old.dart:351:53 - prefer_const_constructors
+  error - Expected to find ';' - lib\Screens\login-page-old.dart:370:7 - expected_token
+warning - Dead code - lib\Screens\login-page-old.dart:370:8 - dead_code
+  error - Expected an identifier - lib\Screens\login-page-old.dart:370:8 - missing_identifier
+  error - Expected to find ';' - lib\Screens\login-page-old.dart:370:8 - expected_token
+  error - Unexpected text ';' - lib\Screens\login-page-old.dart:370:8 - unexpected_token
+  error - Expected an identifier - lib\Screens\login-page-old.dart:371:5 - missing_identifier
+  error - Unexpected text ';' - lib\Screens\login-page-old.dart:371:5 - unexpected_token
+   info - Unnecessary empty statement - lib\Screens\login-page-old.dart:371:6 - empty_statements
+   info - The file name 'login-page-simple.dart' isn't a lower_case_with_underscores identifier - lib\Screens\login-page-simple.dart:1:1 - file_names
+   info - Don't invoke 'print' in production code - lib\Screens\login-page-simple.dart:51:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\Screens\login-page-simple.dart:66:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\Screens\login-page-simple.dart:100:7 - avoid_print
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\login-page-simple.dart:219:47 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\login-page-simple.dart:263:47 - deprecated_member_use
+   info - 'MaterialStateProperty' is deprecated and shouldn't be used. Use WidgetStateProperty instead. Moved to the Widgets layer to make code available outside of Material. This feature was deprecated after v3.19.0-0.3.pre - lib\Screens\login-page-simple.dart:280:36 - deprecated_member_use
+   info - Use 'const' with the constructor to improve performance - lib\Screens\login-page-simple.dart:348:53 - prefer_const_constructors
+   info - The file name 'login-page.dart' isn't a lower_case_with_underscores identifier - lib\Screens\login-page.dart:1:1 - file_names
+   info - Use 'const' with the constructor to improve performance - lib\Screens\login-page.dart:132:31 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\login-page.dart:156:31 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\login-page.dart:214:25 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\login_firebase.dart:118:31 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\login_firebase.dart:136:21 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\login_firebase.dart:137:21 - prefer_const_constructors
+   info - Use 'const' literals as arguments to constructors of '@immutable' classes - lib\Screens\login_firebase.dart:140:21 - prefer_const_literals_to_create_immutables
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\login_firebase.dart:174:51 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\login_firebase.dart:188:53 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\login_firebase.dart:193:53 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\login_firebase.dart:196:55 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\login_firebase.dart:200:55 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\login_firebase.dart:206:55 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\login_firebase.dart:250:53 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\login_firebase.dart:255:53 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\login_firebase.dart:262:55 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\login_firebase.dart:271:55 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\login_firebase.dart:275:55 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\login_firebase.dart:281:55 - deprecated_member_use
+   info - 'MaterialStateProperty' is deprecated and shouldn't be used. Use WidgetStateProperty instead. Moved to the Widgets layer to make code available outside of Material. This feature was deprecated after v3.19.0-0.3.pre - lib\Screens\login_firebase.dart:329:42 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\login_firebase.dart:330:52 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\login_firebase.dart:337:59 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Screens\login_firebase.dart:398:55 - deprecated_member_use
+   info - The type name 'main_app_screenScreen' isn't an UpperCamelCase identifier - lib\Screens\main_app_screen.dart:1:47 - camel_case_types
+   info - Use 'const' with the constructor to improve performance - lib\Screens\main_app_screen.dart:1:222 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\main_app_screen.dart:1:254 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\main_app_screen.dart:1:268 - prefer_const_constructors
+   info - The type name 'notification_settings_screenScreen' isn't an UpperCamelCase identifier - lib\Screens\notification_settings_screen.dart:1:47 - camel_case_types
+   info - Use 'const' with the constructor to improve performance - lib\Screens\notification_settings_screen.dart:1:248 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\notification_settings_screen.dart:1:293 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\notification_settings_screen.dart:1:307 - prefer_const_constructors
+   info - The type name 'otp_verification_screenScreen' isn't an UpperCamelCase identifier - lib\Screens\otp_verification_screen.dart:1:47 - camel_case_types
+   info - Use 'const' with the constructor to improve performance - lib\Screens\otp_verification_screen.dart:1:238 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\otp_verification_screen.dart:1:278 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\otp_verification_screen.dart:1:292 - prefer_const_constructors
+   info - The type name 'password_changed_screenScreen' isn't an UpperCamelCase identifier - lib\Screens\password_changed_screen.dart:1:47 - camel_case_types
+   info - Use 'const' with the constructor to improve performance - lib\Screens\password_changed_screen.dart:1:238 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\password_changed_screen.dart:1:278 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\password_changed_screen.dart:1:292 - prefer_const_constructors
+   info - The type name 'profile_screenScreen' isn't an UpperCamelCase identifier - lib\Screens\profile_screen.dart:1:47 - camel_case_types
+   info - Use 'const' with the constructor to improve performance - lib\Screens\profile_screen.dart:1:220 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\profile_screen.dart:1:251 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\profile_screen.dart:1:265 - prefer_const_constructors
+   info - The type name 'reset_password_screenScreen' isn't an UpperCamelCase identifier - lib\Screens\reset_password_screen.dart:1:47 - camel_case_types
+   info - Use 'const' with the constructor to improve performance - lib\Screens\reset_password_screen.dart:1:234 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\reset_password_screen.dart:1:272 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\reset_password_screen.dart:1:286 - prefer_const_constructors
+   info - The type name 'schedule_screenScreen' isn't an UpperCamelCase identifier - lib\Screens\schedule_screen.dart:1:47 - camel_case_types
+   info - Use 'const' with the constructor to improve performance - lib\Screens\schedule_screen.dart:1:222 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\schedule_screen.dart:1:254 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\schedule_screen.dart:1:268 - prefer_const_constructors
+   info - The type name 'task_management_screenScreen' isn't an UpperCamelCase identifier - lib\Screens\task_management_screen.dart:6:7 - camel_case_types
+   info - The type name '_task_management_screenScreenState' isn't an UpperCamelCase identifier - lib\Screens\task_management_screen.dart:13:7 - camel_case_types
+   info - Use 'const' with the constructor to improve performance - lib\Screens\task_management_screen.dart:22:16 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\task_management_screen.dart:24:18 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\task_management_screen.dart:96:26 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\task_management_screen.dart:97:28 - prefer_const_constructors
+   info - Use 'const' literals as arguments to constructors of '@immutable' classes - lib\Screens\task_management_screen.dart:99:33 - prefer_const_literals_to_create_immutables
+   info - Use 'const' with the constructor to improve performance - lib\Screens\task_management_screen.dart:100:25 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\task_management_screen.dart:102:25 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\task_management_screen.dart:104:34 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\task_management_screen.dart:158:34 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\task_management_screen.dart:160:36 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\task_management_screen.dart:238:32 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\task_management_screen.dart:348:16 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\task_management_screen.dart:350:18 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\task_management_screen.dart:354:18 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\task_management_screen.dart:359:20 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\task_management_screen.dart:361:22 - prefer_const_constructors
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\Screens\task_management_screen.dart:370:40 - use_build_context_synchronously
+   info - Use 'const' with the constructor to improve performance - lib\Screens\task_management_screen.dart:371:21 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\task_management_screen.dart:372:32 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\task_management_screen.dart:374:32 - prefer_const_constructors
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\Screens\task_management_screen.dart:382:40 - use_build_context_synchronously
+   info - Use 'const' with the constructor to improve performance - lib\Screens\task_management_screen.dart:386:32 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\task_management_screen.dart:394:20 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\Screens\task_management_screen.dart:396:22 - prefer_const_constructors
+   info - The file name 'welcome-page1.dart' isn't a lower_case_with_underscores identifier - lib\Screens\welcome-page1.dart:1:1 - file_names
+   info - The file name 'welcome-page2.dart' isn't a lower_case_with_underscores identifier - lib\Screens\welcome-page2.dart:1:1 - file_names
+   info - Use 'const' with the constructor to improve performance - lib\Screens\welcome-page2.dart:104:61 - prefer_const_constructors
+   info - Don't invoke 'print' in production code - lib\models\pigeon_user_details.dart:37:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\models\user_data.dart:42:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\utils\data_seeder.dart:15:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\utils\data_seeder.dart:17:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\utils\error_handler.dart:15:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\utils\error_handler.dart:99:7 - avoid_print
+   info - 'fetchSignInMethodsForEmail' is deprecated and shouldn't be used. fetchSignInMethodsForEmail() has been deprecated. Migrating off of this method is recommended as a security best-practice. Learn more in the Identity Platform documentation:  https://cloud.google.com/identity-platform/docs/admin/email-enumeration-protection - lib\utils\firebase_debug.dart:8:51 - deprecated_member_use
+   info - Don't invoke 'print' in production code - lib\utils\firebase_debug.dart:11:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\utils\firebase_debug.dart:25:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\utils\firebase_debug.dart:38:9 - avoid_print
+   info - Don't invoke 'print' in production code - lib\utils\firebase_debug.dart:39:9 - avoid_print
+   info - Don't invoke 'print' in production code - lib\utils\firebase_debug.dart:44:13 - avoid_print
+   info - Don't invoke 'print' in production code - lib\utils\firebase_debug.dart:47:15 - avoid_print
+   info - Don't invoke 'print' in production code - lib\utils\firebase_debug.dart:50:17 - avoid_print
+   info - Don't invoke 'print' in production code - lib\utils\firebase_debug.dart:56:9 - avoid_print
+   info - Don't invoke 'print' in production code - lib\utils\firebase_debug.dart:59:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\utils\firebase_debug.dart:72:9 - avoid_print
+   info - Don't invoke 'print' in production code - lib\utils\firebase_debug.dart:84:9 - avoid_print
+   info - Don't invoke 'print' in production code - lib\utils\firebase_debug.dart:95:15 - avoid_print
+   info - Don't invoke 'print' in production code - lib\utils\firebase_debug.dart:102:13 - avoid_print
+   info - Don't invoke 'print' in production code - lib\utils\firebase_debug.dart:107:13 - avoid_print
+   info - Don't invoke 'print' in production code - lib\utils\firebase_debug.dart:112:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\utils\firestore_extensions.dart:15:9 - avoid_print
+   info - Don't invoke 'print' in production code - lib\utils\firestore_extensions.dart:20:7 - avoid_print
+   info - The file name 'TickLogo.dart' isn't a lower_case_with_underscores identifier - lib\widgets\TickLogo.dart:1:1 - file_names
+
+571 issues found. (ran in 1.3s)
