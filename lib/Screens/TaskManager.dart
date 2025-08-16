@@ -472,20 +472,6 @@ class _TaskManagerState extends State<TaskManager> {
               ],
             ),
           ),
-        ),
-        // Floating Chatbot Button
-        Positioned(
-          bottom: 20,
-          right: 20,
-          child: FloatingActionButton(
-            onPressed: _showChatbot,
-            backgroundColor: AppTheme.info,
-            foregroundColor: AppTheme.textWhite,
-            tooltip: 'AI Assistant',
-            child: const Icon(Icons.smart_toy),
-          ),
-        ),
-      ],
     );
   }
 
