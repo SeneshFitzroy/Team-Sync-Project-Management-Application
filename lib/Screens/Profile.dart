@@ -247,11 +247,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
         subtitle: Text(
           subtitle,
           style: const TextStyle(
-            color: Colors.grey,
-            fontFamily: 'Poppins',
+            color: AppTheme.textSecondary,
+            fontFamily: AppTheme.fontFamily,
           ),
         ),
-        trailing: const Icon(Icons.arrow_forward_ios, color: Colors.grey, size: 16),
+        trailing: const Icon(Icons.arrow_forward_ios, color: AppTheme.textSecondary, size: 16),
         onTap: onTap,
       ),
     );
