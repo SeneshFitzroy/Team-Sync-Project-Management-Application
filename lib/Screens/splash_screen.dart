@@ -153,9 +153,9 @@ class _SplashScreenState extends State<SplashScreen>
               animation: _logoController,
               builder: (context, child) {
                 return FadeTransition(
-                  opacity: AlwaysStoppedAnimation(_logoFadeAnimation.value.clamp(0.0, 1.0)),
+                  opacity: AlwaysStoppedAnimation(_safeOpacity(_logoFadeAnimation.value)),
                   child: ScaleTransition(
-                    scale: AlwaysStoppedAnimation(_logoScaleAnimation.value.clamp(0.0, double.infinity)),
+                    scale: AlwaysStoppedAnimation(_safeScale(_logoScaleAnimation.value)),
                     child: Container(
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
