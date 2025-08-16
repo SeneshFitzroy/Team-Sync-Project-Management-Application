@@ -22,6 +22,16 @@ class _WelcomePage1State extends State<WelcomePage1>
   late Animation<double> _scaleAnimation;
   late Animation<double> _floatingAnimation;
 
+  // Helper method to safely clamp opacity values
+  double _safeOpacity(double value) {
+    return value.clamp(0.0, 1.0);
+  }
+
+  // Helper method to safely clamp scale values
+  double _safeScale(double value) {
+    return value.clamp(0.0, double.infinity);
+  }
+
   @override
   void initState() {
     super.initState();
@@ -121,9 +131,9 @@ class _WelcomePage1State extends State<WelcomePage1>
                 animation: _scaleController,
                 builder: (context, child) {
                   return ScaleTransition(
-                    scale: AlwaysStoppedAnimation(_scaleAnimation.value.clamp(0.0, double.infinity)),
+                    scale: AlwaysStoppedAnimation(_safeScale(_scaleAnimation.value)),
                     child: FadeTransition(
-                      opacity: AlwaysStoppedAnimation(_fadeAnimation.value.clamp(0.0, 1.0)),
+                      opacity: AlwaysStoppedAnimation(_safeOpacity(_fadeAnimation.value)),
                       child: Container(
                         padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
@@ -162,7 +172,7 @@ class _WelcomePage1State extends State<WelcomePage1>
               SlideTransition(
                 position: _slideAnimation,
                 child: FadeTransition(
-                  opacity: AlwaysStoppedAnimation(_fadeAnimation.value.clamp(0.0, 1.0)),
+                  opacity: AlwaysStoppedAnimation(_safeOpacity(_fadeAnimation.value)),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -200,7 +210,7 @@ class _WelcomePage1State extends State<WelcomePage1>
               SlideTransition(
                 position: _slideAnimation,
                 child: FadeTransition(
-                  opacity: AlwaysStoppedAnimation(_fadeAnimation.value.clamp(0.0, 1.0)),
+                  opacity: AlwaysStoppedAnimation(_safeOpacity(_fadeAnimation.value)),
                   child: Column(
                     children: [
                       Text(
@@ -237,7 +247,7 @@ class _WelcomePage1State extends State<WelcomePage1>
                 child: SlideTransition(
                   position: _slideAnimation,
                   child: FadeTransition(
-                    opacity: AlwaysStoppedAnimation(_fadeAnimation.value.clamp(0.0, 1.0)),
+                    opacity: AlwaysStoppedAnimation(_safeOpacity(_fadeAnimation.value)),
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
                       child: Column(
