@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'welcome-page2.dart';
 import '../widgets/TickLogo.dart';
+import '../theme/app_theme.dart';
 
 class WelcomePage1 extends StatelessWidget {
   const WelcomePage1({super.key});
@@ -9,9 +10,9 @@ class WelcomePage1 extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color(0xFF1A365D), Color(0xFF4A90E2)],
+            colors: [AppTheme.primaryDark, AppTheme.primaryBlue],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -20,91 +21,119 @@ class WelcomePage1 extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24.0),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 40),
+                const SizedBox(height: 60),
+                
                 // TaskSync Logo
                 const Center(
                   child: TickLogoLarge(
-                    size: 120,
+                    size: 100,
                     tickColor: Colors.white,
-                    backgroundColor: Color(0xFF2D62ED),
+                    backgroundColor: AppTheme.primaryBlue,
                   ),
                 ),
+                
+                const SizedBox(height: 20),
+                
+                // App Name
+                Text(
+                  'TaskSync',
+                  style: AppTheme.headingLarge.copyWith(
+                    color: Colors.white,
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                
                 const SizedBox(height: 40),
-                const Text(
+                
+                // Main Heading
+                Text(
                   'Manage your projects in a smarter way',
-                  style: TextStyle(
-                    fontSize: 26,
-                    fontWeight: FontWeight.bold,
+                  textAlign: TextAlign.center,
+                  style: AppTheme.headingMedium.copyWith(
                     color: Colors.white,
-                    letterSpacing: 0.5,
+                    fontSize: 24,
+                    height: 1.3,
                   ),
                 ),
-                const Spacer(),
-                const Text(
-                  'Improve your team efficiency',
-                  style: TextStyle(
-                    fontSize: 36,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                
+                const SizedBox(height: 30),
+                
+                // Subheading
+                Text(
+                  'Improve your team efficiency with powerful project management tools',
+                  textAlign: TextAlign.center,
+                  style: AppTheme.bodyLarge.copyWith(
+                    color: Colors.white.withOpacity(0.9),
+                    fontSize: 16,
                     height: 1.5,
-                    letterSpacing: 0.8,
                   ),
                 ),
+                
                 const Spacer(),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 32.0),
-                  child: AnimatedOpacity(
-                    opacity: 1.0,
-                    duration: const Duration(seconds: 1),
-                    child: Container(
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(32),
+                
+                // Features List
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    children: [
+                      _buildFeatureItem(Icons.task_alt, 'Task Management'),
+                      const SizedBox(height: 12),
+                      _buildFeatureItem(Icons.people, 'Team Collaboration'),
+                      const SizedBox(height: 12),
+                      _buildFeatureItem(Icons.schedule, 'Smart Scheduling'),
+                    ],
+                  ),
+                ),
+                
+                const Spacer(),
+                
+                // Get Started Button
+                Container(
+                  width: double.infinity,
+                  margin: const EdgeInsets.only(bottom: 40),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const WelcomePage2()),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      foregroundColor: AppTheme.primaryBlue,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const WelcomePage2()),
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(32),
+                      elevation: 0,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Get Started',
+                          style: AppTheme.buttonText.copyWith(
+                            color: AppTheme.primaryBlue,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Text(
-                              'Let\'s start!',
-                              style: TextStyle(
-                                color: Color(0xFF1A365D),
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Container(
-                              padding: const EdgeInsets.all(4),
-                              decoration: const BoxDecoration(
-                                color: Color(0xFF1A365D),
-                                shape: BoxShape.circle,
-                              ),
-                              child: const Icon(
-                                Icons.arrow_forward,
-                                color: Colors.white,
-                                size: 18,
-                              ),
-                            ),
-                          ],
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            color: AppTheme.primaryBlue,
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.arrow_forward,
+                            color: Colors.white,
+                            size: 20,
+                          ),
                         ),
-                      ),
+                      ],
                     ),
                   ),
                 ),
@@ -113,6 +142,34 @@ class WelcomePage1 extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildFeatureItem(IconData icon, String text) {
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.2),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(
+            icon,
+            color: Colors.white,
+            size: 20,
+          ),
+        ),
+        const SizedBox(width: 16),
+        Text(
+          text,
+          style: AppTheme.bodyMedium.copyWith(
+            color: Colors.white,
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ],
     );
   }
 }
