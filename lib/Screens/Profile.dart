@@ -215,7 +215,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Container(
       margin: const EdgeInsets.only(bottom: 15),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppTheme.backgroundWhite,
         borderRadius: BorderRadius.circular(15),
         border: Border.all(color: Colors.grey.shade200),
         boxShadow: [
@@ -231,10 +231,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
         leading: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: const Color(0xFF2D62ED).withOpacity(0.1),
+            color: AppTheme.primaryBlue.withOpacity(0.1),
             borderRadius: BorderRadius.circular(10),
           ),
-          child: Icon(icon, color: const Color(0xFF2D62ED)),
+          child: Icon(icon, color: AppTheme.primaryBlue),
         ),
         title: Text(
           title,
