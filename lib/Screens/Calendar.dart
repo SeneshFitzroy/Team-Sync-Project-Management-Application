@@ -221,11 +221,10 @@ class _CalendarState extends State<Calendar> {
               const SizedBox(height: 12),
               
               // Task items
-              Flexible(
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: _getFilteredTasks().length,
-                  itemBuilder: (context, index) {
+              Column(
+                children: List.generate(
+                  _getFilteredTasks().length,
+                  (index) {
                     final task = _getFilteredTasks()[index];
                     return _buildTaskCard(
                       task['title'],
@@ -242,11 +241,12 @@ class _CalendarState extends State<Calendar> {
                 ),
               ),
             ],
-          ),
-        ),
-      ),
-    );
-  }
+          ), // Close Column
+        ), // Close Padding
+      ), // Close SingleChildScrollView
+    ), // Close SafeArea
+  ); // Close Scaffold
+}
 
   Widget _buildTaskCard(String title, String time, String date, String priority, Color indicatorColor) {
     return Card(
