@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'create account.dart';
 import 'ForgetPassword.dart';
 import 'Dashboard.dart'; // Updated import for dashboard
+import '../widgets/TickLogo.dart';
 
 class LoginPage extends StatefulWidget {
   final String? initialEmail;
@@ -167,11 +168,11 @@ class _LoginPageState extends State<LoginPage> {
                   const SizedBox(height: 40),
                   
                   // Logo
-                  Center(
-                    child: Image.asset(
-                      'assets/images/Logo.png',
-                      height: 120,
-                      fit: BoxFit.contain,
+                  const Center(
+                    child: TickLogo(
+                      size: 120,
+                      color: Colors.white,
+                      backgroundColor: Color(0xFF2D62ED),
                     ),
                   ),
                   
