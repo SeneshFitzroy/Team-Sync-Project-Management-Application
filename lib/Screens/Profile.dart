@@ -52,7 +52,14 @@ class ProfileScreen extends StatelessWidget {
                           onPressed: () {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) => const EditProfile()),
+                              MaterialPageRoute(
+                        builder: (context) => const EditProfile(
+                          name: "John Doe",
+                          username: "johndoe",
+                          email: "john.doe@email.com",
+                          phoneNumber: "+1 234 567 8900",
+                        ),
+                      ),
                             );
                           },
                         ),
