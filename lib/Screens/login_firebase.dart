@@ -115,9 +115,7 @@ class _LoginPageState extends State<LoginPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => CreateAccountPage(
-          initialEmail: _emailController.text.trim(),
-        ),
+        builder: (context) => CreateAccount(),
       ),
     );
   }
