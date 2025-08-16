@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import './Profile.dart'; // Add this import
+import './Profile.dart';
+import '../Services/task_service.dart';
+import '../models/task.dart';
 
 class Calendar extends StatefulWidget {
   const Calendar({super.key});
@@ -11,12 +13,8 @@ class Calendar extends StatefulWidget {
 
 class _CalendarState extends State<Calendar> {
   DateTime _selectedMonth = DateTime.now();
+  DateTime _selectedDate = DateTime.now();
   final List<String> _weekDays = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
-  final List<Map<String, dynamic>> _tasks = [
-    {'title': 'Q4 Revenue Report', 'time': '10:00 AM', 'date': '2024-01-25', 'priority': 'urgent'},
-    {'title': 'Design Review Meeting', 'time': '02:30 PM', 'date': '2024-01-26', 'priority': 'pending'},
-    {'title': 'Product Launch Prep', 'time': '11:00 AM', 'date': '2024-01-28', 'priority': 'in-progress'},
-  ];
   String _filterPriority = 'all';
 
   void _changeMonth(int offset) {
@@ -25,9 +23,10 @@ class _CalendarState extends State<Calendar> {
     });
   }
 
-  List<Map<String, dynamic>> _getFilteredTasks() {
-    if (_filterPriority == 'all') return _tasks;
-    return _tasks.where((task) => task['priority'] == _filterPriority).toList();
+  void _selectDate(DateTime date) {
+    setState(() {
+      _selectedDate = date;
+    });
   }
 
   @override
