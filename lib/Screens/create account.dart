@@ -4,6 +4,8 @@ import '../widgets/TickLogo.dart';
 import '../theme/app_theme.dart';
 
 class CreateAccount extends StatefulWidget {
+  const CreateAccount({super.key});
+  
   @override
   _CreateAccountState createState() => _CreateAccountState();
 }
