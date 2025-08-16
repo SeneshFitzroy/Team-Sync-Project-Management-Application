@@ -15,13 +15,20 @@ class AboutPage extends StatelessWidget {
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'About',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.check_circle, color: Colors.white, size: 18),
+            const SizedBox(width: 8),
+            const Text(
+              'About',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
         ),
       ),
       body: SingleChildScrollView(
