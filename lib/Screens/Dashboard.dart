@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'CreateNewProjectPage.dart';
+import 'Notifications.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -187,8 +189,9 @@ class _DashboardState extends State<Dashboard> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Add new project feature coming soon!')),
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const CreateNewProjectPage()),
           );
         },
         backgroundColor: const Color(0xFF2D62ED),
