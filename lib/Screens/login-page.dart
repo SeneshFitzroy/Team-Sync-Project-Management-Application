@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'create account.dart';
 import 'ForgetPassword.dart';
-import 'Dashboard.dart'; // Updated import for dashboard
+import 'MainAppNavigator.dart';
 import '../widgets/TickLogo.dart';
+import '../theme/app_theme.dart';
 
 class LoginPage extends StatefulWidget {
   final String? initialEmail;
