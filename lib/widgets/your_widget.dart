@@ -9,7 +9,7 @@ class YourWidget extends StatefulWidget {
 
 class _YourWidgetState extends State<YourWidget> {
   // Add your state variables here
-  var data;
+  Map<String, dynamic>? data;
   
   @override
   void initState() {
@@ -37,7 +37,7 @@ class _YourWidgetState extends State<YourWidget> {
     return Container(
       child: data == null
           ? const CircularProgressIndicator()
-          : Text(data['message']),
+          : Text(data!['message']),
     );
   }
 }
