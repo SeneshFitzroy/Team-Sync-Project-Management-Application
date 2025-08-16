@@ -100,37 +100,265 @@ class _TaskManagerState extends State<TaskManager> {
     return '${date.day}/${date.month}/${date.year}';
   }
 
+  void _showAddTaskDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        final titleController = TextEditingController();
+        final descriptionController = TextEditingController();
+        String selectedPriority = 'medium';
+        DateTime selectedDate = DateTime.now().add(const Duration(days: 1));
+
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: const Text('Add New Task'),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextField(
+                      controller: titleController,
+                      decoration: const InputDecoration(
+                        labelText: 'Task Title',
+                        hintText: 'Enter task title',
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    TextField(
+                      controller: descriptionController,
+                      decoration: const InputDecoration(
+                        labelText: 'Description',
+                        hintText: 'Enter task description',
+                      ),
+                      maxLines: 3,
+                    ),
+                    const SizedBox(height: 16),
+                    DropdownButtonFormField<String>(
+                      value: selectedPriority,
+                      decoration: const InputDecoration(labelText: 'Priority'),
+                      items: ['low', 'medium', 'high'].map((priority) {
+                        return DropdownMenuItem(
+                          value: priority,
+                          child: Text(priority.toUpperCase()),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        setState(() {
+                          selectedPriority = value!;
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    ListTile(
+                      leading: const Icon(Icons.calendar_today),
+                      title: Text('Due Date: ${_formatDate(selectedDate)}'),
+                      onTap: () async {
+                        final picked = await showDatePicker(
+                          context: context,
+                          initialDate: selectedDate,
+                          firstDate: DateTime.now(),
+                          lastDate: DateTime.now().add(const Duration(days: 365)),
+                        );
+                        if (picked != null) {
+                          setState(() {
+                            selectedDate = picked;
+                          });
+                        }
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    if (titleController.text.trim().isNotEmpty) {
+                      final newTask = Task(
+                        title: titleController.text.trim(),
+                        description: descriptionController.text.trim(),
+                        priority: selectedPriority,
+                        status: 'pending',
+                        dueDate: selectedDate,
+                        createdAt: DateTime.now(),
+                        projectId: widget.selectedProjectId,
+                        assignedTo: AuthService.currentUserId,
+                      );
+
+                      try {
+                        await TaskService.createTask(newTask);
+                        Navigator.of(context).pop();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Task created successfully!'),
+                            backgroundColor: AppTheme.success,
+                          ),
+                        );
+                      } catch (e) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Error creating task: $e'),
+                            backgroundColor: AppTheme.error,
+                          ),
+                        );
+                      }
+                    }
+                  },
+                  child: const Text('Create Task'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _startNewChat() {
+    Navigator.pushNamed(context, '/chat_list');
+  }
+
+  void _showChatbot() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Row(
+            children: [
+              Icon(Icons.smart_toy, color: AppTheme.info),
+              const SizedBox(width: 8),
+              const Text('AI Assistant'),
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text('Hello! I\'m your AI assistant. How can I help you with your tasks today?'),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                        _showAddTaskDialog();
+                      },
+                      icon: const Icon(Icons.add_task, size: 16),
+                      label: const Text('Create Task'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppTheme.primaryBlue,
+                        foregroundColor: AppTheme.textWhite,
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                        _startNewChat();
+                      },
+                      icon: const Icon(Icons.chat, size: 16),
+                      label: const Text('Start Chat'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppTheme.success,
+                        foregroundColor: AppTheme.textWhite,
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Close'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppTheme.backgroundWhite,
-      body: SafeArea(
-        child: Column(
-          children: [
+    return Stack(
+      children: [
+        Scaffold(
+          backgroundColor: AppTheme.backgroundWhite,
+          body: SafeArea(
+            child: Column(
+              children: [
             // Header
             Container(
               padding: const EdgeInsets.all(16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              child: Column(
                 children: [
-                  Text(
-                    widget.selectedProjectName ?? 'Task Manager',
-                    style: AppTheme.headingMedium,
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const ProfileScreen()),
-                      );
-                    },
-                    child: CircleAvatar(
-                      backgroundColor: AppTheme.primaryBlue,
-                      child: Icon(
-                        Icons.person,
-                        color: AppTheme.textWhite,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        widget.selectedProjectName ?? 'Task Manager',
+                        style: AppTheme.headingMedium,
                       ),
-                    ),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const ProfileScreen()),
+                          );
+                        },
+                        child: CircleAvatar(
+                          backgroundColor: AppTheme.primaryBlue,
+                          child: Icon(
+                            Icons.person,
+                            color: AppTheme.textWhite,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  // Action Buttons
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton.icon(
+                          onPressed: _showAddTaskDialog,
+                          icon: const Icon(Icons.add_task, size: 20),
+                          label: const Text('Add Task'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppTheme.primaryBlue,
+                            foregroundColor: AppTheme.textWhite,
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: ElevatedButton.icon(
+                          onPressed: _startNewChat,
+                          icon: const Icon(Icons.chat_bubble_outline, size: 20),
+                          label: const Text('Start Chat'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppTheme.success,
+                            foregroundColor: AppTheme.textWhite,
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -370,6 +598,20 @@ class _TaskManagerState extends State<TaskManager> {
           ],
         ),
       ),
+    ),
+        // Floating Chatbot Button
+        Positioned(
+          bottom: 20,
+          right: 20,
+          child: FloatingActionButton(
+            onPressed: _showChatbot,
+            backgroundColor: AppTheme.info,
+            foregroundColor: AppTheme.textWhite,
+            child: const Icon(Icons.smart_toy),
+            tooltip: 'AI Assistant',
+          ),
+        ),
+      ],
     );
   }
 }
