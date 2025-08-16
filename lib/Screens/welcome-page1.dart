@@ -123,7 +123,7 @@ class WelcomePage1 extends StatelessWidget {
                         const SizedBox(width: 8),
                         Container(
                           padding: const EdgeInsets.all(4),
-                          decoration: BoxDecoration(
+                          decoration: const BoxDecoration(
                             color: AppTheme.primaryBlue,
                             shape: BoxShape.circle,
                           ),

@@ -20,7 +20,7 @@ class WelcomePage2 extends StatelessWidget {
               const Spacer(flex: 2),
 
               // TaskSync Logo
-              TickLogoLarge(
+              const TickLogoLarge(
                 size: 200,
                 tickColor: AppTheme.primaryBlue,
                 backgroundColor: AppTheme.backgroundLight,
@@ -32,7 +32,7 @@ class WelcomePage2 extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.check_circle,
                     color: AppTheme.primaryBlue,
                     size: 28,
