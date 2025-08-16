@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../Components/nav_bar.dart';
-import './Dashboard.dart';
-import './TaskManager.dart';
-import './Chat.dart';
 import './Profile.dart'; // Add this import
 
 class Calendar extends StatefulWidget {
@@ -16,43 +12,12 @@ class Calendar extends StatefulWidget {
 class _CalendarState extends State<Calendar> {
   DateTime _selectedMonth = DateTime.now();
   final List<String> _weekDays = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
-  int _currentIndex = 3; // Set to 3 for Calendar tab
   final List<Map<String, dynamic>> _tasks = [
     {'title': 'Q4 Revenue Report', 'time': '10:00 AM', 'date': '2024-01-25', 'priority': 'urgent'},
     {'title': 'Design Review Meeting', 'time': '02:30 PM', 'date': '2024-01-26', 'priority': 'pending'},
     {'title': 'Product Launch Prep', 'time': '11:00 AM', 'date': '2024-01-28', 'priority': 'in-progress'},
   ];
   String _filterPriority = 'all';
-
-  void _onNavBarTap(int index) {
-    setState(() {
-      _currentIndex = index;
-    });
-    
-    // Navigate to the appropriate screen based on index
-    if (index != 3) { // If not Calendar tab (since we're already in Calendar)
-      switch (index) {
-        case 0: // Dashboard
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const Dashboard()),
-          );
-          break;
-        case 1: // Tasks
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const TaskManager()),
-          );
-          break;
-        case 2: // Chat
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const ChatScreen()),
-          );
-          break;
-      }
-    }
-  }
 
   void _changeMonth(int offset) {
     setState(() {
@@ -277,10 +242,6 @@ class _CalendarState extends State<Calendar> {
             ],
           ),
         ),
-      ),
-      bottomNavigationBar: NavBar(
-        selectedIndex: _currentIndex,
-        onTap: _onNavBarTap,
       ),
     );
   }
