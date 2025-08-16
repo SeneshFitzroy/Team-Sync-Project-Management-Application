@@ -29,10 +29,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> _loadUserData() async {
     try {
-      final userData = await _authService.getCurrentUserData();
-      if (userData != null) {
+      final user = _authService.getCurrentUser();
+      if (user != null) {
+        // Create a basic UserModel from Firebase User
         setState(() {
-          _currentUser = userData;
+          _currentUser = UserModel(
+            uid: user.uid,
+            email: user.email ?? '',
+            firstName: user.displayName?.split(' ').first ?? 'User',
+            lastName: user.displayName?.split(' ').skip(1).join(' ') ?? '',
+            photoURL: user.photoURL,
+            phoneNumber: user.phoneNumber,
+            lastSeen: DateTime.now(),
+            isOnline: true,
+          );
         });
       }
     } catch (e) {
