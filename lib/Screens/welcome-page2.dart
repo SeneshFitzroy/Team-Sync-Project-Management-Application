@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'create account.dart'; // Import the CreateAccount screen
-import 'login-page.dart'; // Import the LoginPage screen
+import 'create account.dart';
+import 'login-page.dart';
 import '../widgets/TickLogo.dart';
+import '../theme/app_theme.dart';
 
 class WelcomePage2 extends StatelessWidget {
   const WelcomePage2({super.key});
