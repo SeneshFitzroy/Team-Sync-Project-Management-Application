@@ -91,14 +91,14 @@ class ErrorHandler {
     // Sign out and go to login
     FirebaseAuth.instance.signOut().then((_) {
       Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => const LoginPage(checkExistingLogin: false)),
+        MaterialPageRoute(builder: (context) => const LoginPage()),
         (route) => false,
       );
     }).catchError((e) {
       print("Error during emergency recovery: $e");
       // Force navigation anyway
       Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => const LoginPage(checkExistingLogin: false)),
+        MaterialPageRoute(builder: (context) => const LoginPage()),
         (route) => false,
       );
     });
