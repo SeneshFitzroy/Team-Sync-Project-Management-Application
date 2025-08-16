@@ -7,6 +7,7 @@ import '../Services/task_service.dart';
 import '../Services/project_service.dart';
 import '../models/project.dart';
 import '../utils/data_seeder.dart';
+import '../theme/app_theme.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -88,21 +89,21 @@ class _DashboardState extends State<Dashboard> {
                     Text(
                       'Dashboard',
                       style: TextStyle(
-                        color: const Color(0xFF192F5D),
+                        color: AppTheme.primaryBlue,
                         fontSize: 22,
-                        fontFamily: 'Poppins',
+                        fontFamily: AppTheme.fontFamily,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                     Row(
                       children: [
                         IconButton(
-                          icon: const Icon(Icons.data_array, color: Color(0xFF192F5D)),
+                          icon: const Icon(Icons.data_array, color: AppTheme.primaryBlue),
                           onPressed: _seedSampleData,
                           tooltip: 'Add Sample Data',
                         ),
                         IconButton(
-                          icon: const Icon(Icons.notifications, color: Color(0xFF192F5D)),
+                          icon: const Icon(Icons.notifications, color: AppTheme.primaryBlue),
                           onPressed: () {
                             // Add notification functionality
                             ScaffoldMessenger.of(context).showSnackBar(
@@ -239,9 +240,9 @@ class _DashboardState extends State<Dashboard> {
                 Text(
                   'Recent Projects',
                   style: TextStyle(
-                    color: const Color(0xFF192F5D),
+                    color: AppTheme.primaryBlue,
                     fontSize: 18,
-                    fontFamily: 'Poppins',
+                    fontFamily: AppTheme.fontFamily,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -339,9 +340,9 @@ class _DashboardState extends State<Dashboard> {
                 Text(
                   'Quick Actions',
                   style: TextStyle(
-                    color: const Color(0xFF192F5D),
+                    color: AppTheme.primaryBlue,
                     fontSize: 18,
-                    fontFamily: 'Poppins',
+                    fontFamily: AppTheme.fontFamily,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -424,9 +425,9 @@ class _DashboardState extends State<Dashboard> {
               Text(
                 value,
                 style: TextStyle(
-                  color: const Color(0xFF192F5D),
+                  color: AppTheme.primaryBlue,
                   fontSize: 20,
-                  fontFamily: 'Poppins',
+                  fontFamily: AppTheme.fontFamily,
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -483,9 +484,9 @@ class _DashboardState extends State<Dashboard> {
                     Text(
                       title,
                       style: TextStyle(
-                        color: const Color(0xFF192F5D),
+                        color: AppTheme.primaryBlue,
                         fontSize: 14,
-                        fontFamily: 'Poppins',
+                        fontFamily: AppTheme.fontFamily,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
