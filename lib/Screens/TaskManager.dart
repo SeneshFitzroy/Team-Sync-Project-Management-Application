@@ -290,11 +290,9 @@ class _TaskManagerState extends State<TaskManager> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Scaffold(
-          backgroundColor: AppTheme.backgroundWhite,
-          body: SafeArea(
+    return Scaffold(
+      backgroundColor: AppTheme.backgroundWhite,
+      body: SafeArea(
             child: Column(
               children: [
                 // Header
@@ -327,35 +325,19 @@ class _TaskManagerState extends State<TaskManager> {
                         ],
                       ),
                       const SizedBox(height: 16),
-                      // Action Buttons
-                      Row(
-                        children: [
-                          Expanded(
-                            child: ElevatedButton.icon(
-                              onPressed: _showAddTaskDialog,
-                              icon: const Icon(Icons.add_task, size: 20),
-                              label: const Text('Add Task'),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppTheme.primaryBlue,
-                                foregroundColor: AppTheme.textWhite,
-                                padding: const EdgeInsets.symmetric(vertical: 12),
-                              ),
-                            ),
+                      // Action Button
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton.icon(
+                          onPressed: _showAddTaskDialog,
+                          icon: const Icon(Icons.add_task, size: 20),
+                          label: const Text('Add Task'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppTheme.primaryBlue,
+                            foregroundColor: AppTheme.textWhite,
+                            padding: const EdgeInsets.symmetric(vertical: 12),
                           ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: ElevatedButton.icon(
-                              onPressed: _startNewChat,
-                              icon: const Icon(Icons.chat_bubble_outline, size: 20),
-                              label: const Text('Start Chat'),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppTheme.success,
-                                foregroundColor: AppTheme.textWhite,
-                                padding: const EdgeInsets.symmetric(vertical: 12),
-                              ),
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
                     ],
                   ),
