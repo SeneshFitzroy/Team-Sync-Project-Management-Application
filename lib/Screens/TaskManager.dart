@@ -1,46 +1,21 @@
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
-// Import other screens that we'll navigate to
-import './Profile.dart'; // Make sure this points to the right file
-
-// Simplified Task model with essential properties
-class Task {
-  String projectName;
-  String taskName;
-  String status;
-  String dueDate;
-  String priority;
-  Color priorityColor;
-  String assignee;
-  Color statusColor;
-
-  Task({
-    required this.projectName,
-    required this.taskName,
-    required this.status,
-    required this.dueDate,
-    required this.priority,
-    required this.priorityColor,
-    required this.assignee,
-    required this.statusColor,
-  });
-}
+import '../Services/task_service.dart';
+import '../Services/project_service.dart';
+import '../Services/auth_service.dart';
+import '../models/task.dart';
+import '../models/project.dart';
+import './Profile.dart';
 
 class TaskManager extends StatefulWidget {
   // Add parameters to receive project data from Dashboard
-  final String? selectedProject;
-  final Color? projectColor;
-  final double? projectProgress;
-  final String? projectMembers;
-  final String? projectStatus;
+  final String? selectedProjectId;
+  final String? selectedProjectName;
 
   const TaskManager({
     super.key,
-    this.selectedProject,
-    this.projectColor,
-    this.projectProgress,
-    this.projectMembers,
-    this.projectStatus,
+    this.selectedProjectId,
+    this.selectedProjectName,
   });
 
   @override
@@ -49,103 +24,62 @@ class TaskManager extends StatefulWidget {
 
 class _TaskManagerState extends State<TaskManager> {
   bool _showProjectTasks = true;
-  String _searchQuery = ''; // For search functionality
-
-  late List<Task> _projectTasks;
-  late List<Task> _myTasks;
-  late List<Task> _filteredTasks; // Filtered tasks based on search
+  String _searchQuery = '';
+  
+  Stream<List<Task>>? _tasksStream;
+  Stream<List<Project>>? _projectsStream;
+  String? _currentUserId;
 
   @override
   void initState() {
     super.initState();
+    _loadCurrentUser();
+    _initializeStreams();
+  }
 
-    // Initialize task lists
-    _projectTasks = [
-      Task(
-        projectName: 'Website Redesign',
-        taskName: 'Design System Update',
-        status: 'In Progress',
-        dueDate: '2024-02-15',
-        priority: 'High',
-        priorityColor: const Color(0xFFD14318),
-        assignee: 'Sarah Chen',
-        statusColor: const Color(0xFF187E0F),
-      ),
-      Task(
-        projectName: 'Mobile App v2.0',
-        taskName: 'API Integration',
-        status: 'Pending',
-        dueDate: '2024-02-20',
-        priority: 'Medium',
-        priorityColor: const Color(0xFF187E0F),
-        assignee: 'Mike Ross',
-        statusColor: const Color(0xFFD14318),
-      ),
-      Task(
-        projectName: 'Data Analytics',
-        taskName: 'Dashboard Implementation',
-        status: 'Not Started',
-        dueDate: '2024-03-05',
-        priority: 'Low',
-        priorityColor: AppTheme.primaryBlue,
-        assignee: 'Team Lead',
-        statusColor: const Color(0xFFCCCCCC),
-      ),
-    ];
-
-    _myTasks = [
-      Task(
-        projectName: 'Personal Development',
-        taskName: 'Flutter Training',
-        status: 'In Progress',
-        dueDate: '2024-02-25',
-        priority: 'High',
-        priorityColor: const Color(0xFFD14318),
-        assignee: 'Me',
-        statusColor: const Color(0xFF187E0F),
-      ),
-      Task(
-        projectName: 'Documentation',
-        taskName: 'Update User Manual',
-        status: 'Completed',
-        dueDate: '2024-02-10',
-        priority: 'Medium',
-        priorityColor: const Color(0xFF187E0F),
-        assignee: 'Me',
-        statusColor: AppTheme.primaryBlue,
-      ),
-    ];
-
-    // If a project was selected, filter tasks and set to project tab
-    if (widget.selectedProject != null) {
-      setState(() {
-        _showProjectTasks = true;
-
-        // Filter project tasks to show only tasks for the selected project
-        // Only if we have a selected project
-        _projectTasks = _projectTasks
-            .where((task) => task.projectName == widget.selectedProject)
-            .toList();
-
-        // If no tasks match the selected project, add a placeholder task
-        if (_projectTasks.isEmpty && widget.selectedProject != null) {
-          _projectTasks = [
-            Task(
-              projectName: widget.selectedProject!,
-              taskName: 'Create first task',
-              status: 'Not Started',
-              dueDate: 'No date',
-              priority: 'Medium',
-              priorityColor: widget.projectColor ?? const Color(0xFF187E0F),
-              assignee: 'Unassigned',
-              statusColor: const Color(0xFFCCCCCC),
-            ),
-          ];
-        }
-      });
+  void _loadCurrentUser() {
+    final user = AuthService.currentUser;
+    if (user != null) {
+      _currentUserId = user.uid;
     }
+  }
 
-    _filteredTasks = _showProjectTasks ? _projectTasks : _myTasks;
+  void _initializeStreams() {
+    // Initialize real Firebase streams instead of fake data
+    if (widget.selectedProjectId != null) {
+      // Show tasks for selected project
+      _tasksStream = TaskService.getTasksByProject(widget.selectedProjectId!);
+      _showProjectTasks = true;
+    } else {
+      // Show all tasks by default
+      _tasksStream = TaskService.getAllTasks();
+    }
+    
+    // Load projects for project selection
+    _projectsStream = ProjectService.getAllProjects();
+  }
+
+  void _switchToProjectTasks() {
+    setState(() {
+      _showProjectTasks = true;
+      if (widget.selectedProjectId != null) {
+        _tasksStream = TaskService.getTasksByProject(widget.selectedProjectId!);
+      } else {
+        _tasksStream = TaskService.getAllTasks();
+      }
+    });
+  }
+
+  void _switchToMyTasks() {
+    setState(() {
+      _showProjectTasks = false;
+      if (_currentUserId != null) {
+        _tasksStream = TaskService.getTasksByAssignee(_currentUserId!);
+      } else {
+        _tasksStream = TaskService.getAllTasks();
+      }
+    });
+  }
   }
 
   void _onSearch(String query) {
