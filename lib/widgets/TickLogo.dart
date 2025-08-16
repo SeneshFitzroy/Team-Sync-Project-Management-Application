@@ -25,7 +25,7 @@ class TickLogo extends StatelessWidget {
               borderRadius: BorderRadius.circular(size * 0.2),
               boxShadow: [
                 BoxShadow(
-                  color: backgroundColor.withOpacity(0.3),
+                  color: backgroundColor.withValues(alpha: 0.3),
                   spreadRadius: 2,
                   blurRadius: 8,
                   offset: const Offset(0, 4),
@@ -67,7 +67,7 @@ class TickLogoLarge extends StatelessWidget {
         borderRadius: BorderRadius.circular(size * 0.15),
         boxShadow: [
           BoxShadow(
-            color: backgroundColor.withOpacity(0.4),
+            color: backgroundColor.withValues(alpha: 0.4),
             spreadRadius: 4,
             blurRadius: 20,
             offset: const Offset(0, 8),
@@ -76,7 +76,7 @@ class TickLogoLarge extends StatelessWidget {
         gradient: LinearGradient(
           colors: [
             backgroundColor,
-            backgroundColor.withOpacity(0.8),
+            backgroundColor.withValues(alpha: 0.8),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
