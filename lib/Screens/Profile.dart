@@ -108,7 +108,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               MaterialPageRoute(
                                 builder: (context) => EditProfile(
                                   name: _currentUser?.fullName ?? "Unknown User",
-                                  username: _currentUser?.displayName ?? "unknown",
+                                  username: _currentUser?.fullName.toLowerCase().replaceAll(' ', '') ?? "unknown",
                                   email: _currentUser?.email ?? "No email",
                                   phoneNumber: _currentUser?.phoneNumber ?? "+1 234 567 8900",
                                 ),
