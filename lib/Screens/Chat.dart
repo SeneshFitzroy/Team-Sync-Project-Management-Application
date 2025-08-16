@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import './Profile.dart'; // Add this import
+import './IndividualChat.dart'; // Add this import
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
@@ -191,49 +192,81 @@ class _ChatScreenState extends State<ChatScreen> with SingleTickerProviderStateM
                     final team = _getFilteredTeams()[index];
                     return Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      child: Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey.withOpacity(0.2)),
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  team,
-                                  style: const TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 16,
-                                    fontFamily: 'Inter',
-                                    fontWeight: FontWeight.w700,
+                      child: GestureDetector(
+                        onTap: () {
+                          // Navigate to individual chat screen
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => IndividualChatScreen(
+                                chatName: team,
+                                chatType: 'team',
+                              ),
+                            ),
+                          );
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey.withOpacity(0.2)),
+                            borderRadius: BorderRadius.circular(15),
+                            color: Colors.white,
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    children: [
+                                      CircleAvatar(
+                                        backgroundColor: const Color(0xFF2D62ED).withOpacity(0.1),
+                                        radius: 20,
+                                        child: const Icon(
+                                          Icons.group,
+                                          color: Color(0xFF2D62ED),
+                                          size: 20,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 12),
+                                      Text(
+                                        team,
+                                        style: const TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 16,
+                                          fontFamily: 'Inter',
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                ),
-                                const Text(
-                                  '10:45 AM',
+                                  const Text(
+                                    '10:45 AM',
+                                    style: TextStyle(
+                                      color: Color(0xFF666666),
+                                      fontSize: 12,
+                                      fontFamily: 'Inter',
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 8),
+                              const Padding(
+                                padding: EdgeInsets.only(left: 52),
+                                child: Text(
+                                  'Sarah: Updated the mockups',
                                   style: TextStyle(
                                     color: Color(0xFF666666),
-                                    fontSize: 12,
+                                    fontSize: 14,
                                     fontFamily: 'Inter',
                                     fontWeight: FontWeight.w400,
                                   ),
                                 ),
-                              ],
-                            ),
-                            const SizedBox(height: 8),
-                            const Text(
-                              'Sarah: Updated the mockups',
-                              style: TextStyle(
-                                color: Color(0xFF666666),
-                                fontSize: 14,
-                                fontFamily: 'Inter',
-                                fontWeight: FontWeight.w400,
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                     );
@@ -246,17 +279,41 @@ class _ChatScreenState extends State<ChatScreen> with SingleTickerProviderStateM
                   itemBuilder: (context, index) {
                     final member = _getFilteredMembers()[index];
                     return ListTile(
+                      onTap: () {
+                        // Navigate to individual chat screen
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => IndividualChatScreen(
+                              chatName: member,
+                              chatType: 'member',
+                            ),
+                          ),
+                        );
+                      },
                       leading: CircleAvatar(
-                        backgroundColor: Colors.grey[300],
-                        child: const Icon(Icons.person, color: Color.fromARGB(255, 85, 84, 84)),
+                        backgroundColor: const Color(0xFF2D62ED).withOpacity(0.1),
+                        child: const Icon(Icons.person, color: Color(0xFF2D62ED)),
                       ),
-                      title: Text(member),
-                      subtitle: Text(index % 2 == 0 ? 'Online' : 'Last seen 2h ago'),
+                      title: Text(
+                        member,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 16,
+                        ),
+                      ),
+                      subtitle: Text(
+                        index % 2 == 0 ? 'Online' : 'Last seen 2h ago',
+                        style: const TextStyle(
+                          color: Color(0xFF666666),
+                          fontSize: 14,
+                        ),
+                      ),
                       trailing: index % 3 == 0 
                           ? Container(
                               padding: const EdgeInsets.all(6),
                               decoration: const BoxDecoration(
-                                color: Colors.green,
+                                color: Color(0xFF2D62ED),
                                 shape: BoxShape.circle,
                               ),
                               child: Text(
@@ -264,10 +321,15 @@ class _ChatScreenState extends State<ChatScreen> with SingleTickerProviderStateM
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 10,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
                             ) 
-                          : null,
+                          : const Icon(
+                              Icons.arrow_forward_ios,
+                              color: Color(0xFF666666),
+                              size: 16,
+                            ),
                     );
                   },
                 ),
