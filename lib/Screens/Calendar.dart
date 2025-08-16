@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import './Profile.dart';
 import '../Services/task_service.dart';
+import '../Services/auth_service.dart';
 import '../models/task.dart';
+import '../theme/app_theme.dart';
 
 class Calendar extends StatefulWidget {
   const Calendar({super.key});
@@ -151,26 +153,41 @@ class _CalendarState extends State<Calendar> {
                             _selectedMonth.month == DateTime.now().month && 
                             _selectedMonth.year == DateTime.now().year;
                         
-                        return Container(
-                          margin: EdgeInsets.all(4),
-                          decoration: BoxDecoration(
-                            color: isToday ? Color(0xFFEFF6FF) : Colors.transparent,
-                            borderRadius: BorderRadius.circular(8),
-                            border: isToday 
-                                ? Border.all(color: Color(0xFF3B82F6)) 
-                                : null,
-                          ),
-                          child: Center(
-                            child: isCurrentMonth 
-                                ? Text(
-                                    day.toString(),
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: isToday ? FontWeight.bold : FontWeight.normal,
-                                      color: isToday ? Color(0xFF3B82F6) : Color(0xFF1E293B),
-                                    ),
-                                  )
-                                : Text(''),
+                        // Is selected?
+                        final bool isSelected = isCurrentMonth && 
+                            day == _selectedDate.day && 
+                            _selectedMonth.month == _selectedDate.month && 
+                            _selectedMonth.year == _selectedDate.year;
+                        
+                        return GestureDetector(
+                          onTap: isCurrentMonth ? () {
+                            setState(() {
+                              _selectedDate = DateTime(_selectedMonth.year, _selectedMonth.month, day);
+                            });
+                          } : null,
+                          child: Container(
+                            margin: EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                              color: isSelected ? Color(0xFF2D62ED) : 
+                                     isToday ? Color(0xFFEFF6FF) : Colors.transparent,
+                              borderRadius: BorderRadius.circular(8),
+                              border: isToday && !isSelected
+                                  ? Border.all(color: Color(0xFF3B82F6)) 
+                                  : null,
+                            ),
+                            child: Center(
+                              child: isCurrentMonth 
+                                  ? Text(
+                                      day.toString(),
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: isSelected || isToday ? FontWeight.bold : FontWeight.normal,
+                                        color: isSelected ? Colors.white :
+                                               isToday ? Color(0xFF3B82F6) : Color(0xFF1E293B),
+                                      ),
+                                    )
+                                  : Text(''),
+                            ),
                           ),
                         );
                       },
