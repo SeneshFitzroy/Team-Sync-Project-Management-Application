@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/TickLogo.dart';
 
 class AboutPage extends StatelessWidget {
   const AboutPage({super.key});
@@ -35,10 +36,10 @@ class AboutPage extends StatelessWidget {
                 color: const Color(0xFF2D62ED).withOpacity(0.1),
                 borderRadius: BorderRadius.circular(20),
               ),
-              child: const Icon(
-                Icons.task_alt,
+              child: const TickLogo(
                 size: 80,
-                color: Color(0xFF2D62ED),
+                color: Colors.white,
+                backgroundColor: Color(0xFF2D62ED),
               ),
             ),
             const SizedBox(height: 20),
