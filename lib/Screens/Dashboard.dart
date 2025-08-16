@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import '../widgets/TickLogo.dart';
 import './Profile.dart';
 import './add_task_screen.dart';
+import './task_management_screen.dart';
 import '../Services/task_service.dart';
 import '../Services/project_service.dart';
 import '../models/project.dart';
+import '../utils/data_seeder.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -38,6 +40,36 @@ class _DashboardState extends State<Dashboard> {
       print('Error loading task statistics: $e');
     }
   }
+
+  Future<void> _seedSampleData() async {
+    try {
+      await DataSeeder.seedSampleData();
+      _loadTaskStatistics(); // Refresh stats after seeding
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Sample data created successfully!',
+              style: TextStyle(fontFamily: 'Poppins'),
+            ),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Error creating sample data: $e',
+              style: TextStyle(fontFamily: 'Poppins'),
+            ),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -64,6 +96,11 @@ class _DashboardState extends State<Dashboard> {
                     ),
                     Row(
                       children: [
+                        IconButton(
+                          icon: const Icon(Icons.data_array, color: Color(0xFF192F5D)),
+                          onPressed: _seedSampleData,
+                          tooltip: 'Add Sample Data',
+                        ),
                         IconButton(
                           icon: const Icon(Icons.notifications, color: Color(0xFF192F5D)),
                           onPressed: () {
@@ -329,13 +366,13 @@ class _DashboardState extends State<Dashboard> {
                     const SizedBox(width: 12),
                     Expanded(
                       child: _buildQuickActionCard(
-                        'View Calendar',
-                        Icons.calendar_today,
+                        'View Tasks',
+                        Icons.list_alt,
                         const Color(0xFF4CAF50),
                         () {
-                          // Navigate to calendar
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Calendar navigation coming soon!')),
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const task_management_screenScreen()),
                           );
                         },
                       ),
