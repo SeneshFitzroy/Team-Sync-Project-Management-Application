@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 import '../Services/task_service.dart';
-import '../Services/project_service.dart';
 import '../Services/auth_service.dart';
 import '../models/task.dart';
-import '../models/project.dart';
 import './Profile.dart';
 
 class TaskManager extends StatefulWidget {
