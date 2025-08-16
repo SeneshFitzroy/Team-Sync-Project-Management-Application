@@ -31,15 +31,7 @@ class _TaskManagerState extends State<TaskManager> {
   @override
   void initState() {
     super.initState();
-    _loadCurrentUser();
     _initializeStreams();
-  }
-
-  void _loadCurrentUser() {
-    final user = AuthService.currentUser;
-    if (user != null) {
-      _currentUserId = user.uid;
-    }
   }
 
   void _initializeStreams() {
