@@ -48,7 +48,6 @@ class TaskManager extends StatefulWidget {
 
 class _TaskManagerState extends State<TaskManager> {
   bool _showProjectTasks = true;
-  int _currentIndex = 1; // Set to 1 for Tasks tab
   String _searchQuery = ''; // For search functionality
 
   late List<Task> _projectTasks;
