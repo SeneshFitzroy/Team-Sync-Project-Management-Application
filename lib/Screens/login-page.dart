@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'ForgetPassword.dart';
 import 'create account.dart';
 import 'MainAppNavigator.dart'; // Updated import for dashboard
+import '../widgets/TickLogo.dart';
 
 class LoginPage extends StatefulWidget {
   final String? initialEmail;
