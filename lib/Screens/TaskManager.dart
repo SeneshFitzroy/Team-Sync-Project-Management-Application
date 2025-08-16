@@ -167,37 +167,6 @@ class _TaskManagerState extends State<TaskManager> {
     });
   }
 
-  void _onNavBarTap(int index) {
-    setState(() {
-      _currentIndex = index;
-    });
-
-    // Navigate to the appropriate screen based on index
-    if (index != 1) {
-      // If not Tasks tab (since we're already in TaskManager)
-      switch (index) {
-        case 0: // Dashboard
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const Dashboard()),
-          );
-          break;
-        case 2: // Chat
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const ChatScreen()),
-          );
-          break;
-        case 3: // Calendar
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const Calendar()),
-          );
-          break;
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -224,10 +193,6 @@ class _TaskManagerState extends State<TaskManager> {
                   const SizedBox(height: 24),
                 ],
               ),
-            ),
-            NavBar(
-              selectedIndex: _currentIndex,
-              onTap: _onNavBarTap,
             ),
           ],
         ),
