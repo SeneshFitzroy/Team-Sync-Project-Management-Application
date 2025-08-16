@@ -93,11 +93,10 @@ class ProfileScreen extends StatelessWidget {
             const SizedBox(height: 20),
             
             // Profile Options
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: Column(
-                  children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: Column(
+                children: [
                     _buildProfileOption(
                       context,
                       Icons.person,
@@ -138,9 +137,7 @@ class ProfileScreen extends StatelessWidget {
                   ],
                 ),
               ),
-            ),
           ],
-        ),
         ), // Close SingleChildScrollView
       ),
     );

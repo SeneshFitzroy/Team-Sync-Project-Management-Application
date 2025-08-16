@@ -220,9 +220,9 @@ class _CalendarState extends State<Calendar> {
               const SizedBox(height: 12),
               
               // Task items
-              Container(
-                height: 200, // Fixed height for task list
+              Flexible(
                 child: ListView.builder(
+                  shrinkWrap: true,
                   itemCount: _getFilteredTasks().length,
                   itemBuilder: (context, index) {
                     final task = _getFilteredTasks()[index];
