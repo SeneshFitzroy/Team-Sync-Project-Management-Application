@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import '../widgets/TickLogo.dart';
 import './Profile.dart';
 import './add_task_screen.dart';
+import '../Services/task_service.dart';
+import '../Services/project_service.dart';
+import '../models/task.dart';
+import '../models/project.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -11,6 +15,30 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
+  Map<String, int> taskStats = {
+    'total': 0,
+    'completed': 0,
+    'in_progress': 0,
+    'pending': 0,
+  };
+
+  @override
+  void initState() {
+    super.initState();
+    _loadTaskStatistics();
+  }
+
+  Future<void> _loadTaskStatistics() async {
+    try {
+      final stats = await TaskService.getTaskStatistics();
+      setState(() {
+        taskStats = stats;
+      });
+    } catch (e) {
+      // Handle error - show default values
+      print('Error loading task statistics: $e');
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -128,7 +156,7 @@ class _DashboardState extends State<Dashboard> {
                     Expanded(
                       child: _buildStatCard(
                         'Total Tasks',
-                        '24',
+                        '${taskStats['total']}',
                         Icons.task_alt,
                         const Color(0xFF4CAF50),
                       ),
@@ -137,7 +165,7 @@ class _DashboardState extends State<Dashboard> {
                     Expanded(
                       child: _buildStatCard(
                         'Completed',
-                        '18',
+                        '${taskStats['completed']}',
                         Icons.check_circle,
                         const Color(0xFF2196F3),
                       ),
@@ -152,7 +180,7 @@ class _DashboardState extends State<Dashboard> {
                     Expanded(
                       child: _buildStatCard(
                         'In Progress',
-                        '4',
+                        '${taskStats['in_progress']}',
                         Icons.schedule,
                         const Color(0xFFFF9800),
                       ),
@@ -161,7 +189,7 @@ class _DashboardState extends State<Dashboard> {
                     Expanded(
                       child: _buildStatCard(
                         'Pending',
-                        '2',
+                        '${taskStats['pending']}',
                         Icons.pending,
                         const Color(0xFFF44336),
                       ),
@@ -184,30 +212,89 @@ class _DashboardState extends State<Dashboard> {
                 
                 const SizedBox(height: 16),
                 
-                // Project cards
-                _buildProjectCard(
-                  'Mobile App Development',
-                  'UI/UX Design Phase',
-                  0.75,
-                  const Color(0xFF2D62ED),
-                ),
-                
-                const SizedBox(height: 12),
-                
-                _buildProjectCard(
-                  'Website Redesign',
-                  'Frontend Development',
-                  0.45,
-                  const Color(0xFF4CAF50),
-                ),
-                
-                const SizedBox(height: 12),
-                
-                _buildProjectCard(
-                  'Marketing Campaign',
-                  'Content Creation',
-                  0.30,
-                  const Color(0xFFFF9800),
+                // Project cards from Firebase
+                StreamBuilder<List<Project>>(
+                  stream: ProjectService.getRecentProjects(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    
+                    if (snapshot.hasError) {
+                      return Center(
+                        child: Text(
+                          'Error loading projects',
+                          style: TextStyle(
+                            color: Colors.red,
+                            fontFamily: 'Poppins',
+                          ),
+                        ),
+                      );
+                    }
+                    
+                    final projects = snapshot.data ?? [];
+                    
+                    if (projects.isEmpty) {
+                      return Container(
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: Colors.grey[100],
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Column(
+                          children: [
+                            Icon(Icons.folder_open, color: Colors.grey[400], size: 48),
+                            const SizedBox(height: 8),
+                            Text(
+                              'No projects yet',
+                              style: TextStyle(
+                                color: Colors.grey[600],
+                                fontFamily: 'Poppins',
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            Text(
+                              'Create your first project to get started!',
+                              style: TextStyle(
+                                color: Colors.grey[500],
+                                fontFamily: 'Poppins',
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+                    
+                    return Column(
+                      children: projects.map((project) {
+                        Color statusColor;
+                        switch (project.status.toLowerCase()) {
+                          case 'completed':
+                            statusColor = const Color(0xFF4CAF50);
+                            break;
+                          case 'in_progress':
+                            statusColor = const Color(0xFFFF9800);
+                            break;
+                          case 'on_hold':
+                            statusColor = const Color(0xFFF44336);
+                            break;
+                          default:
+                            statusColor = const Color(0xFF2D62ED);
+                        }
+                        
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: _buildProjectCard(
+                            project.name,
+                            project.description,
+                            project.progress,
+                            statusColor,
+                          ),
+                        );
+                      }).toList(),
+                    );
+                  },
                 ),
                 
                 const SizedBox(height: 24),
