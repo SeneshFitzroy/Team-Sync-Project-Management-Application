@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import 'theme/app_theme.dart';
 
 // Import welcome screen
 import 'Screens/welcome-page1.dart';
@@ -34,41 +35,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: '✓ TaskSync',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primaryColor: const Color(0xFF2D62ED),
-        scaffoldBackgroundColor: Colors.white,
-        fontFamily: 'Inter',
-        textTheme: const TextTheme(
-          headlineLarge: TextStyle(
-            color: Color(0xFF000000),
-            fontWeight: FontWeight.bold,
-          ),
-          bodyLarge: TextStyle(
-            color: Color(0xFF555555),
-          ),
-          bodyMedium: TextStyle(
-            color: Color(0xFF555555),
-          ),
-        ),
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF2D62ED),
-            foregroundColor: Colors.white,
-            elevation: 0,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-          ),
-        ),
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Color(0xFF2D62ED),
-          foregroundColor: Colors.white,
-          elevation: 0,
-          centerTitle: true,
-        ),
-        useMaterial3: true,
-      ),
+      theme: AppTheme.lightTheme,
       home: const WelcomePage1(),
     );
   }
