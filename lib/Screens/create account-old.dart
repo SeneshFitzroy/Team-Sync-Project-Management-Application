@@ -91,7 +91,7 @@ class _CreateAccountState extends State<CreateAccount> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => LoginPage(initialEmail: _emailController.text.trim()),
+            builder: (context) => const LoginPage(),
           ),
         );
       }
