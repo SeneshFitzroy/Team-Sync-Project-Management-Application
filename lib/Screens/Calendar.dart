@@ -294,7 +294,6 @@ class _CalendarState extends State<Calendar> {
                   );
                 },
               ),
-              ),
             ],
           ), // Close Column
         ), // Close Padding
