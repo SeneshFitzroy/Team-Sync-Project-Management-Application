@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../Services/chat_service.dart';
-import '../models/chat_message.dart';
+import '../models/chat_model.dart';
 import '../theme/app_theme.dart';
 
 class IndividualChatScreen extends StatefulWidget {
   final String chatName;
   final String chatType;
-  final String? chatId;
+  final String? receiverId;
 
   const IndividualChatScreen({
     super.key,
     required this.chatName,
-    this.chatType = 'team',
-    this.chatId,
+    this.chatType = 'individual',
+    this.receiverId,
   });
 
   @override
@@ -21,28 +21,31 @@ class IndividualChatScreen extends StatefulWidget {
 }
 
 class _IndividualChatScreenState extends State<IndividualChatScreen> {
-  final ChatService _chatService = ChatService();
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
-  late String _chatId;
+  String? _chatRoomId;
   User? _currentUser;
 
   @override
   void initState() {
     super.initState();
     _currentUser = FirebaseAuth.instance.currentUser;
-    _chatId = widget.chatId ?? _generateChatId();
     _initializeChat();
   }
 
-  String _generateChatId() {
-    // Generate chat ID based on chat name and type
-    return '${widget.chatType}_${widget.chatName.toLowerCase().replaceAll(' ', '_')}';
-  }
-
   void _initializeChat() async {
-    if (_currentUser != null) {
-      await _chatService.createChatIfNotExists(_chatId, widget.chatName, [_currentUser!.uid]);
+    if (_currentUser != null && widget.receiverId != null) {
+      try {
+        _chatRoomId = await ChatService.createOrGetChatRoom(widget.receiverId!);
+        setState(() {});
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to initialize chat: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
@@ -54,17 +57,16 @@ class _IndividualChatScreenState extends State<IndividualChatScreen> {
   }
 
   void _sendMessage() async {
-    if (_messageController.text.trim().isEmpty || _currentUser == null) return;
+    if (_messageController.text.trim().isEmpty || _currentUser == null || _chatRoomId == null || widget.receiverId == null) return;
 
     final message = _messageController.text.trim();
     _messageController.clear();
 
     try {
-      await _chatService.sendMessage(
-        _chatId,
-        message,
-        _currentUser!.uid,
-        _currentUser!.displayName ?? 'Anonymous',
+      await ChatService.sendMessage(
+        chatRoomId: _chatRoomId!,
+        receiverId: widget.receiverId!,
+        message: message,
       );
 
       // Scroll to bottom after sending message
@@ -113,7 +115,7 @@ class _IndividualChatScreenState extends State<IndividualChatScreen> {
               ),
             const SizedBox(height: 4),
             Text(
-              message.content,
+              message.message,
               style: TextStyle(
                 color: isMe ? Colors.white : Colors.black87,
                 fontSize: 16,
@@ -195,7 +197,7 @@ class _IndividualChatScreenState extends State<IndividualChatScreen> {
           // Messages list
           Expanded(
             child: StreamBuilder<List<ChatMessage>>(
-              stream: _chatService.getChatMessages(_chatId),
+              stream: _chatRoomId != null ? ChatService.getMessages(_chatRoomId!) : null,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(
