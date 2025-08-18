@@ -72,7 +72,7 @@ class _DashboardState extends State<Dashboard> {
                         onPressed: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => const NotificationsPage()),
+                            MaterialPageRoute(builder: (context) => const NotificationsScreen()),
                           );
                         },
                       ),
