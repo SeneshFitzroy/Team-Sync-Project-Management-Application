@@ -301,7 +301,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                     ),
                   ),
                 ),
-                style: TextStyle(
+                style: const TextStyle(
                   fontFamily: AppTheme.fontFamily,
                 ),
                 onChanged: _filterUsers,
@@ -309,7 +309,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
             ),
             Expanded(
               child: _filteredUsers.isEmpty
-                  ? Center(
+                  ? const Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
