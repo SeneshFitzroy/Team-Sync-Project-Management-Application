@@ -380,7 +380,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                   List<ChatRoom> chatRooms = snapshot.data ?? [];
 
                   if (chatRooms.isEmpty) {
-                    return Center(
+                    return const Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -389,14 +389,12 @@ class _ChatListScreenState extends State<ChatListScreen> {
                             size: 48,
                             color: AppTheme.textLight,
                           ),
-                          const SizedBox(height: 16),
+                          SizedBox(height: 16),
                           Text(
                             'No conversations yet',
-                            style: AppTheme.bodyLarge.copyWith(
-                              color: AppTheme.textLight,
-                            ),
+                            style: AppTheme.bodyLarge,
                           ),
-                          const SizedBox(height: 8),
+                          SizedBox(height: 8),
                           Text(
                             'Tap the search icon to start a new chat',
                             style: AppTheme.bodyMedium,
