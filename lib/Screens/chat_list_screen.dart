@@ -309,11 +309,11 @@ class _ChatListScreenState extends State<ChatListScreen> {
             ),
             Expanded(
               child: _filteredUsers.isEmpty
-                  ? const Center(
+                  ? Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.person_search,
                             size: 48,
                             color: AppTheme.textLight,
