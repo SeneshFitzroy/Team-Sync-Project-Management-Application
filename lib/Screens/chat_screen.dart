@@ -390,7 +390,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     controller: _messageController,
                     decoration: InputDecoration(
                       hintText: 'Type a message...',
-                      hintStyle: const TextStyle(
+                      hintStyle: TextStyle(
                         color: AppTheme.textLight,
                         fontFamily: AppTheme.fontFamily,
                       ),

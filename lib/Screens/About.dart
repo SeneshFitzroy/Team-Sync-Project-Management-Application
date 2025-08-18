@@ -15,12 +15,12 @@ class AboutPage extends StatelessWidget {
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Row(
+        title: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.check_circle, color: Colors.white, size: 18),
-            SizedBox(width: 8),
-            Text(
+            const Icon(Icons.check_circle, color: Colors.white, size: 18),
+            const SizedBox(width: 8),
+            const Text(
               'About',
               style: TextStyle(
                 color: Colors.white,
@@ -51,16 +51,16 @@ class AboutPage extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             
-            const Row(
+            Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
+                const Icon(
                   Icons.check_circle,
                   color: Color(0xFF2D62ED),
                   size: 24,
                 ),
-                SizedBox(width: 8),
-                Text(
+                const SizedBox(width: 8),
+                const Text(
                   'TaskSync',
                   style: TextStyle(
                     fontSize: 28,

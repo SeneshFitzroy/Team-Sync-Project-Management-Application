@@ -19,7 +19,7 @@ class _task_management_screenScreenState extends State<task_management_screenScr
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'Task Management',
           style: TextStyle(
             fontFamily: 'Poppins',
@@ -93,12 +93,12 @@ class _task_management_screenScreenState extends State<task_management_screenScr
                 }
                 
                 if (snapshot.hasError) {
-                  return const Center(
+                  return Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(Icons.error, color: Colors.red, size: 48),
-                        SizedBox(height: 16),
+                        const SizedBox(height: 16),
                         Text(
                           'Error loading tasks',
                           style: TextStyle(
@@ -155,7 +155,7 @@ class _task_management_screenScreenState extends State<task_management_screenScr
                             ),
                           ),
                           icon: const Icon(Icons.add),
-                          label: const Text(
+                          label: Text(
                             'Create Task',
                             style: TextStyle(fontFamily: 'Poppins'),
                           ),
@@ -235,11 +235,11 @@ class _task_management_screenScreenState extends State<task_management_screenScr
                     children: [
                       Text(
                         task.title,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontFamily: 'Poppins',
                           fontWeight: FontWeight.w600,
                           fontSize: 16,
-                          color: Color(0xFF192F5D),
+                          color: const Color(0xFF192F5D),
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -345,18 +345,18 @@ class _task_management_screenScreenState extends State<task_management_screenScr
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text(
+        title: Text(
           'Delete Task',
           style: TextStyle(fontFamily: 'Poppins'),
         ),
         content: Text(
           'Are you sure you want to delete "${task.title}"?',
-          style: const TextStyle(fontFamily: 'Poppins'),
+          style: TextStyle(fontFamily: 'Poppins'),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text(
+            child: Text(
               'Cancel',
               style: TextStyle(fontFamily: 'Poppins'),
             ),
@@ -368,7 +368,7 @@ class _task_management_screenScreenState extends State<task_management_screenScr
                 await TaskService.deleteTask(task.id!);
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
+                    SnackBar(
                       content: Text(
                         'Task deleted successfully',
                         style: TextStyle(fontFamily: 'Poppins'),
@@ -383,7 +383,7 @@ class _task_management_screenScreenState extends State<task_management_screenScr
                     SnackBar(
                       content: Text(
                         'Error deleting task: $e',
-                        style: const TextStyle(fontFamily: 'Poppins'),
+                        style: TextStyle(fontFamily: 'Poppins'),
                       ),
                       backgroundColor: Colors.red,
                     ),
@@ -391,7 +391,7 @@ class _task_management_screenScreenState extends State<task_management_screenScr
                 }
               }
             },
-            child: const Text(
+            child: Text(
               'Delete',
               style: TextStyle(
                 color: Colors.red,

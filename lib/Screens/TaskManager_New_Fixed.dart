@@ -225,11 +225,11 @@ class _TaskManagerState extends State<TaskManager> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Row(
+          title: Row(
             children: [
               Icon(Icons.smart_toy, color: AppTheme.info),
-              SizedBox(width: 8),
-              Text('AI Assistant'),
+              const SizedBox(width: 8),
+              const Text('AI Assistant'),
             ],
           ),
           content: Column(
@@ -311,7 +311,7 @@ class _TaskManagerState extends State<TaskManager> {
                                 MaterialPageRoute(builder: (context) => const ProfileScreen()),
                               );
                             },
-                            child: const CircleAvatar(
+                            child: CircleAvatar(
                               backgroundColor: AppTheme.primaryBlue,
                               child: Icon(
                                 Icons.person,
@@ -363,7 +363,7 @@ class _TaskManagerState extends State<TaskManager> {
                     onChanged: _onSearchChanged,
                     decoration: InputDecoration(
                       hintText: 'Search tasks...',
-                      prefixIcon: const Icon(Icons.search, color: AppTheme.textSecondary),
+                      prefixIcon: Icon(Icons.search, color: AppTheme.textSecondary),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide(color: AppTheme.textLight.withOpacity(0.3)),
@@ -426,9 +426,9 @@ class _TaskManagerState extends State<TaskManager> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const Icon(Icons.error, size: 64, color: AppTheme.textLight),
+                              Icon(Icons.error, size: 64, color: AppTheme.textLight),
                               const SizedBox(height: 16),
-                              const Text('Error loading tasks', style: AppTheme.bodyLarge),
+                              Text('Error loading tasks', style: AppTheme.bodyLarge),
                               const SizedBox(height: 8),
                               Text(snapshot.error.toString(), style: AppTheme.bodySmall),
                             ],
@@ -456,14 +456,14 @@ class _TaskManagerState extends State<TaskManager> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const Icon(Icons.task, size: 64, color: AppTheme.textLight),
+                              Icon(Icons.task, size: 64, color: AppTheme.textLight),
                               const SizedBox(height: 16),
                               Text(
                                 _showProjectTasks ? 'No project tasks found' : 'No assigned tasks found',
                                 style: AppTheme.bodyLarge,
                               ),
                               const SizedBox(height: 8),
-                              const Text(
+                              Text(
                                 'Tasks will appear here when created',
                                 style: AppTheme.bodySmall,
                               ),
@@ -495,8 +495,8 @@ class _TaskManagerState extends State<TaskManager> {
             onPressed: _showChatbot,
             backgroundColor: AppTheme.info,
             foregroundColor: AppTheme.textWhite,
-            tooltip: 'AI Assistant',
             child: const Icon(Icons.smart_toy),
+            tooltip: 'AI Assistant',
           ),
         ),
       ],
@@ -565,7 +565,7 @@ class _TaskManagerState extends State<TaskManager> {
               children: [
                 Row(
                   children: [
-                    const Icon(Icons.calendar_today, size: 16, color: AppTheme.textSecondary),
+                    Icon(Icons.calendar_today, size: 16, color: AppTheme.textSecondary),
                     const SizedBox(width: 4),
                     Text(
                       _formatDate(task.dueDate),
@@ -574,10 +574,10 @@ class _TaskManagerState extends State<TaskManager> {
                   ],
                 ),
                 if (task.assignedTo != null) ...[
-                  const Row(
+                  Row(
                     children: [
                       Icon(Icons.person, size: 16, color: AppTheme.textSecondary),
-                      SizedBox(width: 4),
+                      const SizedBox(width: 4),
                       Text(
                         'Assigned',
                         style: AppTheme.bodySmall,

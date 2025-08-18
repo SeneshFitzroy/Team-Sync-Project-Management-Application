@@ -22,16 +22,6 @@ class _WelcomePage1State extends State<WelcomePage1>
   late Animation<double> _scaleAnimation;
   late Animation<double> _floatingAnimation;
 
-  // Helper method to safely clamp opacity values
-  double _safeOpacity(double value) {
-    return value.clamp(0.0, 1.0);
-  }
-
-  // Helper method to safely clamp scale values
-  double _safeScale(double value) {
-    return value.clamp(0.0, double.infinity);
-  }
-
   @override
   void initState() {
     super.initState();
@@ -131,9 +121,9 @@ class _WelcomePage1State extends State<WelcomePage1>
                 animation: _scaleController,
                 builder: (context, child) {
                   return ScaleTransition(
-                    scale: AlwaysStoppedAnimation(_safeScale(_scaleAnimation.value)),
+                    scale: _scaleAnimation,
                     child: FadeTransition(
-                      opacity: AlwaysStoppedAnimation(_safeOpacity(_fadeAnimation.value)),
+                      opacity: _fadeAnimation,
                       child: Container(
                         padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
@@ -172,7 +162,7 @@ class _WelcomePage1State extends State<WelcomePage1>
               SlideTransition(
                 position: _slideAnimation,
                 child: FadeTransition(
-                  opacity: AlwaysStoppedAnimation(_safeOpacity(_fadeAnimation.value)),
+                  opacity: _fadeAnimation,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -210,7 +200,7 @@ class _WelcomePage1State extends State<WelcomePage1>
               SlideTransition(
                 position: _slideAnimation,
                 child: FadeTransition(
-                  opacity: AlwaysStoppedAnimation(_safeOpacity(_fadeAnimation.value)),
+                  opacity: _fadeAnimation,
                   child: Column(
                     children: [
                       Text(
@@ -247,7 +237,7 @@ class _WelcomePage1State extends State<WelcomePage1>
                 child: SlideTransition(
                   position: _slideAnimation,
                   child: FadeTransition(
-                    opacity: AlwaysStoppedAnimation(_safeOpacity(_fadeAnimation.value)),
+                    opacity: _fadeAnimation,
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
                       child: Column(
@@ -271,12 +261,12 @@ class _WelcomePage1State extends State<WelcomePage1>
                 child: SlideTransition(
                   position: _slideAnimation,
                   child: FadeTransition(
-                    opacity: AlwaysStoppedAnimation(_safeOpacity(_fadeAnimation.value)),
+                    opacity: _fadeAnimation,
                     child: AnimatedBuilder(
                       animation: _scaleController,
                       builder: (context, child) {
                         return Transform.scale(
-                          scale: _safeScale(_scaleAnimation.value),
+                          scale: _scaleAnimation.value,
                           child: Container(
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(16),
@@ -372,11 +362,10 @@ class _WelcomePage1State extends State<WelcomePage1>
           tween: Tween(begin: 0.0, end: 1.0),
           curve: Curves.easeOutBack,
           builder: (context, value, child) {
-            final clampedValue = _safeOpacity(value);
             return Transform.translate(
-              offset: Offset(0, (1 - clampedValue) * 30),
+              offset: Offset(0, (1 - value) * 30),
               child: Opacity(
-                opacity: clampedValue,
+                opacity: value,
                 child: Container(
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
@@ -391,7 +380,7 @@ class _WelcomePage1State extends State<WelcomePage1>
                         color: AppTheme.primaryBlue.withValues(alpha: 0.08),
                         spreadRadius: 0,
                         blurRadius: 15,
-                        offset: const Offset(4, 4),
+                        offset: const Offset(0, 4),
                       ),
                     ],
                   ),

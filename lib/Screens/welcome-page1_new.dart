@@ -10,7 +10,7 @@ class WelcomePage1 extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [AppTheme.primaryDark, AppTheme.primaryBlue],
             begin: Alignment.topCenter,
@@ -123,7 +123,7 @@ class WelcomePage1 extends StatelessWidget {
                         const SizedBox(width: 8),
                         Container(
                           padding: const EdgeInsets.all(4),
-                          decoration: const BoxDecoration(
+                          decoration: BoxDecoration(
                             color: AppTheme.primaryBlue,
                             shape: BoxShape.circle,
                           ),

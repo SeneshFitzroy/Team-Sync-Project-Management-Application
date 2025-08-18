@@ -199,7 +199,7 @@ class _TaskManagerState extends State<TaskManager> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(
+                        Icon(
                           Icons.error_outline,
                           size: 64,
                           color: AppTheme.error,
@@ -227,7 +227,7 @@ class _TaskManagerState extends State<TaskManager> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(
+                        Icon(
                           Icons.task_alt,
                           size: 64,
                           color: AppTheme.textLight,
@@ -240,7 +240,7 @@ class _TaskManagerState extends State<TaskManager> {
                           ),
                         ),
                         const SizedBox(height: 8),
-                        const Text(
+                        Text(
                           'Create your first task to get started',
                           style: AppTheme.bodyMedium,
                         ),
@@ -264,7 +264,7 @@ class _TaskManagerState extends State<TaskManager> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(
+                        Icon(
                           Icons.search_off,
                           size: 64,
                           color: AppTheme.textLight,
@@ -277,7 +277,7 @@ class _TaskManagerState extends State<TaskManager> {
                           ),
                         ),
                         const SizedBox(height: 8),
-                        const Text(
+                        Text(
                           'Try adjusting your search terms',
                           style: AppTheme.bodyMedium,
                         ),
@@ -372,7 +372,7 @@ class _TaskManagerState extends State<TaskManager> {
                 
                 const Spacer(),
                 
-                const Icon(
+                Icon(
                   Icons.calendar_today,
                   size: 16,
                   color: AppTheme.textLight,

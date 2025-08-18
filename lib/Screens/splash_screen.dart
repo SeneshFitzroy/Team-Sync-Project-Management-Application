@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 import '../widgets/TickLogo.dart';
-import 'welcome-page1_new.dart';
+import '../widgets/auth_wrapper.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -22,20 +22,9 @@ class _SplashScreenState extends State<SplashScreen>
   late Animation<Offset> _textSlideAnimation;
   late Animation<double> _progressAnimation;
 
-  // Helper method to safely clamp opacity values
-  double _safeOpacity(double value) {
-    return value.clamp(0.0, 1.0);
-  }
-
-  // Helper method to safely clamp scale values
-  double _safeScale(double value) {
-    return value.clamp(0.0, double.infinity);
-  }
-
   @override
   void initState() {
     super.initState();
-    print('SplashScreen: initState called');
     _initializeAnimations();
     _startAnimationSequence();
   }
@@ -101,29 +90,34 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   void _startAnimationSequence() async {
-    print('SplashScreen: Animation sequence started');
+    // Start logo animation
+    await _logoController.forward();
     
-    // Start all animations immediately for faster loading
-    _logoController.forward();
+    // Wait a bit, then start text animation
+    await Future.delayed(const Duration(milliseconds: 300));
     _textController.forward();
+    
+    // Start progress animation
+    await Future.delayed(const Duration(milliseconds: 200));
     _progressController.forward();
     
-    print('SplashScreen: All animations started');
-    
-    // Wait less time before navigation
-    await Future.delayed(const Duration(milliseconds: 2000));
-    print('SplashScreen: About to navigate');
+    // Wait for all animations to complete, then navigate
+    await Future.delayed(const Duration(milliseconds: 2500));
     
     if (mounted) {
-      print('SplashScreen: Widget is mounted, navigating to WelcomePage1');
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(
-          builder: (context) => const WelcomePage1(),
+        PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) => const AuthWrapper(),
+          transitionDuration: const Duration(milliseconds: 500),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(
+              opacity: animation,
+              child: child,
+            );
+          },
         ),
       );
-    } else {
-      print('SplashScreen: Widget not mounted, cannot navigate');
     }
   }
 
@@ -139,19 +133,9 @@ class _SplashScreenState extends State<SplashScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.backgroundWhite,
-      body: GestureDetector(
-        onTap: () {
-          print('SplashScreen: Tapped, navigating immediately');
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const WelcomePage1(),
-            ),
-          );
-        },
-        child: SafeArea(
-          child: Column(
-            children: [
+      body: SafeArea(
+        child: Column(
+          children: [
             const Spacer(flex: 3),
             
             // Animated Logo Section
@@ -159,9 +143,9 @@ class _SplashScreenState extends State<SplashScreen>
               animation: _logoController,
               builder: (context, child) {
                 return FadeTransition(
-                  opacity: AlwaysStoppedAnimation(_safeOpacity(_logoFadeAnimation.value)),
+                  opacity: _logoFadeAnimation,
                   child: ScaleTransition(
-                    scale: AlwaysStoppedAnimation(_safeScale(_logoScaleAnimation.value)),
+                    scale: _logoScaleAnimation,
                     child: Container(
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
@@ -195,7 +179,7 @@ class _SplashScreenState extends State<SplashScreen>
                 return SlideTransition(
                   position: _textSlideAnimation,
                   child: FadeTransition(
-                    opacity: AlwaysStoppedAnimation(_safeOpacity(_textFadeAnimation.value)),
+                    opacity: _textFadeAnimation,
                     child: Column(
                       children: [
                         // App Name with animated icon
@@ -267,7 +251,7 @@ class _SplashScreenState extends State<SplashScreen>
                   children: [
                     // Loading text
                     FadeTransition(
-                      opacity: AlwaysStoppedAnimation(_safeOpacity(_textFadeAnimation.value)),
+                      opacity: _textFadeAnimation,
                       child: Text(
                         'Loading...',
                         style: AppTheme.bodyMedium.copyWith(
@@ -334,7 +318,7 @@ class _SplashScreenState extends State<SplashScreen>
             Padding(
               padding: const EdgeInsets.only(bottom: 40),
               child: FadeTransition(
-                opacity: AlwaysStoppedAnimation(_safeOpacity(_textFadeAnimation.value)),
+                opacity: _textFadeAnimation,
                 child: Column(
                   children: [
                     Text(
@@ -360,7 +344,6 @@ class _SplashScreenState extends State<SplashScreen>
               ),
             ),
           ],
-        ),
         ),
       ),
     );
@@ -396,7 +379,7 @@ class _SplashScreenState extends State<SplashScreen>
           height: 6,
           decoration: BoxDecoration(
             color: AppTheme.primaryBlue.withValues(
-              alpha: _safeOpacity(0.3 + (0.7 * _progressAnimation.value)),
+              alpha: 0.3 + (0.7 * _progressAnimation.value),
             ),
             shape: BoxShape.circle,
           ),

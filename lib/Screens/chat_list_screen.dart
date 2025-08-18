@@ -113,7 +113,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
         ),
         title: Text(
           otherUserName,
-          style: const TextStyle(
+          style: TextStyle(
             fontFamily: AppTheme.fontFamily,
             fontWeight: FontWeight.w600,
             color: AppTheme.textPrimary,
@@ -121,7 +121,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
         ),
         subtitle: Text(
           chatRoom.lastMessage ?? 'No messages yet',
-          style: const TextStyle(
+          style: TextStyle(
             fontFamily: AppTheme.fontFamily,
             color: AppTheme.textSecondary,
           ),
@@ -135,7 +135,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
             if (chatRoom.lastMessageTime != null)
               Text(
                 _formatTime(chatRoom.lastMessageTime!),
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 12,
                   color: AppTheme.textLight,
                   fontFamily: AppTheme.fontFamily,
@@ -201,7 +201,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
         ),
         title: Text(
           user.fullName,
-          style: const TextStyle(
+          style: TextStyle(
             fontFamily: AppTheme.fontFamily,
             fontWeight: FontWeight.w600,
             color: AppTheme.textPrimary,
@@ -209,7 +209,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
         ),
         subtitle: Text(
           user.email,
-          style: const TextStyle(
+          style: TextStyle(
             fontFamily: AppTheme.fontFamily,
             color: AppTheme.textSecondary,
           ),
@@ -273,7 +273,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                 controller: _searchController,
                 decoration: InputDecoration(
                   hintText: 'Search users...',
-                  hintStyle: const TextStyle(
+                  hintStyle: TextStyle(
                     color: AppTheme.textLight,
                     fontFamily: AppTheme.fontFamily,
                   ),
@@ -301,7 +301,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                     ),
                   ),
                 ),
-                style: const TextStyle(
+                style: TextStyle(
                   fontFamily: AppTheme.fontFamily,
                 ),
                 onChanged: _filterUsers,
@@ -313,7 +313,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.person_search,
                             size: 48,
                             color: AppTheme.textLight,
@@ -353,7 +353,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.error_outline,
                             size: 48,
                             color: AppTheme.error,
@@ -384,7 +384,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.chat_bubble_outline,
                             size: 48,
                             color: AppTheme.textLight,
@@ -397,7 +397,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                             ),
                           ),
                           const SizedBox(height: 8),
-                          const Text(
+                          Text(
                             'Tap the search icon to start a new chat',
                             style: AppTheme.bodyMedium,
                             textAlign: TextAlign.center,

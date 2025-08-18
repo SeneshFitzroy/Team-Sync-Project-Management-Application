@@ -4,8 +4,6 @@ import '../widgets/TickLogo.dart';
 import '../theme/app_theme.dart';
 
 class CreateAccount extends StatefulWidget {
-  const CreateAccount({super.key});
-
   @override
   _CreateAccountState createState() => _CreateAccountState();
 }
@@ -91,8 +89,8 @@ class _CreateAccountState extends State<CreateAccount> {
         );
         
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Account created successfully! Please login.'),
+          SnackBar(
+            content: const Text('Account created successfully! Please login.'),
             backgroundColor: AppTheme.success,
           ),
         );
@@ -133,7 +131,7 @@ class _CreateAccountState extends State<CreateAccount> {
                 Row(
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.arrow_back, color: AppTheme.textSecondary),
+                      icon: Icon(Icons.arrow_back, color: AppTheme.textSecondary),
                       onPressed: () => Navigator.pop(context),
                     ),
                     const Spacer(),
@@ -143,7 +141,7 @@ class _CreateAccountState extends State<CreateAccount> {
                 const SizedBox(height: 20),
                 
                 // Logo
-                const Center(
+                Center(
                   child: TickLogo(
                     size: 80,
                     color: AppTheme.primaryBlue,
@@ -178,7 +176,7 @@ class _CreateAccountState extends State<CreateAccount> {
                   controller: _nameController,
                   validator: _validateName,
                   style: AppTheme.bodyLarge,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Full Name',
                     prefixIcon: Icon(Icons.person_outlined, color: AppTheme.textSecondary),
                   ),
@@ -192,7 +190,7 @@ class _CreateAccountState extends State<CreateAccount> {
                   keyboardType: TextInputType.emailAddress,
                   validator: _validateEmail,
                   style: AppTheme.bodyLarge,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Email',
                     prefixIcon: Icon(Icons.email_outlined, color: AppTheme.textSecondary),
                   ),
@@ -208,7 +206,7 @@ class _CreateAccountState extends State<CreateAccount> {
                   style: AppTheme.bodyLarge,
                   decoration: InputDecoration(
                     labelText: 'Password',
-                    prefixIcon: const Icon(Icons.lock_outlined, color: AppTheme.textSecondary),
+                    prefixIcon: Icon(Icons.lock_outlined, color: AppTheme.textSecondary),
                     suffixIcon: IconButton(
                       icon: Icon(
                         _obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
@@ -233,7 +231,7 @@ class _CreateAccountState extends State<CreateAccount> {
                   style: AppTheme.bodyLarge,
                   decoration: InputDecoration(
                     labelText: 'Confirm Password',
-                    prefixIcon: const Icon(Icons.lock_outlined, color: AppTheme.textSecondary),
+                    prefixIcon: Icon(Icons.lock_outlined, color: AppTheme.textSecondary),
                     suffixIcon: IconButton(
                       icon: Icon(
                         _obscureConfirmPassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
@@ -263,10 +261,10 @@ class _CreateAccountState extends State<CreateAccount> {
                       ),
                     ),
                     child: _isLoading
-                        ? const CircularProgressIndicator(
+                        ? CircularProgressIndicator(
                             valueColor: AlwaysStoppedAnimation<Color>(AppTheme.textWhite),
                           )
-                        : const Text(
+                        : Text(
                             'Create Account',
                             style: AppTheme.buttonText,
                           ),
@@ -279,7 +277,7 @@ class _CreateAccountState extends State<CreateAccount> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text(
+                    Text(
                       'Already have an account? ',
                       style: AppTheme.bodyMedium,
                     ),

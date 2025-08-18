@@ -41,7 +41,7 @@ class AppTheme {
   static const Color chatTextReceived = textPrimary;
   
   // Typography
-  static const String fontFamily = 'Segoe UI';
+  static const String fontFamily = 'Poppins';
   
   static const TextStyle headingLarge = TextStyle(
     fontFamily: fontFamily,
