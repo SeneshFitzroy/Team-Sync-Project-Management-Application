@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 import '../widgets/TickLogo.dart';
-import 'welcome-page1.dart';
+import 'welcome-page1_new.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -119,7 +119,7 @@ class _SplashScreenState extends State<SplashScreen>
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => const WelcomePage1(),
+          builder: (context) => const WelcomePageNew(),
         ),
       );
     } else {
