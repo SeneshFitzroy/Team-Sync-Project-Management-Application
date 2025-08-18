@@ -273,7 +273,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                 controller: _searchController,
                 decoration: InputDecoration(
                   hintText: 'Search users...',
-                  hintStyle: TextStyle(
+                  hintStyle: const TextStyle(
                     color: AppTheme.textLight,
                     fontFamily: AppTheme.fontFamily,
                   ),
@@ -284,13 +284,13 @@ class _ChatListScreenState extends State<ChatListScreen> {
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide(
-                      color: AppTheme.textLight.withOpacity(0.3),
+                      color: AppTheme.textLight.withValues(alpha: 0.3),
                     ),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide(
-                      color: AppTheme.textLight.withOpacity(0.3),
+                      color: AppTheme.textLight.withValues(alpha: 0.3),
                     ),
                   ),
                   focusedBorder: OutlineInputBorder(
