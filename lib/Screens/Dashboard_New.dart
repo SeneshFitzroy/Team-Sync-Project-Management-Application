@@ -196,7 +196,7 @@ class _DashboardState extends State<Dashboard> {
                           onPressed: () {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) => const CreateaNewProject()),
+                              MaterialPageRoute(builder: (context) => const CreateANewProject()),
                             );
                           },
                           icon: const Icon(Icons.add, color: Color(0xFF2D62ED)),
