@@ -79,7 +79,7 @@ class _SimpleSplashScreenState extends State<SimpleSplashScreen> {
                 'Project Management',
                 style: TextStyle(
                   fontSize: 16,
-                  color: AppTheme.textGray,
+                  color: AppTheme.textSecondary,
                 ),
               ),
               const SizedBox(height: 50),
@@ -91,7 +91,7 @@ class _SimpleSplashScreenState extends State<SimpleSplashScreen> {
                 'Tap anywhere to continue',
                 style: TextStyle(
                   fontSize: 14,
-                  color: AppTheme.textGray,
+                  color: AppTheme.textSecondary,
                 ),
               ),
             ],
