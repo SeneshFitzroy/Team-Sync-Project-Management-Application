@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'theme/app_theme.dart';
-import 'Screens/splash_screen.dart';
+import 'Screens/clean_splash_screen.dart';
 
 void main() {
   // Ensure Flutter is initialized
@@ -15,18 +15,18 @@ void main() {
     ),
   );
   
-  runApp(const MyApp());
+  runApp(const CleanTeamSyncApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class CleanTeamSyncApp extends StatelessWidget {
+  const CleanTeamSyncApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Team Sync',
+      title: 'Team Sync - Clean Demo',
       theme: AppTheme.lightTheme,
-      home: const SplashScreen(),
+      home: const CleanSplashScreen(),
       debugShowCheckedModeBanner: false,
     );
   }
