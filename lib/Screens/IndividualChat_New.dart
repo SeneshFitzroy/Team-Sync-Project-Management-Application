@@ -154,7 +154,7 @@ class _IndividualChatScreenState extends State<IndividualChatScreen> {
     if (_currentUser == null) {
       return Scaffold(
         appBar: AppBar(
-          title: Text(
+          title: const Text(
             'Chat',
             style: TextStyle(
               fontFamily: AppTheme.fontFamily,
@@ -180,7 +180,7 @@ class _IndividualChatScreenState extends State<IndividualChatScreen> {
       appBar: AppBar(
         title: Text(
           widget.chatName,
-          style: TextStyle(
+          style: const TextStyle(
             fontFamily: AppTheme.fontFamily,
             fontWeight: FontWeight.w600,
           ),

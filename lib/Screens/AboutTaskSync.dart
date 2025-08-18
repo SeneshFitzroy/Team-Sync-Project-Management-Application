@@ -50,8 +50,8 @@ class AboutTaskSync extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 16),
-          Expanded(
-            child: const Text(
+          const Expanded(
+            child: Text(
               'About TaskSync',
               style: TextStyle(
                 color: Colors.black,
@@ -85,9 +85,9 @@ class AboutTaskSync extends StatelessWidget {
           ),
         ],
       ),
-      child: Column(
+      child: const Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: const [
+        children: [
           Text(
             'Our Mission',
             style: TextStyle(
@@ -236,9 +236,9 @@ class AboutTaskSync extends StatelessWidget {
           ),
         ],
       ),
-      child: Column(
+      child: const Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: const [
+        children: [
           Text(
             'Version',
             style: TextStyle(

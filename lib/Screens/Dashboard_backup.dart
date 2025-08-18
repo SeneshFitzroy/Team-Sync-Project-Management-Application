@@ -51,10 +51,10 @@ class _DashboardState extends State<Dashboard> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
+                  const Text(
                     'Dashboard',
                     style: TextStyle(
-                      color: const Color(0xFF192F5D),
+                      color: Color(0xFF192F5D),
                       fontSize: 22,
                       fontFamily: 'Poppins',
                       fontWeight: FontWeight.w600,
@@ -85,9 +85,9 @@ class _DashboardState extends State<Dashboard> {
                             MaterialPageRoute(builder: (context) => const ProfileScreen()),
                           );
                         },
-                        child: CircleAvatar(
+                        child: const CircleAvatar(
                           radius: 20,
-                          backgroundColor: const Color(0xFF2D62ED),
+                          backgroundColor: Color(0xFF2D62ED),
                           child: Icon(Icons.person, color: Colors.white, size: 24),
                         ),
                       ),
@@ -113,14 +113,14 @@ class _DashboardState extends State<Dashboard> {
                     ),
                   ],
                 ),
-                child: Row(
+                child: const Row(
                   children: [
                     CircleAvatar(
                       radius: 25,
                       backgroundColor: Colors.white,
                       child: Icon(Icons.person, color: Color(0xFF2D62ED), size: 28),
                     ),
-                    const SizedBox(width: 16),
+                    SizedBox(width: 16),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -134,7 +134,7 @@ class _DashboardState extends State<Dashboard> {
                               fontWeight: FontWeight.w400,
                             ),
                           ),
-                          const SizedBox(height: 4),
+                          SizedBox(height: 4),
                           Text(
                             'John Doe',
                             style: TextStyle(
@@ -155,7 +155,7 @@ class _DashboardState extends State<Dashboard> {
               
               Expanded(
                 child: SingleChildScrollView(
-                  child: Column(
+                  child: const Column(
                     children: [
                     ),
                     IconButton(
@@ -273,7 +273,7 @@ class _DashboardState extends State<Dashboard> {
         foregroundColor: Colors.white,
         child: const Icon(Icons.add),
       ),
-    );
+    )
   }
 
   Widget _buildStatCard(String title, String value, IconData icon, Color color) {

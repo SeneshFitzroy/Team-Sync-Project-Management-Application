@@ -211,10 +211,10 @@ class _TaskBoxState extends State<TaskBox> {
             ),
           
           // Progress text
-          Positioned(
+          const Positioned(
             left: 24,
             top: 101,
-            child: const Text(
+            child: Text(
               'Progress',
               style: TextStyle(
                 color: Colors.black54,

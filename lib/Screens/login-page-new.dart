@@ -141,7 +141,7 @@ class _LoginPageState extends State<LoginPage> {
                 const SizedBox(height: 40),
                 
                 // Logo
-                Center(
+                const Center(
                   child: TickLogo(
                     size: 100,
                     color: AppTheme.primaryBlue,
@@ -177,7 +177,7 @@ class _LoginPageState extends State<LoginPage> {
                   keyboardType: TextInputType.emailAddress,
                   validator: _validateEmail,
                   style: AppTheme.bodyLarge,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Email',
                     prefixIcon: Icon(Icons.email_outlined, color: AppTheme.textSecondary),
                   ),
@@ -193,7 +193,7 @@ class _LoginPageState extends State<LoginPage> {
                   style: AppTheme.bodyLarge,
                   decoration: InputDecoration(
                     labelText: 'Password',
-                    prefixIcon: Icon(Icons.lock_outlined, color: AppTheme.textSecondary),
+                    prefixIcon: const Icon(Icons.lock_outlined, color: AppTheme.textSecondary),
                     suffixIcon: IconButton(
                       icon: Icon(
                         _obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
@@ -222,7 +222,7 @@ class _LoginPageState extends State<LoginPage> {
                       },
                       activeColor: AppTheme.primaryBlue,
                     ),
-                    Text(
+                    const Text(
                       'Remember me',
                       style: AppTheme.bodyMedium,
                     ),
@@ -262,10 +262,10 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                     child: _isLoading
-                        ? CircularProgressIndicator(
+                        ? const CircularProgressIndicator(
                             valueColor: AlwaysStoppedAnimation<Color>(AppTheme.textWhite),
                           )
-                        : Text(
+                        : const Text(
                             'Login',
                             style: AppTheme.buttonText,
                           ),
@@ -278,7 +278,7 @@ class _LoginPageState extends State<LoginPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
+                    const Text(
                       "Don't have an account? ",
                       style: AppTheme.bodyMedium,
                     ),
@@ -287,7 +287,7 @@ class _LoginPageState extends State<LoginPage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => CreateAccount(),
+                            builder: (context) => const CreateAccount(),
                           ),
                         );
                       },

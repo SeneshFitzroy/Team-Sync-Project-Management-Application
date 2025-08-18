@@ -22,7 +22,7 @@ class ProfileHeader extends StatelessWidget {
       child: Stack(
         clipBehavior: Clip.none,
         children: [
-          Positioned(
+          const Positioned(
             left: 69,
             top: 0,
             child: Text(
@@ -48,7 +48,7 @@ class ProfileHeader extends StatelessWidget {
                 height: 115,
                 decoration: ShapeDecoration(
                   shape: RoundedRectangleBorder(
-                    side: BorderSide(width: 1),
+                    side: const BorderSide(width: 1),
                     borderRadius: BorderRadius.circular(68),
                   ),
                 ),
@@ -63,8 +63,8 @@ class ProfileHeader extends StatelessWidget {
                       return Container(
                         width: 93,
                         height: 93,
-                        color: Color(0xFFE0E0E0),
-                        child: Icon(
+                        color: const Color(0xFFE0E0E0),
+                        child: const Icon(
                           Icons.person,
                           size: 50,
                           color: Colors.grey,
@@ -82,7 +82,7 @@ class ProfileHeader extends StatelessWidget {
             top: 211,
             child: Text(
               name,
-              style: TextStyle(
+              style: const TextStyle(
                 color: Colors.black,
                 fontSize: 30,
                 fontFamily: 'Poppins',
@@ -98,7 +98,7 @@ class ProfileHeader extends StatelessWidget {
             top: 255,
             child: Text(
               username,
-              style: TextStyle(
+              style: const TextStyle(
                 color: Color(0xFF9D9D9D),
                 fontSize: 14,
                 fontFamily: 'Poppins',

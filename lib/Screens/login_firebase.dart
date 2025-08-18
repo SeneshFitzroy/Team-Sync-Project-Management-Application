@@ -115,7 +115,7 @@ class _LoginPageState extends State<LoginPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => CreateAccount(),
+        builder: (context) => const CreateAccount(),
       ),
     );
   }
@@ -133,7 +133,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
@@ -326,7 +326,7 @@ class _LoginPageState extends State<LoginPage> {
                                   _rememberMe = value ?? false;
                                 });
                               },
-                              fillColor: MaterialStateProperty.all(
+                              fillColor: WidgetStateProperty.all(
                                 AppTheme.textWhite.withOpacity(0.8),
                               ),
                               checkColor: AppTheme.primaryBlue,

@@ -162,7 +162,7 @@ class _LoginPageState extends State<LoginPage> {
                 const SizedBox(height: 40),
                 
                 // Logo
-                Center(
+                const Center(
                   child: TickLogo(
                     size: 100,
                     color: AppTheme.primaryBlue,
@@ -200,7 +200,7 @@ class _LoginPageState extends State<LoginPage> {
                   style: AppTheme.bodyLarge,
                   decoration: InputDecoration(
                     labelText: 'Email',
-                    prefixIcon: Icon(Icons.email_outlined, color: AppTheme.textSecondary),
+                    prefixIcon: const Icon(Icons.email_outlined, color: AppTheme.textSecondary),
                       prefixIcon: const Icon(Icons.email, color: Colors.white70),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -280,7 +280,7 @@ class _LoginPageState extends State<LoginPage> {
                             _rememberMe = value ?? false;
                           });
                         },
-                        fillColor: MaterialStateProperty.all(Colors.white),
+                        fillColor: WidgetStateProperty.all(Colors.white),
                         checkColor: const Color(0xFF1A365D),
                       ),
                       const Text(
@@ -348,7 +348,7 @@ class _LoginPageState extends State<LoginPage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => CreateAccount(),
+                              builder: (context) => const CreateAccount(),
                             ),
                           );
                         },
@@ -368,7 +368,7 @@ class _LoginPageState extends State<LoginPage> {
           ),
         ),
       ),
-    );
+    )
   }
 
   @override

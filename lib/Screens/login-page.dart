@@ -129,7 +129,7 @@ class _LoginPageState extends State<LoginPage> {
                     borderRadius: BorderRadius.circular(12),
                     borderSide: const BorderSide(color: AppTheme.primaryBlue, width: 2),
                   ),
-                  prefixIcon: Icon(Icons.email_outlined, color: AppTheme.textSecondary),
+                  prefixIcon: const Icon(Icons.email_outlined, color: AppTheme.textSecondary),
                 ),
               ),
               
@@ -153,7 +153,7 @@ class _LoginPageState extends State<LoginPage> {
                     borderRadius: BorderRadius.circular(12),
                     borderSide: const BorderSide(color: AppTheme.primaryBlue, width: 2),
                   ),
-                  prefixIcon: Icon(Icons.lock_outline, color: AppTheme.textSecondary),
+                  prefixIcon: const Icon(Icons.lock_outline, color: AppTheme.textSecondary),
                   suffixIcon: IconButton(
                     icon: Icon(
                       _obscureText ? Icons.visibility_off : Icons.visibility,
@@ -211,7 +211,7 @@ class _LoginPageState extends State<LoginPage> {
                             valueColor: AlwaysStoppedAnimation<Color>(AppTheme.textWhite),
                           ),
                         )
-                      : Text(
+                      : const Text(
                           'Sign In',
                           style: AppTheme.buttonText,
                         ),

@@ -43,8 +43,8 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
       
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Password reset email sent! Check your inbox.'),
+          const SnackBar(
+            content: Text('Password reset email sent! Check your inbox.'),
             backgroundColor: AppTheme.success,
           ),
         );
@@ -88,7 +88,7 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
                 Row(
                   children: [
                     IconButton(
-                      icon: Icon(Icons.arrow_back, color: AppTheme.textSecondary),
+                      icon: const Icon(Icons.arrow_back, color: AppTheme.textSecondary),
                       onPressed: () => Navigator.pop(context),
                     ),
                     const Spacer(),
@@ -98,7 +98,7 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
                 const SizedBox(height: 40),
                 
                 // Logo
-                Center(
+                const Center(
                   child: TickLogo(
                     size: 100,
                     color: AppTheme.primaryBlue,
@@ -135,7 +135,7 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
                   keyboardType: TextInputType.emailAddress,
                   validator: _validateEmail,
                   style: AppTheme.bodyLarge,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Email',
                     prefixIcon: Icon(Icons.email_outlined, color: AppTheme.textSecondary),
                   ),
@@ -156,10 +156,10 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
                       ),
                     ),
                     child: _isLoading
-                        ? CircularProgressIndicator(
+                        ? const CircularProgressIndicator(
                             valueColor: AlwaysStoppedAnimation<Color>(AppTheme.textWhite),
                           )
-                        : Text(
+                        : const Text(
                             'Send Reset Email',
                             style: AppTheme.buttonText,
                           ),

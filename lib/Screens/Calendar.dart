@@ -37,7 +37,7 @@ class _CalendarState extends State<Calendar> {
         builder: (context, setDialogState) => AlertDialog(
           title: Text(
             'Add Task for ${DateFormat('MMM dd, yyyy').format(_selectedDate)}',
-            style: TextStyle(
+            style: const TextStyle(
               color: Color(0xFF2D62ED),
               fontSize: 18,
               fontWeight: FontWeight.w600,
@@ -56,7 +56,7 @@ class _CalendarState extends State<Calendar> {
                     ),
                   ),
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 TextField(
                   controller: descriptionController,
                   maxLines: 3,
@@ -67,7 +67,7 @@ class _CalendarState extends State<Calendar> {
                     ),
                   ),
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 DropdownButtonFormField<String>(
                   value: selectedPriority,
                   decoration: InputDecoration(
@@ -76,7 +76,7 @@ class _CalendarState extends State<Calendar> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  items: [
+                  items: const [
                     DropdownMenuItem(value: 'low', child: Text('Low')),
                     DropdownMenuItem(value: 'medium', child: Text('Medium')),
                     DropdownMenuItem(value: 'high', child: Text('High')),
@@ -88,9 +88,9 @@ class _CalendarState extends State<Calendar> {
                     });
                   },
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 ListTile(
-                  leading: Icon(Icons.access_time, color: Color(0xFF2D62ED)),
+                  leading: const Icon(Icons.access_time, color: Color(0xFF2D62ED)),
                   title: Text('Time: ${selectedTime.format(context)}'),
                   onTap: () async {
                     final TimeOfDay? picked = await showTimePicker(
@@ -110,7 +110,7 @@ class _CalendarState extends State<Calendar> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
             ),
             ElevatedButton(
               onPressed: () async {
@@ -141,7 +141,7 @@ class _CalendarState extends State<Calendar> {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text('Task added for ${DateFormat('MMM dd').format(_selectedDate)}!'),
-                        backgroundColor: Color(0xFF2D62ED),
+                        backgroundColor: const Color(0xFF2D62ED),
                       ),
                     );
                   } catch (e) {
@@ -155,9 +155,9 @@ class _CalendarState extends State<Calendar> {
                 }
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFF2D62ED),
+                backgroundColor: const Color(0xFF2D62ED),
               ),
-              child: Text('Add Task', style: TextStyle(color: Colors.white)),
+              child: const Text('Add Task', style: TextStyle(color: Colors.white)),
             ),
           ],
         ),
@@ -180,10 +180,10 @@ class _CalendarState extends State<Calendar> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
+                  const Text(
                     'Calendar',
                     style: TextStyle(
-                      color: const Color(0xFF192F5D),
+                      color: Color(0xFF192F5D),
                       fontSize: 22,
                       fontFamily: 'Poppins',
                       fontWeight: FontWeight.w600,
@@ -223,8 +223,8 @@ class _CalendarState extends State<Calendar> {
                       children: [
                         Text(
                           DateFormat('MMMM yyyy').format(_selectedMonth),
-                          style: TextStyle(
-                            color: const Color(0xFF192F5D),
+                          style: const TextStyle(
+                            color: Color(0xFF192F5D),
                             fontSize: 16,
                             fontFamily: 'Poppins',
                             fontWeight: FontWeight.w500,
@@ -233,11 +233,11 @@ class _CalendarState extends State<Calendar> {
                         Row(
                           children: [
                             IconButton(
-                              icon: Icon(Icons.arrow_back_ios, size: 16),
+                              icon: const Icon(Icons.arrow_back_ios, size: 16),
                               onPressed: () => _changeMonth(-1),
                             ),
                             IconButton(
-                              icon: Icon(Icons.arrow_forward_ios, size: 16),
+                              icon: const Icon(Icons.arrow_forward_ios, size: 16),
                               onPressed: () => _changeMonth(1),
                             ),
                           ],
@@ -255,8 +255,8 @@ class _CalendarState extends State<Calendar> {
                         child: Text(
                           day,
                           textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: const Color(0xFF64748B),
+                          style: const TextStyle(
+                            color: Color(0xFF64748B),
                             fontSize: 12,
                             fontFamily: 'Poppins',
                             fontWeight: FontWeight.w500,
@@ -270,8 +270,8 @@ class _CalendarState extends State<Calendar> {
                     // Calendar grid
                     GridView.builder(
                       shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      physics: const NeverScrollableScrollPhysics(),
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 7,
                         childAspectRatio: 1,
                       ),
@@ -306,13 +306,13 @@ class _CalendarState extends State<Calendar> {
                             });
                           } : null,
                           child: Container(
-                            margin: EdgeInsets.all(4),
+                            margin: const EdgeInsets.all(4),
                             decoration: BoxDecoration(
-                              color: isSelected ? Color(0xFF2D62ED) : 
-                                     isToday ? Color(0xFFEFF6FF) : Colors.transparent,
+                              color: isSelected ? const Color(0xFF2D62ED) : 
+                                     isToday ? const Color(0xFFEFF6FF) : Colors.transparent,
                               borderRadius: BorderRadius.circular(8),
                               border: isToday && !isSelected
-                                  ? Border.all(color: Color(0xFF3B82F6)) 
+                                  ? Border.all(color: const Color(0xFF3B82F6)) 
                                   : null,
                             ),
                             child: Center(
@@ -323,10 +323,10 @@ class _CalendarState extends State<Calendar> {
                                         fontSize: 14,
                                         fontWeight: isSelected || isToday ? FontWeight.bold : FontWeight.normal,
                                         color: isSelected ? Colors.white :
-                                               isToday ? Color(0xFF3B82F6) : Color(0xFF1E293B),
+                                               isToday ? const Color(0xFF3B82F6) : const Color(0xFF1E293B),
                                       ),
                                     )
-                                  : Text(''),
+                                  : const Text(''),
                             ),
                           ),
                         );
@@ -344,18 +344,18 @@ class _CalendarState extends State<Calendar> {
                 margin: const EdgeInsets.symmetric(horizontal: 4),
                 child: ElevatedButton.icon(
                   onPressed: () => _showAddTaskDialog(),
-                  icon: Icon(Icons.add_task, color: Colors.white),
+                  icon: const Icon(Icons.add_task, color: Colors.white),
                   label: Text(
                     'Add Task for ${DateFormat('MMM dd').format(_selectedDate)}',
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFF2D62ED),
-                    padding: EdgeInsets.symmetric(vertical: 14),
+                    backgroundColor: const Color(0xFF2D62ED),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -369,10 +369,10 @@ class _CalendarState extends State<Calendar> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
+                  const Text(
                     'Upcoming Tasks',
                     style: TextStyle(
-                      color: const Color(0xFF192F5D),
+                      color: Color(0xFF192F5D),
                       fontSize: 16,
                       fontFamily: 'Poppins',
                       fontWeight: FontWeight.w500,
@@ -406,7 +406,7 @@ class _CalendarState extends State<Calendar> {
                   }
                   
                   if (snapshot.hasError) {
-                    return Center(
+                    return const Center(
                       child: Text(
                         'Error loading tasks',
                         style: TextStyle(
@@ -482,7 +482,7 @@ class _CalendarState extends State<Calendar> {
 
   Widget _buildTaskCard(String title, String time, String date, String priority, Color indicatorColor) {
     return Card(
-      margin: EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: 12),
       elevation: 0,
       color: const Color(0xFFF8FAFC),
       shape: RoundedRectangleBorder(
@@ -510,8 +510,8 @@ class _CalendarState extends State<Calendar> {
                 children: [
                   Text(
                     title,
-                    style: TextStyle(
-                      color: const Color(0xFF1E293B),
+                    style: const TextStyle(
+                      color: Color(0xFF1E293B),
                       fontSize: 14,
                       fontFamily: 'Poppins',
                       fontWeight: FontWeight.w500,
@@ -520,22 +520,22 @@ class _CalendarState extends State<Calendar> {
                   const SizedBox(height: 4),
                   Row(
                     children: [
-                      Icon(Icons.access_time, size: 12, color: Color(0xFF64748B)),
-                      SizedBox(width: 4),
+                      const Icon(Icons.access_time, size: 12, color: Color(0xFF64748B)),
+                      const SizedBox(width: 4),
                       Text(
                         time,
-                        style: TextStyle(
-                          color: const Color(0xFF64748B),
+                        style: const TextStyle(
+                          color: Color(0xFF64748B),
                           fontSize: 12,
                         ),
                       ),
-                      SizedBox(width: 16),
-                      Icon(Icons.calendar_today, size: 12, color: Color(0xFF64748B)),
-                      SizedBox(width: 4),
+                      const SizedBox(width: 16),
+                      const Icon(Icons.calendar_today, size: 12, color: Color(0xFF64748B)),
+                      const SizedBox(width: 4),
                       Text(
                         date,
-                        style: TextStyle(
-                          color: const Color(0xFF64748B),
+                        style: const TextStyle(
+                          color: Color(0xFF64748B),
                           fontSize: 12,
                         ),
                       ),
@@ -547,7 +547,7 @@ class _CalendarState extends State<Calendar> {
             
             // Priority badge
             Container(
-              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(12),
@@ -555,8 +555,8 @@ class _CalendarState extends State<Calendar> {
               ),
               child: Text(
                 priority,
-                style: TextStyle(
-                  color: const Color(0xFF64748B),
+                style: const TextStyle(
+                  color: Color(0xFF64748B),
                   fontSize: 12,
                 ),
               ),
