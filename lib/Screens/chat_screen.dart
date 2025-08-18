@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../Services/chat_service.dart';
 import '../Services/auth_service.dart';
 import '../models/chat_model.dart';
-import '../models/user_model.dart';
 import '../theme/app_theme.dart';
 
 class ChatScreen extends StatefulWidget {
