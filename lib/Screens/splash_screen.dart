@@ -103,22 +103,15 @@ class _SplashScreenState extends State<SplashScreen>
   void _startAnimationSequence() async {
     print('SplashScreen: Animation sequence started');
     
-    // Start logo animation
+    // Start all animations immediately for faster loading
     _logoController.forward();
-    print('SplashScreen: Logo animation started');
-    
-    // Wait a bit, then start text animation
-    await Future.delayed(const Duration(milliseconds: 500));
     _textController.forward();
-    print('SplashScreen: Text animation started');
-    
-    // Start progress animation
-    await Future.delayed(const Duration(milliseconds: 300));
     _progressController.forward();
-    print('SplashScreen: Progress animation started');
     
-    // Wait for animations to complete, then navigate (reduced time)
-    await Future.delayed(const Duration(milliseconds: 1500));
+    print('SplashScreen: All animations started');
+    
+    // Wait less time before navigation
+    await Future.delayed(const Duration(milliseconds: 2000));
     print('SplashScreen: About to navigate');
     
     if (mounted) {
