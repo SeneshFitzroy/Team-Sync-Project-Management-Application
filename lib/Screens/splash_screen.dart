@@ -101,31 +101,24 @@ class _SplashScreenState extends State<SplashScreen>
 
   void _startAnimationSequence() async {
     // Start logo animation
-    await _logoController.forward();
+    _logoController.forward();
     
     // Wait a bit, then start text animation
-    await Future.delayed(const Duration(milliseconds: 300));
+    await Future.delayed(const Duration(milliseconds: 500));
     _textController.forward();
     
     // Start progress animation
-    await Future.delayed(const Duration(milliseconds: 200));
+    await Future.delayed(const Duration(milliseconds: 300));
     _progressController.forward();
     
-    // Wait for all animations to complete, then navigate
-    await Future.delayed(const Duration(milliseconds: 2500));
+    // Wait for animations to complete, then navigate (reduced time)
+    await Future.delayed(const Duration(milliseconds: 1500));
     
     if (mounted) {
       Navigator.pushReplacement(
         context,
-        PageRouteBuilder(
-          pageBuilder: (context, animation, secondaryAnimation) => const WelcomePage1(),
-          transitionDuration: const Duration(milliseconds: 500),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return FadeTransition(
-              opacity: animation,
-              child: child,
-            );
-          },
+        MaterialPageRoute(
+          builder: (context) => const WelcomePage1(),
         ),
       );
     }
