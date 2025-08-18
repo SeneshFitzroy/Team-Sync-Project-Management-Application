@@ -158,7 +158,7 @@ class _SplashScreenState extends State<SplashScreen>
         },
         child: SafeArea(
           child: Column(
-          children: [
+            children: [
             const Spacer(flex: 3),
             
             // Animated Logo Section
