@@ -35,6 +35,7 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   void initState() {
     super.initState();
+    print('SplashScreen: initState called');
     _initializeAnimations();
     _startAnimationSequence();
   }
@@ -100,27 +101,36 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   void _startAnimationSequence() async {
+    print('SplashScreen: Animation sequence started');
+    
     // Start logo animation
     _logoController.forward();
+    print('SplashScreen: Logo animation started');
     
     // Wait a bit, then start text animation
     await Future.delayed(const Duration(milliseconds: 500));
     _textController.forward();
+    print('SplashScreen: Text animation started');
     
     // Start progress animation
     await Future.delayed(const Duration(milliseconds: 300));
     _progressController.forward();
+    print('SplashScreen: Progress animation started');
     
     // Wait for animations to complete, then navigate (reduced time)
     await Future.delayed(const Duration(milliseconds: 1500));
+    print('SplashScreen: About to navigate');
     
     if (mounted) {
+      print('SplashScreen: Widget is mounted, navigating to WelcomePage1');
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder: (context) => const WelcomePage1(),
         ),
       );
+    } else {
+      print('SplashScreen: Widget not mounted, cannot navigate');
     }
   }
 
@@ -136,8 +146,18 @@ class _SplashScreenState extends State<SplashScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.backgroundWhite,
-      body: SafeArea(
-        child: Column(
+      body: GestureDetector(
+        onTap: () {
+          print('SplashScreen: Tapped, navigating immediately');
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const WelcomePage1(),
+            ),
+          );
+        },
+        child: SafeArea(
+          child: Column(
           children: [
             const Spacer(flex: 3),
             
