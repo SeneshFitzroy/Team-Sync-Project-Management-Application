@@ -58,7 +58,7 @@ class _DashboardState extends State<Dashboard> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
+                    Text(
                       'Dashboard',
                       style: TextStyle(
                         color: AppTheme.primaryBlue,
@@ -111,13 +111,13 @@ class _DashboardState extends State<Dashboard> {
                     ),
                     borderRadius: BorderRadius.circular(16),
                   ),
-                  child: const Column(
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
                         children: [
-                          TickLogo(size: 32),
-                          SizedBox(width: 12),
+                          const TickLogo(size: 32),
+                          const SizedBox(width: 12),
                           Text(
                             'TaskSync',
                             style: TextStyle(
@@ -129,7 +129,7 @@ class _DashboardState extends State<Dashboard> {
                           ),
                         ],
                       ),
-                      SizedBox(height: 16),
+                      const SizedBox(height: 16),
                       Text(
                         'Welcome back!',
                         style: TextStyle(
@@ -204,7 +204,7 @@ class _DashboardState extends State<Dashboard> {
                 const SizedBox(height: 24),
                 
                 // Recent Projects section
-                const Text(
+                Text(
                   'Recent Projects',
                   style: TextStyle(
                     color: AppTheme.primaryBlue,
@@ -225,7 +225,7 @@ class _DashboardState extends State<Dashboard> {
                     }
                     
                     if (snapshot.hasError) {
-                      return const Center(
+                      return Center(
                         child: Text(
                           'Error loading projects',
                           style: TextStyle(
@@ -304,7 +304,7 @@ class _DashboardState extends State<Dashboard> {
                 const SizedBox(height: 24),
                 
                 // Quick Actions
-                const Text(
+                Text(
                   'Quick Actions',
                   style: TextStyle(
                     color: AppTheme.primaryBlue,
@@ -391,7 +391,7 @@ class _DashboardState extends State<Dashboard> {
               Icon(icon, color: color, size: 24),
               Text(
                 value,
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppTheme.primaryBlue,
                   fontSize: 20,
                   fontFamily: AppTheme.fontFamily,
@@ -450,7 +450,7 @@ class _DashboardState extends State<Dashboard> {
                   children: [
                     Text(
                       title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: AppTheme.primaryBlue,
                         fontSize: 14,
                         fontFamily: AppTheme.fontFamily,

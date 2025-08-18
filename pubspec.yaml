@@ -1,25 +1,28 @@
-name: team_sync_clean
-description: Clean demonstration version of Team Sync - Project Management Application
-
+name: fluttercomponenets
+description: "A new Flutter project."
 publish_to: 'none'
-
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.1.0 <4.0.0'
+  sdk: ^3.7.0
 
 dependencies:
   flutter:
     sdk: flutter
-  cupertino_icons: ^1.0.2
+  cupertino_icons: ^1.0.8
+  intl: ^0.18.1
+  shared_preferences: ^2.2.2
+  firebase_core: ^3.6.0
+  cloud_firestore: ^5.4.3
+  firebase_auth: ^5.3.1
+  provider: ^6.1.2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^2.0.0
+  flutter_lints: ^3.0.0
 
 flutter:
   uses-material-design: true
-  
   assets:
-    - assets/images/
+    - assets/images/Logo.png

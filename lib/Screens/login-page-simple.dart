@@ -277,7 +277,7 @@ class _LoginPageState extends State<LoginPage> {
                             _rememberMe = value ?? false;
                           });
                         },
-                        fillColor: WidgetStateProperty.all(Colors.white),
+                        fillColor: MaterialStateProperty.all(Colors.white),
                         checkColor: const Color(0xFF1A365D),
                       ),
                       const Text(
@@ -345,7 +345,7 @@ class _LoginPageState extends State<LoginPage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const CreateAccount(),
+                              builder: (context) => CreateAccount(),
                             ),
                           );
                         },

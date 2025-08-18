@@ -395,7 +395,7 @@ class _TaskManagerState extends State<TaskManager> with SingleTickerProviderStat
         feedback: Material(
           elevation: 8,
           borderRadius: BorderRadius.circular(12),
-          child: SizedBox(
+          child: Container(
             width: 250,
             child: _buildTaskCardContent(task),
           ),

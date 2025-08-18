@@ -303,7 +303,7 @@ class _CalendarState extends State<Calendar> {
                     ? Border.all(color: const Color(0xFF2D62ED), width: 1)
                     : null,
               ),
-              child: SizedBox(
+              child: Container(
                 height: 40,
                 child: Stack(
                   children: [
