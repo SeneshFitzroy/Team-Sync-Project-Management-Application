@@ -131,7 +131,7 @@ class AppTheme {
           backgroundColor: primaryBlue,
           foregroundColor: textWhite,
           elevation: 2,
-          shadowColor: primaryBlue.withValues(alpha: 0.3),
+          shadowColor: primaryBlue.withOpacity(0.3),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
@@ -147,11 +147,11 @@ class AppTheme {
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: textLight.withValues(alpha: 0.3)),
+          borderSide: BorderSide(color: textLight.withOpacity(0.3)),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: textLight.withValues(alpha: 0.3)),
+          borderSide: BorderSide(color: textLight.withOpacity(0.3)),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -178,7 +178,7 @@ class AppTheme {
       // Card Theme
       cardTheme: CardThemeData(
         elevation: 2,
-        shadowColor: textPrimary.withValues(alpha: 0.1),
+        shadowColor: textPrimary.withOpacity(0.1),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
@@ -245,7 +245,7 @@ class AppTheme {
     borderRadius: BorderRadius.circular(16),
     boxShadow: [
       BoxShadow(
-        color: textPrimary.withValues(alpha: 0.1),
+        color: textPrimary.withOpacity(0.1),
         blurRadius: 8,
         offset: const Offset(0, 2),
       ),
