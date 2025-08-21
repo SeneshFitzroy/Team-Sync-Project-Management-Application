@@ -110,11 +110,12 @@ class _WelcomePage1State extends State<WelcomePage1>
     return Scaffold(
       backgroundColor: AppTheme.backgroundWhite,
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0),
-          child: Column(
-            children: [
-              const SizedBox(height: 60),
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24.0),
+            child: Column(
+              children: [
+                const SizedBox(height: 60),
               
               // Animated Logo Section
               AnimatedBuilder(
@@ -347,6 +348,7 @@ class _WelcomePage1State extends State<WelcomePage1>
                 ),
               ),
             ],
+            ),
           ),
         ),
       ),
