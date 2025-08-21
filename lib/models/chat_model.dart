@@ -157,3 +157,47 @@ class ChatRoom {
     return unreadCounts[userId] ?? 0;
   }
 }
+
+class ChatUser {
+  final String id;
+  final String name;
+  final String avatar;
+  final String lastMessage;
+  final DateTime lastMessageTime;
+  final bool isOnline;
+  final int unreadCount;
+
+  ChatUser({
+    required this.id,
+    required this.name,
+    required this.avatar,
+    required this.lastMessage,
+    required this.lastMessageTime,
+    required this.isOnline,
+    required this.unreadCount,
+  });
+
+  factory ChatUser.fromMap(Map<String, dynamic> map) {
+    return ChatUser(
+      id: map['id'] ?? '',
+      name: map['name'] ?? '',
+      avatar: map['avatar'] ?? '',
+      lastMessage: map['lastMessage'] ?? '',
+      lastMessageTime: DateTime.fromMillisecondsSinceEpoch(map['lastMessageTime'] ?? 0),
+      isOnline: map['isOnline'] ?? false,
+      unreadCount: map['unreadCount'] ?? 0,
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'name': name,
+      'avatar': avatar,
+      'lastMessage': lastMessage,
+      'lastMessageTime': lastMessageTime.millisecondsSinceEpoch,
+      'isOnline': isOnline,
+      'unreadCount': unreadCount,
+    };
+  }
+}
