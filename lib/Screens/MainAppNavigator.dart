@@ -18,7 +18,7 @@ class _MainAppNavigatorState extends State<MainAppNavigator> {
   final List<Widget> _pages = [
     const Dashboard(),
     const TaskManager(),
-    const ChatScreen(),
+    const Chat(),
     const Calendar(),
   ];
 
