@@ -130,7 +130,7 @@ class _WelcomePage1State extends State<WelcomePage1>
                           shape: BoxShape.circle,
                           boxShadow: [
                             BoxShadow(
-                              color: AppTheme.primaryBlue.withValues(alpha: 0.2),
+                              color: AppTheme.primaryBlue.withOpacity(0.2),
                               spreadRadius: 8,
                               blurRadius: 25,
                               offset: const Offset(0, 8),
@@ -277,7 +277,7 @@ class _WelcomePage1State extends State<WelcomePage1>
                               ),
                               boxShadow: [
                                 BoxShadow(
-                                  color: AppTheme.primaryBlue.withValues(alpha: 0.3),
+                                  color: AppTheme.primaryBlue.withOpacity(0.3),
                                   spreadRadius: 0,
                                   blurRadius: 20,
                                   offset: const Offset(0, 8),
@@ -389,7 +389,7 @@ class _WelcomePage1State extends State<WelcomePage1>
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: AppTheme.primaryBlue.withValues(alpha: 0.1),
+                          color: AppTheme.primaryBlue.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Icon(
