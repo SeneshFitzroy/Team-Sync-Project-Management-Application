@@ -372,12 +372,12 @@ class _WelcomePage1State extends State<WelcomePage1>
                     color: AppTheme.backgroundWhite,
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
-                      color: AppTheme.primaryBlue.withValues(alpha: 0.1),
+                      color: AppTheme.primaryBlue.withOpacity(0.1),
                       width: 1,
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: AppTheme.primaryBlue.withValues(alpha: 0.08),
+                        color: AppTheme.primaryBlue.withOpacity(0.08),
                         spreadRadius: 0,
                         blurRadius: 15,
                         offset: const Offset(0, 4),
