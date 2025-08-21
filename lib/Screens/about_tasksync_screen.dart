@@ -1,1 +1,0 @@
-import 'package:flutter/material.dart'; class about_tasksync_screenScreen extends StatelessWidget { const about_tasksync_screenScreen({super.key}); @override Widget build(BuildContext context) { return Scaffold(appBar: AppBar(title: const Text('about_tasksync_screen')), body: const Center(child: Text('about_tasksync_screen - Under Construction'))); }} 

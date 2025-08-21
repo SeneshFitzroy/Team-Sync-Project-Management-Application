@@ -1,1 +1,0 @@
-import 'package:flutter/material.dart'; class main_app_screenScreen extends StatelessWidget { const main_app_screenScreen({super.key}); @override Widget build(BuildContext context) { return Scaffold(appBar: AppBar(title: const Text('main_app_screen')), body: const Center(child: Text('main_app_screen - Under Construction'))); }} 
