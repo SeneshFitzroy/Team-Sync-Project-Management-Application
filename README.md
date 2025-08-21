@@ -1,52 +1,144 @@
-# Team-Sync Project Management Application 🚀
+# ✓ TaskSync - Project Management Application
 
-## Overview 📱
+A clean, professional Flutter application for project management with task tracking, team collaboration, and real-time chat functionality.
 
-**Team-Sync** is a mobile application designed to streamline project management and collaboration for university students working on group projects. The app consolidates all the essential tools required for efficient team collaboration into a single platform, eliminating the need for fragmented tools like WhatsApp, Zoom, and Monday.com. By integrating task tracking, communication, document storage, and team management, Team-Sync provides a centralized solution for university group projects. 📊
+## 🚀 Features
 
-## Table of Contents 📑
+- **Authentication System**: Secure login and registration with Firebase Authentication
+- **Dashboard**: Project overview with statistics and quick actions  
+- **Task Management**: Create, assign, and track tasks with priority levels
+- **Team Chat**: Real-time messaging system for team collaboration
+- **Calendar Integration**: View and manage project deadlines
+- **User Profiles**: Manage personal information and settings
 
-- [Problem Definition](#problem-definition)
-- [Scope of the Project](#scope-of-the-project)
-- [Features of the Application](#features-of-the-application)
-- [Wireframe Diagram](https://www.figma.com/design/yrlabB1ihtTMakZiVax8wX/TeamSync-ui-ux-design-v1?node-id=0-1&t=Arll7keClpJ1Q6Jh-1)
-- [Getting Started](#getting-started)
-- [Installation](#installation)
-- [Usage](#usage)
-- [Contributing](#contributing)
-- [License](#license)
+## 🛠️ Technology Stack
 
-## Problem Definition 😕 
+- **Framework**: Flutter 3.x
+- **Backend**: Firebase (Authentication, Firestore, Storage)
+- **State Management**: Provider pattern
+- **UI/UX**: Material Design 3
+- **Platform**: Cross-platform (Windows, iOS, Android, Web)
 
-Managing university group projects is often challenging due to the lack of a unified platform for collaboration, task management, and project outcome sharing. Currently, students rely on multiple fragmented tools for communication, task tracking, and documentation. Many of these tools offer limited free trials, and the necessary features are often locked behind paid versions. This fragmentation leads to miscommunication, unstructured task delegation, difficulty in tracking progress, and limited visibility of completed projects.
+## 📱 Screens
 
-There is a clear need for a single, unified platform that integrates all aspects of project management, improving organization, collaboration, and productivity. 💡
+### Core Navigation
+- Splash Screen
+- Welcome Pages
+- Authentication (Login/Register)
+- Main App Navigator with 5 tabs:
+  - Dashboard
+  - Task Manager  
+  - Calendar
+  - Chat
+  - Profile
 
-## Scope of the Project 🎯
+### Additional Features
+- Forgot Password flow
+- Profile management
+- Settings and preferences
+- Help and support
 
-### Project Boundaries and Objectives 🧑‍💻
+## 🎨 Design
 
-**Team-Sync** will serve as a mobile application that addresses the common challenges faced by university students working on group projects. The goal is to streamline collaboration, improve task tracking, and facilitate communication in one cohesive application. 🔄
+The app follows Material Design 3 principles with:
+- Clean, modern interface
+- Consistent color scheme
+- Smooth animations and transitions
+- Responsive layout for all screen sizes
 
-### In-Scope Features (Included Features) ✔️
+## 🚀 Getting Started
 
-1. **Team Management**: Users can create project teams, assign roles, and manage team members efficiently. 👥
-2. **Task Tracking**: Users can assign, update, and monitor project tasks. 📝
-3. **Communication**: In-app messaging, notifications, and video/audio calls for real-time collaboration. 📞
-4. **Project Documentation & Storage**: A centralized space for storing and organizing project documents, notes, and reports. 📂
-5. **User-Friendly Dashboard**: Displays project progress, deadlines, and pending tasks. 📅
-6. **Access Control & Security**: Role-based access control to ensure authorized users can manage and edit project tasks. 🔒
+### Prerequisites
+- Flutter SDK (latest stable version)
+- Dart SDK
+- Firebase project setup
+- IDE (VS Code, Android Studio, etc.)
 
-By focusing on these key features, the project remains streamlined and user-focused for university students, ensuring all essential project management functions are available in one place.
+### Installation
 
-## Features of the Application 🌟
+1. Clone the repository
+```bash
+git clone https://github.com/SeneshFitzroy/Team-Sync-Project-Management-Application.git
+```
 
-The application will include the following core features:
+2. Navigate to the project directory
+```bash
+cd Team-Sync-Project-Management-Application
+```
 
-1. **Team Management**:
-   - Create and join teams. 👥
-   - Assign roles (Admin, Editor, Viewer). 🛠️
-   - Invite members via email. 📧
+3. Get dependencies
+```bash
+flutter pub get
+```
+
+4. Configure Firebase
+   - Add your `google-services.json` for Android
+   - Add your `GoogleService-Info.plist` for iOS
+   - Update `lib/firebase_options.dart` with your configuration
+
+5. Run the app
+```bash
+flutter run
+```
+
+### Building for Production
+
+#### Windows
+```bash
+flutter build windows --release
+```
+
+#### Android
+```bash
+flutter build apk --release
+```
+
+#### iOS
+```bash
+flutter build ios --release
+```
+
+## 📁 Project Structure
+
+```
+lib/
+├── main.dart                 # App entry point
+├── firebase_options.dart     # Firebase configuration
+├── Screens/                  # All UI screens
+├── widgets/                  # Reusable widgets
+├── Services/                 # Business logic and API calls
+├── models/                   # Data models
+├── theme/                    # App theming
+└── utils/                    # Helper utilities
+```
+
+## 🔥 Firebase Setup
+
+This project uses Firebase for:
+- **Authentication**: User registration and login
+- **Firestore**: Real-time database for tasks and projects
+- **Storage**: File uploads and user avatars
+- **Cloud Functions**: Server-side logic
+
+## 🤝 Contributing
+
+1. Fork the project
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 📞 Support
+
+For support and questions, please open an issue in the GitHub repository.
+
+---
+
+**Built with ❤️ using Flutter and Firebase**
    
 2. **Project Management**:
    - Kanban boards for task management. 📊
