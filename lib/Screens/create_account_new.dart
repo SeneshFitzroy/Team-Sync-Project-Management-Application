@@ -341,31 +341,31 @@ class _CreateAccountState extends State<CreateAccount> {
           
           messages.add('📧 Firebase verification email also sent');
 
-          // Show success message briefly, then navigate
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: messages.map((msg) => Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 2),
-                  child: Text(msg, style: TextStyle(fontSize: 13)),
-                )).toList(),
-              ),
-              backgroundColor: AppTheme.success,
-              duration: const Duration(seconds: 3), // Reduced duration
+          // Navigate immediately to prevent message persistence
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const MainAppNavigator(),
             ),
+            (route) => false, // Clear all previous routes
           );
 
-          // Navigate immediately without waiting for SnackBar
-          Future.delayed(const Duration(milliseconds: 500), () {
+          // Show success message after navigation
+          Future.delayed(const Duration(milliseconds: 100), () {
             if (mounted) {
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const MainAppNavigator(),
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: messages.map((msg) => Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 2),
+                      child: Text(msg, style: TextStyle(fontSize: 13)),
+                    )).toList(),
+                  ),
+                  backgroundColor: AppTheme.success,
+                  duration: const Duration(seconds: 2),
                 ),
-                (route) => false, // Clear all previous routes
               );
             }
           });
