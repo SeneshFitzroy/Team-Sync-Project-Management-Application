@@ -204,21 +204,16 @@ class _SplashScreenState extends State<SplashScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
-          gradient: AnimatedBuilder(
-            animation: _backgroundAnimation,
-            builder: (context, child) {
-              return LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Color.lerp(const Color(0xFFF8FAFC), const Color(0xFF667EEA), _backgroundAnimation.value * 0.1) ?? const Color(0xFFF8FAFC),
-                  Color.lerp(Colors.white, const Color(0xFF764BA2), _backgroundAnimation.value * 0.05) ?? Colors.white,
-                  Color.lerp(const Color(0xFFF1F5F9), const Color(0xFF667EEA), _backgroundAnimation.value * 0.08) ?? const Color(0xFFF1F5F9),
-                ],
-                stops: const [0.0, 0.5, 1.0],
-              );
-            },
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Color(0xFFF8FAFC),
+              Colors.white,
+              Color(0xFFF1F5F9),
+            ],
+            stops: [0.0, 0.5, 1.0],
           ),
         ),
         child: SafeArea(
