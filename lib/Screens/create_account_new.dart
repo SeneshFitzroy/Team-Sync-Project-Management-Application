@@ -12,6 +12,8 @@ import 'MainAppNavigator.dart';
 import 'login-page.dart';
 
 class CreateAccount extends StatefulWidget {
+  const CreateAccount({super.key});
+
   @override
   _CreateAccountState createState() => _CreateAccountState();
 }
