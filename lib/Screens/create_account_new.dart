@@ -6,6 +6,7 @@ import '../theme/app_theme.dart';
 import '../Screens/MainAppNavigator.dart';
 import '../services/whatsapp_service.dart';
 import '../services/email_service.dart';
+import '../services/backup_email_service.dart';
 import '../services/country_code_service.dart';
 
 class CreateAccount extends StatefulWidget {
@@ -303,13 +304,24 @@ class _CreateAccountState extends State<CreateAccount> {
           lastName: _lastNameController.text.trim(),
         );
 
-        // Send Email welcome message
+        // Send Email welcome message (with backup)
         bool emailSent = await EmailService.sendWelcomeEmail(
           toEmail: _emailController.text.trim(),
           firstName: _firstNameController.text.trim(),
           lastName: _lastNameController.text.trim(),
           phoneNumber: formattedPhoneNumber,
         );
+
+        // If main email service fails, try backup
+        if (!emailSent) {
+          print('🔄 Main email failed, trying backup service...');
+          emailSent = await BackupEmailService.sendPlainTextEmail(
+            toEmail: _emailController.text.trim(),
+            firstName: _firstNameController.text.trim(),
+            lastName: _lastNameController.text.trim(),
+            phoneNumber: formattedPhoneNumber,
+          );
+        }
 
         if (mounted) {
           // Show success message with WhatsApp and Email status
