@@ -319,15 +319,62 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 TextButton(
                   onPressed: () async {
+                    Navigator.pop(context); // Close the dialog first
+                    
                     try {
+                      // Show loading indicator
+                      showDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (context) => const Center(
+                          child: CircularProgressIndicator(
+                            color: AppTheme.primaryBlue,
+                          ),
+                        ),
+                      );
+                      
+                      // Sign out from Firebase
                       await AuthService.signOut();
+                      
+                      // Clear any cached user data
+                      setState(() {
+                        _currentUser = null;
+                      });
+                      
                       if (context.mounted) {
-                        Navigator.popUntil(context, (route) => route.isFirst);
+                        // Close loading dialog
+                        Navigator.pop(context);
+                        
+                        // Navigate to login page and clear all previous routes
+                        Navigator.pushNamedAndRemoveUntil(
+                          context,
+                          '/login',
+                          (route) => false, // This removes all previous routes
+                        );
+                        
+                        // Show success message
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Successfully logged out'),
+                            backgroundColor: AppTheme.success,
+                            duration: Duration(seconds: 2),
+                          ),
+                        );
                       }
                     } catch (e) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Error logging out: $e')),
-                      );
+                      if (context.mounted) {
+                        // Close loading dialog if it's still open
+                        Navigator.pop(context);
+                        
+                        // Show error message
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Error logging out: $e'),
+                            backgroundColor: AppTheme.error,
+                            duration: const Duration(seconds: 3),
+                          ),
+                        );
+                      }
                     }
                   },
                   child: const Text(
