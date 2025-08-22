@@ -68,12 +68,27 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     _formController.forward();
   }
 
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    _particleController.dispose();
+    _formController.dispose();
+    super.dispose();
+  }
+
   Future<void> _signIn() async {
+    if (_emailController.text.trim().isEmpty || _passwordController.text.isEmpty) {
+      _showErrorSnackBar('Please fill in all fields');
+      return;
+    }
+
     setState(() {
       _isLoading = true;
     });
 
     try {
+      HapticFeedback.lightImpact();
       final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text,
@@ -93,66 +108,45 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
           print('Failed to update last login: $e');
         }
         
+        HapticFeedback.heavyImpact();
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const MainAppNavigator()),
+          PageRouteBuilder(
+            pageBuilder: (context, animation, secondaryAnimation) =>
+                const MainAppNavigator(),
+            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+              return FadeTransition(
+                opacity: animation,
+                child: SlideTransition(
+                  position: Tween<Offset>(
+                    begin: const Offset(0.3, 0),
+                    end: Offset.zero,
+                  ).animate(CurvedAnimation(
+                    parent: animation,
+                    curve: Curves.easeOutCubic,
+                  )),
+                  child: child,
+                ),
+              );
+            },
+            transitionDuration: const Duration(milliseconds: 600),
+          ),
         );
-        
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: const Text('Welcome back! Login successful.'),
-              backgroundColor: AppTheme.success,
-              duration: const Duration(seconds: 2),
-            ),
-          );
-        }
       }
     } on FirebaseAuthException catch (e) {
-      String message = 'An error occurred while signing in';
-      
-      switch (e.code) {
-        case 'user-not-found':
-          message = 'No account found with this email address.';
-          break;
-        case 'wrong-password':
-          message = 'Incorrect password. Please try again.';
-          break;
-        case 'invalid-email':
-          message = 'Please enter a valid email address.';
-          break;
-        case 'user-disabled':
-          message = 'This account has been disabled.';
-          break;
-        case 'too-many-requests':
-          message = 'Too many failed attempts. Please try again later.';
-          break;
-        case 'invalid-credential':
-          message = 'Invalid email or password. Please check your credentials.';
-          break;
-        default:
-          message = 'Login failed: ${e.message}';
+      String message = 'Login failed. Please try again.';
+      if (e.code == 'user-not-found') {
+        message = 'No account found with this email.';
+      } else if (e.code == 'wrong-password') {
+        message = 'Incorrect password.';
+      } else if (e.code == 'invalid-email') {
+        message = 'Invalid email address.';
+      } else if (e.code == 'too-many-requests') {
+        message = 'Too many failed attempts. Please try again later.';
       }
-      
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(message),
-            backgroundColor: AppTheme.error,
-            duration: const Duration(seconds: 4),
-          ),
-        );
-      }
+      _showErrorSnackBar(message);
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('An unexpected error occurred during login'),
-            backgroundColor: AppTheme.error,
-            duration: const Duration(seconds: 3),
-          ),
-        );
-      }
+      _showErrorSnackBar('An unexpected error occurred. Please try again.');
     } finally {
       if (mounted) {
         setState(() {
@@ -162,12 +156,42 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     }
   }
 
-  // Navigate to Forgot Password page
+  void _showErrorSnackBar(String message) {
+    HapticFeedback.lightImpact();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red.shade600,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        margin: const EdgeInsets.all(16),
+      ),
+    );
+  }
+
   void _navigateToForgotPassword() {
+    HapticFeedback.selectionClick();
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (context) => const ForgetPasswordPage(),
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            const ForgetPasswordPage(),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          return FadeTransition(
+            opacity: animation,
+            child: SlideTransition(
+              position: Tween<Offset>(
+                begin: const Offset(0.3, 0),
+                end: Offset.zero,
+              ).animate(CurvedAnimation(
+                parent: animation,
+                curve: Curves.easeOutCubic,
+              )),
+              child: child,
+            ),
+          );
+        },
+        transitionDuration: const Duration(milliseconds: 600),
       ),
     );
   }
@@ -386,134 +410,235 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
       ),
     );
   }
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: AppTheme.primaryBlue, width: 2),
-                  ),
-                  prefixIcon: Icon(Icons.email_outlined, color: AppTheme.textSecondary),
-                ),
-              ),
-              
-              const SizedBox(height: 16),
-              
-              // Password Field
-              TextFormField(
-                controller: _passwordController,
-                obscureText: _obscureText,
-                style: AppTheme.bodyLarge.copyWith(color: AppTheme.textPrimary),
-                decoration: InputDecoration(
-                  labelText: 'Password',
-                  labelStyle: AppTheme.bodyMedium.copyWith(color: AppTheme.textSecondary),
-                  filled: true,
-                  fillColor: AppTheme.backgroundLight,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none,
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: AppTheme.primaryBlue, width: 2),
-                  ),
-                  prefixIcon: Icon(Icons.lock_outline, color: AppTheme.textSecondary),
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      _obscureText ? Icons.visibility_off : Icons.visibility,
-                      color: AppTheme.textSecondary,
+
+  Widget _buildModernTextField({
+    required TextEditingController controller,
+    required String label,
+    TextInputType? keyboardType,
+    IconData? prefixIcon,
+    Widget? suffixIcon,
+    bool isPassword = false,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: AppTheme.primaryBlue.withOpacity(0.08),
+            spreadRadius: 0,
+            blurRadius: 20,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: TextFormField(
+        controller: controller,
+        keyboardType: keyboardType,
+        obscureText: isPassword ? _obscureText : false,
+        style: AppTheme.bodyLarge.copyWith(
+          color: AppTheme.textPrimary,
+          fontWeight: FontWeight.w500,
+        ),
+        decoration: InputDecoration(
+          labelText: label,
+          labelStyle: AppTheme.bodyMedium.copyWith(
+            color: AppTheme.textSecondary,
+            fontWeight: FontWeight.w500,
+          ),
+          filled: true,
+          fillColor: Colors.white,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: BorderSide.none,
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: BorderSide(
+              color: AppTheme.primaryBlue.withOpacity(0.1),
+              width: 1,
+            ),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: const BorderSide(
+              color: AppTheme.primaryBlue,
+              width: 2,
+            ),
+          ),
+          prefixIcon: prefixIcon != null
+              ? Icon(prefixIcon, color: AppTheme.textSecondary)
+              : null,
+          suffixIcon: suffixIcon,
+          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildModernButton({
+    required String text,
+    required VoidCallback? onPressed,
+    bool isLoading = false,
+  }) {
+    return Container(
+      height: 60,
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            AppTheme.primaryBlue,
+            Color(0xFF764BA2),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(30),
+        boxShadow: [
+          BoxShadow(
+            color: AppTheme.primaryBlue.withOpacity(0.4),
+            spreadRadius: 0,
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onPressed,
+          borderRadius: BorderRadius.circular(30),
+          child: Center(
+            child: isLoading
+                ? const SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                      strokeWidth: 2,
                     ),
-                    onPressed: () {
-                      setState(() {
-                        _obscureText = !_obscureText;
-                      });
-                    },
-                  ),
-                ),
-              ),
-              
-              const SizedBox(height: 12),
-              
-              // Forgot Password
-              Align(
-                alignment: Alignment.centerRight,
-                child: TextButton(
-                  onPressed: _navigateToForgotPassword,
-                  child: Text(
-                    'Forgot Password?',
-                    style: AppTheme.bodyMedium.copyWith(color: AppTheme.primaryBlue),
-                  ),
-                ),
-              ),
-              
-              const SizedBox(height: 32),
-              
-              // Sign In Button
-              SizedBox(
-                height: 56,
-                child: ElevatedButton(
-                  onPressed: _isLoading ? null : _signIn,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.primaryBlue,
-                    foregroundColor: AppTheme.textWhite,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    elevation: 0,
-                  ),
-                  child: _isLoading
-                      ? const SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(AppTheme.textWhite),
-                          ),
-                        )
-                      : Text(
-                          'Sign In',
-                          style: AppTheme.buttonText,
-                        ),
-                ),
-              ),
-              
-              const SizedBox(height: 24),
-              
-              // Sign Up Link
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    "Don't have an account? ",
-                    style: AppTheme.bodyMedium.copyWith(color: AppTheme.textSecondary),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const CreateAccount()),
-                      );
-                    },
-                    child: Text(
-                      'Sign Up',
-                      style: AppTheme.bodyMedium.copyWith(
-                        color: AppTheme.primaryBlue,
-                        fontWeight: FontWeight.w600,
-                      ),
+                  )
+                : Text(
+                    text,
+                    style: AppTheme.bodyLarge.copyWith(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                      letterSpacing: 0.5,
                     ),
                   ),
-                ],
-              ),
-              
-              const Spacer(),
-            ],
           ),
         ),
       ),
     );
   }
 
-  @override
-  void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
-    super.dispose();
+  Widget _buildOutlinedButton({
+    required String text,
+    required VoidCallback onPressed,
+  }) {
+    return Container(
+      height: 60,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(30),
+        border: Border.all(
+          color: AppTheme.primaryBlue.withOpacity(0.3),
+          width: 2,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            spreadRadius: 0,
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onPressed,
+          borderRadius: BorderRadius.circular(30),
+          child: Center(
+            child: ShaderMask(
+              shaderCallback: (bounds) {
+                return const LinearGradient(
+                  colors: [
+                    AppTheme.primaryBlue,
+                    Color(0xFF764BA2),
+                  ],
+                ).createShader(bounds);
+              },
+              child: Text(
+                text,
+                style: AppTheme.bodyLarge.copyWith(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white,
+                  letterSpacing: 0.5,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
   }
+}
+
+// Custom painter for login page particles (consistent design)
+class LoginParticlePainter extends CustomPainter {
+  final double animationValue;
+  
+  LoginParticlePainter(this.animationValue);
+  
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..style = PaintingStyle.fill;
+    
+    // Generate consistent particles based on screen size
+    final random = Random(42); // Fixed seed for consistent positions
+    
+    for (int i = 0; i < 12; i++) {
+      final x = random.nextDouble() * size.width;
+      final y = random.nextDouble() * size.height;
+      final radius = 1.0 + (random.nextDouble() * 2.5);
+      
+      // Animate opacity and position
+      final opacity = (0.05 + (random.nextDouble() * 0.2)) * 
+                     (0.5 + 0.5 * sin(animationValue * 2 * pi + i));
+      final offsetY = sin(animationValue * 2 * pi + i * 0.5) * 8;
+      
+      paint.color = AppTheme.primaryBlue.withOpacity(opacity);
+      
+      canvas.drawCircle(
+        Offset(x, y + offsetY),
+        radius,
+        paint,
+      );
+    }
+    
+    // Add some larger, slower moving particles
+    for (int i = 0; i < 5; i++) {
+      final x = random.nextDouble() * size.width;
+      final y = random.nextDouble() * size.height;
+      final radius = 1.5 + (random.nextDouble() * 3);
+      
+      final opacity = (0.03 + (random.nextDouble() * 0.1)) * 
+                     (0.3 + 0.7 * sin(animationValue * pi + i * 0.3));
+      final offsetY = cos(animationValue * pi + i * 0.7) * 12;
+      final offsetX = sin(animationValue * 0.5 * pi + i * 0.4) * 4;
+      
+      paint.color = const Color(0xFF764BA2).withOpacity(opacity);
+      
+      canvas.drawCircle(
+        Offset(x + offsetX, y + offsetY),
+        radius,
+        paint,
+      );
+    }
+  }
+  
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }
