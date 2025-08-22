@@ -21,7 +21,6 @@ class _SplashScreenState extends State<SplashScreen>
   late AnimationController _progressController;
   late AnimationController _particleController;
 
-  late Animation<double> _backgroundAnimation;
   late Animation<double> _logoScaleAnimation;
   late Animation<double> _logoRotateAnimation;
   late Animation<double> _logoGlowAnimation;
