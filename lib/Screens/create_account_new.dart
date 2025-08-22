@@ -341,7 +341,7 @@ class _CreateAccountState extends State<CreateAccount> {
           
           messages.add('📧 Firebase verification email also sent');
 
-          // Navigate immediately to prevent message persistence
+          // Navigate to dashboard without showing persistent message
           Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(
@@ -349,26 +349,6 @@ class _CreateAccountState extends State<CreateAccount> {
             ),
             (route) => false, // Clear all previous routes
           );
-
-          // Show success message after navigation
-          Future.delayed(const Duration(milliseconds: 100), () {
-            if (mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: messages.map((msg) => Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 2),
-                      child: Text(msg, style: TextStyle(fontSize: 13)),
-                    )).toList(),
-                  ),
-                  backgroundColor: AppTheme.success,
-                  duration: const Duration(seconds: 2),
-                ),
-              );
-            }
-          });
         }
       }
     } on FirebaseAuthException catch (e) {
