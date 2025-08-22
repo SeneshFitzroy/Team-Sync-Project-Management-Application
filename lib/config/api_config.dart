@@ -4,8 +4,8 @@ class ApiConfig {
   static const String greenApiAccessToken = '29158cf0aff0400f997dbe5fbe9d604e551b120d46814dcaa4';
   
   // EmailJS Configuration - YOUR ACTUAL CREDENTIALS  
-  static const String emailJsServiceId = 'YOUR_SERVICE_ID'; // From EmailJS dashboard
-  static const String emailJsTemplateId = 'YOUR_TEMPLATE_ID'; // Create welcome template
+  static const String emailJsServiceId = 'service_xtlfp5m'; // From EmailJS dashboard
+  static const String emailJsTemplateId = 'template_welcome'; // Create welcome template
   static const String emailJsUserId = 'YOUR_USER_ID'; // From EmailJS account settings
   static const String emailJsAccessToken = 'YOUR_ACCESS_TOKEN'; // From EmailJS account settings
   
