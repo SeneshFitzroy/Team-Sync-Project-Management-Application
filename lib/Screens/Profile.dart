@@ -355,16 +355,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         // Close loading dialog
                         Navigator.pop(context);
                         
-                        // Navigate to welcome page and clear all previous routes
-                        // Using pushNamedAndRemoveUntil to ensure clean navigation stack
+                        // Navigate to login page and clear all previous routes
                         Navigator.pushNamedAndRemoveUntil(
                           context,
-                          '/',
+                          '/login',
                           (route) => false, // This removes all previous routes
                         );
-                        
-                        // The AuthWrapper will automatically handle the redirect
-                        // to WelcomePage1 since user is no longer authenticated
                       }
                     } catch (e) {
                       if (context.mounted) {
