@@ -76,18 +76,34 @@ class EmailService {
     }
   }
 
-  /// Test email service connection
-  static Future<bool> testEmailService() async {
+  /// Test email service connection with real values
+  static Future<bool> testEmailService({String? testEmail}) async {
     try {
-      return await sendWelcomeEmail(
-        toEmail: 'test@example.com',
+      String email = testEmail ?? 'test@example.com';
+      print('📧 Testing email service with: $email');
+      
+      bool result = await sendWelcomeEmail(
+        toEmail: email,
         firstName: 'Test',
         lastName: 'User',
         phoneNumber: '+94123456789',
       );
+      
+      print('📧 Test result: ${result ? "SUCCESS" : "FAILED"}');
+      return result;
     } catch (e) {
-      print('Email service test failed: $e');
+      print('📧 Email service test failed: $e');
       return false;
     }
+  }
+
+  /// Debug function to check configuration
+  static void debugConfiguration() {
+    print('📧 === EmailJS Configuration Debug ===');
+    print('📧 Service ID: $_serviceId');
+    print('📧 Template ID: $_templateId');
+    print('📧 User ID: $_userId');
+    print('📧 Access Token: ${_accessToken.substring(0, 5)}...');
+    print('📧 =====================================');
   }
 }
