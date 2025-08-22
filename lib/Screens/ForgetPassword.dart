@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../theme/app_theme.dart';
 import '../widgets/TickLogo.dart';
 
@@ -14,6 +15,7 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
   final TextEditingController _emailController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
+  bool _emailSent = false;
 
   @override
   void dispose() {
@@ -31,6 +33,37 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
     return null;
   }
 
+  /// Check if email is registered in Firebase
+  Future<bool> _isEmailRegistered(String email) async {
+    try {
+      // Method 1: Check Firestore users collection
+      final userQuery = await FirebaseFirestore.instance
+          .collection('users')
+          .where('email', isEqualTo: email.trim().toLowerCase())
+          .limit(1)
+          .get();
+
+      if (userQuery.docs.isNotEmpty) {
+        print('✅ Email found in Firestore: $email');
+        return true;
+      }
+
+      // Method 2: Check Firebase Auth sign-in methods
+      final signInMethods = await FirebaseAuth.instance.fetchSignInMethodsForEmail(email.trim());
+      if (signInMethods.isNotEmpty) {
+        print('✅ Email found in Firebase Auth: $email');
+        return true;
+      }
+
+      print('❌ Email not registered: $email');
+      return false;
+    } catch (e) {
+      print('Error checking email: $e');
+      // If there's an error checking, assume email exists to let Firebase handle it
+      return true;
+    }
+  }
+
   Future<void> _sendResetEmail() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -39,15 +72,103 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
     });
 
     try {
-      // Send Firebase password reset email (only)
-      await FirebaseAuth.instance.sendPasswordResetEmail(
-        email: _emailController.text.trim(),
-      );
+      final email = _emailController.text.trim().toLowerCase();
+      
+      // First verify if email is registered
+      final isRegistered = await _isEmailRegistered(email);
+      
+      if (!isRegistered) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                '❌ This email is not registered with TaskSync.\nPlease check your email or create a new account.',
+                style: TextStyle(color: Colors.white, fontSize: 14),
+              ),
+              backgroundColor: Colors.red,
+              duration: Duration(seconds: 5),
+            ),
+          );
+        }
+        setState(() {
+          _isLoading = false;
+        });
+        return;
+      }
+
+      // Send Firebase password reset email
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+      
+      setState(() {
+        _emailSent = true;
+        _isLoading = false;
+      });
       
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
+              '✅ Password reset email sent to $email\n\nPlease check your inbox and click the reset link.',
+              style: const TextStyle(color: Colors.white, fontSize: 14),
+            ),
+            backgroundColor: Colors.green,
+            duration: const Duration(seconds: 6),
+          ),
+        );
+      }
+    } on FirebaseAuthException catch (e) {
+      String errorMessage = '';
+      
+      switch (e.code) {
+        case 'user-not-found':
+          errorMessage = '❌ No account found with this email address.\nPlease check your email or create a new account.';
+          break;
+        case 'invalid-email':
+          errorMessage = '❌ Please enter a valid email address.';
+          break;
+        case 'too-many-requests':
+          errorMessage = '⏱️ Too many reset attempts.\nPlease wait a few minutes before trying again.';
+          break;
+        case 'user-disabled':
+          errorMessage = '❌ This account has been disabled.\nPlease contact support for assistance.';
+          break;
+        default:
+          errorMessage = '❌ Error sending reset email: ${e.message}';
+      }
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              errorMessage,
+              style: const TextStyle(color: Colors.white, fontSize: 14),
+            ),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 5),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              '❌ Unexpected error occurred: ${e.toString()}',
+              style: const TextStyle(color: Colors.white, fontSize: 14),
+            ),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 4),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
               '✅ Password reset email sent successfully!\n\n'
               '📧 Check your email inbox for reset instructions\n'
               '🔗 Click the link in the email to reset your password\n'
