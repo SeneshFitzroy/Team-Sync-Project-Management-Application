@@ -1,4 +1,6 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../widgets/TickLogo.dart';
@@ -15,7 +17,7 @@ class CreateAccount extends StatefulWidget {
   _CreateAccountState createState() => _CreateAccountState();
 }
 
-class _CreateAccountState extends State<CreateAccount> {
+class _CreateAccountState extends State<CreateAccount> with TickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
@@ -37,10 +39,70 @@ class _CreateAccountState extends State<CreateAccount> {
   Color _passwordStrengthColor = AppTheme.textSecondary;
   List<String> _passwordCriteria = [];
 
+  // Animation controllers for consistent design
+  late AnimationController _fadeController;
+  late AnimationController _slideController;
+  late AnimationController _particleController;
+
+  late Animation<double> _fadeAnimation;
+  late Animation<Offset> _slideAnimation;
+  late Animation<double> _particleAnimation;
+
   @override
   void initState() {
     super.initState();
     _passwordController.addListener(_updatePasswordStrength);
+    _initializeAnimations();
+    _startAnimations();
+  }
+
+  void _initializeAnimations() {
+    _fadeController = AnimationController(
+      duration: const Duration(milliseconds: 1000),
+      vsync: this,
+    );
+
+    _slideController = AnimationController(
+      duration: const Duration(milliseconds: 1200),
+      vsync: this,
+    );
+
+    _particleController = AnimationController(
+      duration: const Duration(milliseconds: 4000),
+      vsync: this,
+    );
+
+    _fadeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _fadeController,
+      curve: Curves.easeOut,
+    ));
+
+    _slideAnimation = Tween<Offset>(
+      begin: const Offset(0, 0.3),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(
+      parent: _slideController,
+      curve: Curves.easeOutCubic,
+    ));
+
+    _particleAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _particleController,
+      curve: Curves.linear,
+    ));
+  }
+
+  void _startAnimations() async {
+    HapticFeedback.lightImpact();
+    _particleController.repeat();
+    _fadeController.forward();
+    await Future.delayed(const Duration(milliseconds: 200));
+    _slideController.forward();
   }
 
   @override
@@ -48,6 +110,14 @@ class _CreateAccountState extends State<CreateAccount> {
     _firstNameController.dispose();
     _lastNameController.dispose();
     _emailController.dispose();
+    _phoneController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    _fadeController.dispose();
+    _slideController.dispose();
+    _particleController.dispose();
+    super.dispose();
+  }
     _phoneController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
@@ -387,47 +457,147 @@ class _CreateAccountState extends State<CreateAccount> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.backgroundWhite,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const SizedBox(height: 40),
-                
-                // Logo
-                Center(
-                  child: TickLogo(
-                    size: 80,
-                    color: AppTheme.primaryBlue,
-                    backgroundColor: AppTheme.backgroundLight,
-                  ),
-                ),
-                
-                const SizedBox(height: 24),
-                
-                Text(
-                  'Create Account',
-                  textAlign: TextAlign.center,
-                  style: AppTheme.headingLarge.copyWith(
-                    color: AppTheme.textPrimary,
-                  ),
-                ),
-                
-                const SizedBox(height: 8),
-                
-                Text(
-                  'Join TaskSync and start managing your projects',
-                  textAlign: TextAlign.center,
-                  style: AppTheme.bodyMedium.copyWith(
-                    color: AppTheme.textSecondary,
-                  ),
-                ),
-                
-                const SizedBox(height: 32),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Color(0xFFF8FAFC),
+              Colors.white,
+              Color(0xFFF1F5F9),
+            ],
+            stops: [0.0, 0.5, 1.0],
+          ),
+        ),
+        child: SafeArea(
+          child: Stack(
+            children: [
+              // Animated background particles (consistent design)
+              AnimatedBuilder(
+                animation: _particleAnimation,
+                builder: (context, child) {
+                  return CustomPaint(
+                    painter: ParticlePainter(_particleAnimation.value),
+                    size: MediaQuery.of(context).size,
+                  );
+                },
+              ),
+              
+              // Main content
+              SingleChildScrollView(
+                padding: const EdgeInsets.all(24.0),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      const SizedBox(height: 40),
+                      
+                      // Consistent Logo Design (blue-purple gradient ball with tick)
+                      FadeTransition(
+                        opacity: _fadeAnimation,
+                        child: Center(
+                          child: Container(
+                            padding: const EdgeInsets.all(20),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              gradient: RadialGradient(
+                                colors: [
+                                  AppTheme.primaryBlue.withOpacity(0.1),
+                                  AppTheme.primaryBlue.withOpacity(0.05),
+                                  Colors.transparent,
+                                ],
+                                stops: const [0.0, 0.7, 1.0],
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: AppTheme.primaryBlue.withOpacity(0.2),
+                                  spreadRadius: 10,
+                                  blurRadius: 25,
+                                  offset: const Offset(0, 8),
+                                ),
+                              ],
+                            ),
+                            child: Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                gradient: const LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                  colors: [
+                                    AppTheme.primaryBlue,
+                                    Color(0xFF764BA2),
+                                  ],
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: AppTheme.primaryBlue.withOpacity(0.4),
+                                    spreadRadius: 2,
+                                    blurRadius: 12,
+                                    offset: const Offset(0, 6),
+                                  ),
+                                ],
+                              ),
+                              child: const TickLogo(
+                                size: 60,
+                                color: Colors.white,
+                                backgroundColor: Colors.transparent,
+                                showBackground: false,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      
+                      const SizedBox(height: 32),
+                      
+                      // Title with consistent styling
+                      SlideTransition(
+                        position: _slideAnimation,
+                        child: FadeTransition(
+                          opacity: _fadeAnimation,
+                          child: Column(
+                            children: [
+                              ShaderMask(
+                                shaderCallback: (bounds) {
+                                  return const LinearGradient(
+                                    colors: [
+                                      AppTheme.primaryBlue,
+                                      Color(0xFF764BA2),
+                                    ],
+                                  ).createShader(bounds);
+                                },
+                                child: Text(
+                                  'Create Account',
+                                  textAlign: TextAlign.center,
+                                  style: AppTheme.headingLarge.copyWith(
+                                    fontSize: 28,
+                                    fontWeight: FontWeight.w800,
+                                    color: Colors.white,
+                                    letterSpacing: -0.5,
+                                  ),
+                                ),
+                              ),
+                              
+                              const SizedBox(height: 8),
+                              
+                              Text(
+                                'Join TaskSync and start managing your projects',
+                                textAlign: TextAlign.center,
+                                style: AppTheme.bodyMedium.copyWith(
+                                  color: AppTheme.textSecondary,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      
+                      const SizedBox(height: 40),
                 
                 // First Name field
                 TextFormField(
