@@ -238,7 +238,7 @@ class _CreateAccountState extends State<CreateAccount> with TickerProviderStateM
         phoneNumber: _phoneController.text.trim(),
       );
 
-      if (result.user != null) {
+      if (result != null && result.user != null) {
         String fullName = '${_firstNameController.text.trim()} ${_lastNameController.text.trim()}';
         
         print('✅ Firebase Auth account created successfully');
@@ -261,7 +261,7 @@ class _CreateAccountState extends State<CreateAccount> with TickerProviderStateM
         // Send WhatsApp welcome message
         try {
           bool whatsAppSent = await WhatsAppService.sendWelcomeMessage(
-            phone: _phoneController.text.trim(),
+            phoneNumber: _phoneController.text.trim(),
             firstName: _firstNameController.text.trim(),
             lastName: _lastNameController.text.trim(),
           );
@@ -276,6 +276,7 @@ class _CreateAccountState extends State<CreateAccount> with TickerProviderStateM
             toEmail: _emailController.text.trim(),
             firstName: _firstNameController.text.trim(),
             lastName: _lastNameController.text.trim(),
+            phoneNumber: _phoneController.text.trim(),
           );
           print('📧 Welcome email ${emailSent ? "sent successfully" : "failed"} to ${_emailController.text.trim()}');
         } catch (e) {
