@@ -30,35 +30,76 @@ class _LoginPageState extends State<LoginPage> {
       );
       
       if (mounted && credential.user != null) {
+        // Update last login timestamp in Firestore
+        try {
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(credential.user!.uid)
+              .update({
+            'lastLoginAt': FieldValue.serverTimestamp(),
+          });
+        } catch (e) {
+          // Continue with login even if Firestore update fails
+          print('Failed to update last login: $e');
+        }
+        
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const MainAppNavigator()),
         );
+        
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text('Welcome back! Login successful.'),
+              backgroundColor: AppTheme.success,
+              duration: const Duration(seconds: 2),
+            ),
+          );
+        }
       }
     } on FirebaseAuthException catch (e) {
-      String message = 'An error occurred';
-      if (e.code == 'user-not-found') {
-        message = 'No user found for that email.';
-      } else if (e.code == 'wrong-password') {
-        message = 'Wrong password provided.';
-      } else if (e.code == 'invalid-email') {
-        message = 'Invalid email format.';
+      String message = 'An error occurred while signing in';
+      
+      switch (e.code) {
+        case 'user-not-found':
+          message = 'No account found with this email address.';
+          break;
+        case 'wrong-password':
+          message = 'Incorrect password. Please try again.';
+          break;
+        case 'invalid-email':
+          message = 'Please enter a valid email address.';
+          break;
+        case 'user-disabled':
+          message = 'This account has been disabled.';
+          break;
+        case 'too-many-requests':
+          message = 'Too many failed attempts. Please try again later.';
+          break;
+        case 'invalid-credential':
+          message = 'Invalid email or password. Please check your credentials.';
+          break;
+        default:
+          message = 'Login failed: ${e.message}';
       }
       
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(message),
-            backgroundColor: Colors.red,
+            backgroundColor: AppTheme.error,
+            duration: const Duration(seconds: 4),
           ),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('An unexpected error occurred'),
-            backgroundColor: Colors.red,
+          SnackBar(
+            content: const Text('An unexpected error occurred during login'),
+            backgroundColor: AppTheme.error,
+            duration: const Duration(seconds: 3),
           ),
         );
       }
