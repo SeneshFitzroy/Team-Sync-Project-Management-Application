@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../theme/app_theme.dart';
@@ -284,10 +285,10 @@ class _SplashScreenState extends State<SplashScreen>
                                   ),
                                 ],
                               ),
-                              child: const Icon(
-                                Icons.check_circle_outline,
+                              child: TickLogoLarge(
                                 size: 80,
-                                color: Colors.white,
+                                tickColor: Colors.white,
+                                backgroundColor: Colors.transparent,
                               ),
                             ),
                           ),
