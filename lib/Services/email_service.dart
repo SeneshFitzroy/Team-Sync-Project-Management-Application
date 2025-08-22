@@ -34,33 +34,8 @@ class EmailService {
         'phone': phoneNumber,
         'date': formattedDate,
       };
-• 📈 Progress Tracking & Reports
-• 🔔 Smart Notifications
-• 📱 Cross-platform Access
 
-Need Help Getting Started?
-• 📚 Check our Quick Start Guide
-• 💬 Join our Community Forum
-• 📧 Contact Support: support@tasksync.com
-• 📞 Call us: +1-800-TASKSYNC
-
-Thank you for choosing TaskSync to power your productivity!
-
-Best regards,
-The TaskSync Team
-
----
-Follow us on social media:
-🐦 Twitter: @TaskSyncApp
-📘 Facebook: TaskSync Official
-💼 LinkedIn: TaskSync
-
-This email was sent because you recently created a TaskSync account.
-If you didn't create this account, please contact our support team immediately.
-        ''',
-      };
-
-      // Request body
+      // Request body for EmailJS API
       Map<String, dynamic> body = {
         'service_id': _serviceId,
         'template_id': _templateId,
@@ -79,44 +54,34 @@ If you didn't create this account, please contact our support team immediately.
       );
 
       if (response.statusCode == 200) {
-        print('Welcome email sent successfully to $toEmail');
+        print('✅ Welcome email sent successfully to $toEmail');
         return true;
       } else {
-        print('Failed to send email: ${response.statusCode}');
+        print('❌ Failed to send email: ${response.statusCode}');
         print('Response: ${response.body}');
         return false;
       }
     } catch (e) {
-      print('Error sending welcome email: $e');
+      print('❌ Error sending welcome email: $e');
       return false;
     }
   }
 
-  /// Send password reset email
-  static Future<bool> sendPasswordResetEmail({
-    required String toEmail,
-    required String resetLink,
-    required String firstName,
-  }) async {
+  /// Test email service connection
+  static Future<bool> testEmailService() async {
     try {
-      const String url = 'https://api.emailjs.com/api/v1.0/email/send';
-
-      Map<String, dynamic> templateParams = {
-        'to_email': toEmail,
-        'to_name': firstName,
-        'first_name': firstName,
-        'reset_link': resetLink,
-        'subject': 'Reset Your TaskSync Password 🔐',
-        'message': '''
-Hello $firstName,
-
-We received a request to reset your password for your TaskSync account.
-
-If you requested this password reset, please click the link below to create a new password:
-
-🔗 Reset Password: $resetLink
-
-This link will expire in 1 hour for security reasons.
+      return await sendWelcomeEmail(
+        toEmail: 'test@example.com',
+        firstName: 'Test',
+        lastName: 'User',
+        phoneNumber: '+94123456789',
+      );
+    } catch (e) {
+      print('Email service test failed: $e');
+      return false;
+    }
+  }
+}
 
 If you didn't request this password reset:
 • You can safely ignore this email
