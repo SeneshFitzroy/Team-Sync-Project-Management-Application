@@ -269,12 +269,6 @@ class _CreateAccountState extends State<CreateAccount> {
         String fullName = '${_firstNameController.text.trim()} ${_lastNameController.text.trim()}';
         await credential.user!.updateDisplayName(fullName);
         
-        // Format phone number with country code
-        String formattedPhoneNumber = CountryCodeService.formatPhoneNumber(
-          _phoneController.text.trim(), 
-          _selectedCountry
-        );
-        
         // Store additional user data in Firestore
         await FirebaseFirestore.instance.collection('users').doc(credential.user!.uid).set({
           'uid': credential.user!.uid,
