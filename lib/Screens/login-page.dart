@@ -1,10 +1,8 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../theme/app_theme.dart';
-import '../widgets/ConsistentHeader.dart';
+import '../widgets/TickLogo.dart';
 import '../Screens/MainAppNavigator.dart';
 import 'create_account_new.dart';
 import 'ForgetPassword.dart';
@@ -16,57 +14,11 @@ class LoginPage extends StatefulWidget {
   State<LoginPage> createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
+class _LoginPageState extends State<LoginPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _obscureText = true;
   bool _isLoading = false;
-
-  late AnimationController _particleController;
-  late AnimationController _formController;
-  late Animation<double> _particleAnimation;
-  late Animation<double> _formAnimation;
-
-  @override
-  void initState() {
-    super.initState();
-    _initializeAnimations();
-    _startAnimations();
-  }
-
-  void _initializeAnimations() {
-    _particleController = AnimationController(
-      duration: const Duration(milliseconds: 4000),
-      vsync: this,
-    );
-
-    _formController = AnimationController(
-      duration: const Duration(milliseconds: 1000),
-      vsync: this,
-    );
-
-    _particleAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _particleController,
-      curve: Curves.linear,
-    ));
-
-    _formAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _formController,
-      curve: Curves.easeOut,
-    ));
-  }
-
-  void _startAnimations() async {
-    _particleController.repeat();
-    await Future.delayed(const Duration(milliseconds: 500));
-    _formController.forward();
-  }
 
   Future<void> _signIn() async {
     setState(() {
@@ -175,217 +127,57 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Color(0xFFF8FAFC),
-              Colors.white,
-              Color(0xFFF1F5F9),
-            ],
-            stops: [0.0, 0.5, 1.0],
-          ),
-        ),
-        child: SafeArea(
-          child: Stack(
+      backgroundColor: AppTheme.backgroundWhite,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Animated background particles (consistent design)
-              AnimatedBuilder(
-                animation: _particleAnimation,
-                builder: (context, child) {
-                  return CustomPaint(
-                    painter: LoginParticlePainter(_particleAnimation.value),
-                    size: MediaQuery.of(context).size,
-                  );
-                },
+              const Spacer(),
+              
+              // Logo
+              const Center(
+                child: TickLogo(size: 120),
               ),
               
-              // Main content
-              SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    const SizedBox(height: 40),
-                    
-                    // Consistent Header with blue-purple gradient ball tick
-                    const ConsistentHeader(
-                      title: 'Welcome Back',
-                      subtitle: 'Sign in to your account',
-                      logoSize: 100,
-                      showDecorative: false,
-                    ),
-                    
-                    const SizedBox(height: 64),
-                    
-                    // Animated Form
-                    FadeTransition(
-                      opacity: _formAnimation,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          // Email Field with modern styling
-                          _buildModernTextField(
-                            controller: _emailController,
-                            label: 'Email',
-                            keyboardType: TextInputType.emailAddress,
-                            prefixIcon: Icons.email_outlined,
-                          ),
-                          
-                          const SizedBox(height: 20),
-                          
-                          // Password Field with modern styling
-                          _buildModernTextField(
-                            controller: _passwordController,
-                            label: 'Password',
-                            isPassword: true,
-                            prefixIcon: Icons.lock_outline,
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                _obscureText ? Icons.visibility_off : Icons.visibility,
-                                color: AppTheme.textSecondary,
-                              ),
-                              onPressed: () {
-                                setState(() {
-                                  _obscureText = !_obscureText;
-                                });
-                              },
-                            ),
-                          ),
-                          
-                          const SizedBox(height: 16),
-                          
-                          // Forgot Password Link
-                          Align(
-                            alignment: Alignment.centerRight,
-                            child: TextButton(
-                              onPressed: _navigateToForgotPassword,
-                              style: TextButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
-                              ),
-                              child: ShaderMask(
-                                shaderCallback: (bounds) {
-                                  return const LinearGradient(
-                                    colors: [
-                                      AppTheme.primaryBlue,
-                                      Color(0xFF764BA2),
-                                    ],
-                                  ).createShader(bounds);
-                                },
-                                child: Text(
-                                  'Forgot Password?',
-                                  style: AppTheme.bodyMedium.copyWith(
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          
-                          const SizedBox(height: 32),
-                          
-                          // Sign In Button with consistent gradient design
-                          _buildModernButton(
-                            text: 'Sign In',
-                            onPressed: _isLoading ? null : _signIn,
-                            isLoading: _isLoading,
-                          ),
-                          
-                          const SizedBox(height: 24),
-                          
-                          // Divider with text
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Container(
-                                  height: 1,
-                                  decoration: BoxDecoration(
-                                    gradient: LinearGradient(
-                                      colors: [
-                                        Colors.transparent,
-                                        AppTheme.textSecondary.withOpacity(0.3),
-                                        Colors.transparent,
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 16),
-                                child: Text(
-                                  'or',
-                                  style: AppTheme.bodySmall.copyWith(
-                                    color: AppTheme.textSecondary,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                child: Container(
-                                  height: 1,
-                                  decoration: BoxDecoration(
-                                    gradient: LinearGradient(
-                                      colors: [
-                                        Colors.transparent,
-                                        AppTheme.textSecondary.withOpacity(0.3),
-                                        Colors.transparent,
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          
-                          const SizedBox(height: 24),
-                          
-                          // Create Account Button
-                          _buildOutlinedButton(
-                            text: 'Create New Account',
-                            onPressed: () {
-                              HapticFeedback.selectionClick();
-                              Navigator.push(
-                                context,
-                                PageRouteBuilder(
-                                  pageBuilder: (context, animation, secondaryAnimation) =>
-                                      const CreateAccount(),
-                                  transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                                    return FadeTransition(
-                                      opacity: animation,
-                                      child: SlideTransition(
-                                        position: Tween<Offset>(
-                                          begin: const Offset(0.3, 0),
-                                          end: Offset.zero,
-                                        ).animate(CurvedAnimation(
-                                          parent: animation,
-                                          curve: Curves.easeOutCubic,
-                                        )),
-                                        child: child,
-                                      ),
-                                    );
-                                  },
-                                  transitionDuration: const Duration(milliseconds: 600),
-                                ),
-                              );
-                            },
-                          ),
-                          
-                          const SizedBox(height: 40),
-                        ],
-                      ),
-                    ),
-                  ],
+              const SizedBox(height: 48),
+              
+              // Welcome Text
+              Text(
+                'Welcome Back',
+                style: AppTheme.headingLarge.copyWith(
+                  color: AppTheme.textPrimary,
                 ),
+                textAlign: TextAlign.center,
               ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+              
+              const SizedBox(height: 8),
+              
+              Text(
+                'Sign in to your account',
+                style: AppTheme.bodyLarge.copyWith(
+                  color: AppTheme.textSecondary,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              
+              const SizedBox(height: 48),
+              
+              // Email Field
+              TextFormField(
+                controller: _emailController,
+                keyboardType: TextInputType.emailAddress,
+                style: AppTheme.bodyLarge.copyWith(color: AppTheme.textPrimary),
+                decoration: InputDecoration(
+                  labelText: 'Email',
+                  labelStyle: AppTheme.bodyMedium.copyWith(color: AppTheme.textSecondary),
+                  filled: true,
+                  fillColor: AppTheme.backgroundLight,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: const BorderSide(color: AppTheme.primaryBlue, width: 2),
