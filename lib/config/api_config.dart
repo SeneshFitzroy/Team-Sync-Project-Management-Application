@@ -5,7 +5,7 @@ class ApiConfig {
   
   // EmailJS Configuration - YOUR ACTUAL CREDENTIALS  
   static const String emailJsServiceId = 'service_xtlfp5m'; // Gmail service from your EmailJS
-  static const String emailJsTemplateId = 'template_welcome'; // Welcome template only
+  static const String emailJsTemplateId = 'template_7vgqa7h'; // YOUR ACTUAL TEMPLATE ID
   static const String emailJsUserId = 'dz8xtM4ALRHVg9HBj'; // From EmailJS account settings
   static const String emailJsAccessToken = 'C_XRQslKP7-eO_LUr5MHN'; // From EmailJS account settings
   

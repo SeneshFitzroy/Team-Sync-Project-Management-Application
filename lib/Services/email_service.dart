@@ -24,16 +24,15 @@ class EmailService {
       DateTime now = DateTime.now();
       String formattedDate = '${now.day}/${now.month}/${now.year}';
 
-      // Email template parameters for EmailJS template_welcome
+      // Email template parameters for EmailJS template_7vgqa7h
       Map<String, dynamic> templateParams = {
+        'email': toEmail, // This matches {{email}} in your template
         'user_name': '$firstName $lastName',
-        'user_email': toEmail,
         'first_name': firstName,
         'last_name': lastName,
         'phone_number': phoneNumber,
         'registration_date': formattedDate,
-        'to_email': toEmail, // EmailJS default field
-        'from_name': 'TaskSync Team', // EmailJS default field
+        'to_email': toEmail, // Additional mapping for safety
       };
 
       // Request body for EmailJS API
