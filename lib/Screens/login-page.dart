@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../theme/app_theme.dart';
 import '../widgets/TickLogo.dart';
 import '../Screens/MainAppNavigator.dart';
-import 'create account.dart';
+import 'create_account_new.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});

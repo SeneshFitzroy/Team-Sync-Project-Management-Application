@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'create account.dart';
+import 'create_account_new.dart';
 import 'login-page.dart';
 import '../widgets/TickLogo.dart';
 import '../theme/app_theme.dart';
