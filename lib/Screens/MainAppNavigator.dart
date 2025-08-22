@@ -23,7 +23,6 @@ class _MainAppNavigatorState extends State<MainAppNavigator> {
     const TaskManager(),
     const Chat(),
     const Calendar(),
-    const Profile(),
   ];
 
   @override
