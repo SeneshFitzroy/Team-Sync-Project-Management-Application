@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -19,7 +20,7 @@ class _SplashScreenState extends State<SplashScreen>
   late AnimationController _textController;
   late AnimationController _progressController;
   late AnimationController _particleController;
-  
+
   late Animation<double> _logoScaleAnimation;
   late Animation<double> _logoRotateAnimation;
   late Animation<double> _logoGlowAnimation;
@@ -27,7 +28,6 @@ class _SplashScreenState extends State<SplashScreen>
   late Animation<Offset> _textSlideAnimation;
   late Animation<double> _progressAnimation;
   late Animation<double> _particleAnimation;
-  late Animation<double> _backgroundAnimation;
 
   @override
   void initState() {
@@ -37,24 +37,43 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   void _initializeAnimations() {
-    // Main controller for overall timing
+    // Main controller for overall sequence
     _mainController = AnimationController(
+      duration: const Duration(milliseconds: 3000),
+      vsync: this,
+    );
+
+    // Logo animation controller
+    _logoController = AnimationController(
+      duration: const Duration(milliseconds: 1500),
+      vsync: this,
+    );
+
+    // Text animation controller
+    _textController = AnimationController(
+      duration: const Duration(milliseconds: 1200),
+      vsync: this,
+    );
+
+    // Progress animation controller
+    _progressController = AnimationController(
+      duration: const Duration(milliseconds: 2000),
+      vsync: this,
+    );
+
+    // Particle animation controller
+    _particleController = AnimationController(
       duration: const Duration(milliseconds: 4000),
       vsync: this,
     );
 
     // Logo animations
-    _logoController = AnimationController(
-      duration: const Duration(milliseconds: 2000),
-      vsync: this,
-    );
-
     _logoScaleAnimation = Tween<double>(
-      begin: 0.0,
+      begin: 0.5,
       end: 1.0,
     ).animate(CurvedAnimation(
       parent: _logoController,
-      curve: const Interval(0.0, 0.6, curve: Curves.elasticOut),
+      curve: Curves.elasticOut,
     ));
 
     _logoRotateAnimation = Tween<double>(
@@ -62,7 +81,7 @@ class _SplashScreenState extends State<SplashScreen>
       end: 1.0,
     ).animate(CurvedAnimation(
       parent: _logoController,
-      curve: const Interval(0.3, 1.0, curve: Curves.easeInOut),
+      curve: Curves.easeInOut,
     ));
 
     _logoGlowAnimation = Tween<double>(
@@ -70,37 +89,27 @@ class _SplashScreenState extends State<SplashScreen>
       end: 1.0,
     ).animate(CurvedAnimation(
       parent: _logoController,
-      curve: Curves.easeInOut,
+      curve: const Interval(0.5, 1.0, curve: Curves.easeOut),
     ));
 
     // Text animations
-    _textController = AnimationController(
-      duration: const Duration(milliseconds: 1500),
-      vsync: this,
-    );
-
     _textFadeAnimation = Tween<double>(
       begin: 0.0,
       end: 1.0,
     ).animate(CurvedAnimation(
       parent: _textController,
-      curve: const Interval(0.0, 0.8, curve: Curves.easeOut),
+      curve: Curves.easeOut,
     ));
 
     _textSlideAnimation = Tween<Offset>(
-      begin: const Offset(0, 0.8),
+      begin: const Offset(0, 0.5),
       end: Offset.zero,
     ).animate(CurvedAnimation(
       parent: _textController,
-      curve: const Interval(0.0, 0.8, curve: Curves.easeOutBack),
+      curve: Curves.easeOut,
     ));
 
     // Progress animation
-    _progressController = AnimationController(
-      duration: const Duration(milliseconds: 2500),
-      vsync: this,
-    );
-
     _progressAnimation = Tween<double>(
       begin: 0.0,
       end: 1.0,
@@ -109,77 +118,63 @@ class _SplashScreenState extends State<SplashScreen>
       curve: Curves.easeInOut,
     ));
 
-    // Particle effect
-    _particleController = AnimationController(
-      duration: const Duration(milliseconds: 3000),
-      vsync: this,
-    );
-
+    // Particle animation
     _particleAnimation = Tween<double>(
       begin: 0.0,
       end: 1.0,
     ).animate(CurvedAnimation(
       parent: _particleController,
-      curve: Curves.easeInOut,
-    ));
-
-    // Background animation
-    _backgroundAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _mainController,
-      curve: Curves.easeInOut,
+      curve: Curves.linear,
     ));
   }
 
   void _startAnimationSequence() async {
     // Add haptic feedback
     HapticFeedback.lightImpact();
-    
-    // Start background animation
+
+    // Start particle animation (continuous)
+    _particleController.repeat();
+
+    // Start main background animation
     _mainController.forward();
-    
-    // Start logo animation
+
+    // Delay then start logo animation
     await Future.delayed(const Duration(milliseconds: 300));
     _logoController.forward();
-    
-    // Start text animation
-    await Future.delayed(const Duration(milliseconds: 800));
+    HapticFeedback.selectionClick();
+
+    // Delay then start text animation
+    await Future.delayed(const Duration(milliseconds: 500));
     _textController.forward();
-    
-    // Start progress animation
-    await Future.delayed(const Duration(milliseconds: 400));
+
+    // Delay then start progress animation
+    await Future.delayed(const Duration(milliseconds: 800));
     _progressController.forward();
-    
-    // Start particle animation
-    _particleController.repeat();
-    
-    // Wait for completion, then navigate
-    await Future.delayed(const Duration(milliseconds: 3500));
-    
+
+    // Wait for all animations to complete, then navigate
+    await Future.delayed(const Duration(milliseconds: 2500));
     if (mounted) {
-      HapticFeedback.mediumImpact();
-      Navigator.pushReplacement(
-        context,
+      HapticFeedback.heavyImpact();
+      Navigator.of(context).pushReplacement(
         PageRouteBuilder(
-          pageBuilder: (context, animation, secondaryAnimation) => const WelcomePage1(),
-          transitionDuration: const Duration(milliseconds: 800),
+          pageBuilder: (context, animation, secondaryAnimation) =>
+              const WelcomePage1(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return SlideTransition(
-              position: Tween<Offset>(
-                begin: const Offset(1.0, 0.0),
-                end: Offset.zero,
-              ).animate(CurvedAnimation(
-                parent: animation,
-                curve: Curves.easeOutCubic,
-              )),
-              child: FadeTransition(
-                opacity: animation,
+            return FadeTransition(
+              opacity: animation,
+              child: SlideTransition(
+                position: Tween<Offset>(
+                  begin: const Offset(0.3, 0),
+                  end: Offset.zero,
+                ).animate(CurvedAnimation(
+                  parent: animation,
+                  curve: Curves.easeOutCubic,
+                )),
                 child: child,
               ),
             );
           },
+          transitionDuration: const Duration(milliseconds: 800),
         ),
       );
     }
@@ -199,21 +194,16 @@ class _SplashScreenState extends State<SplashScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
-          gradient: AnimatedBuilder(
-            animation: _backgroundAnimation,
-            builder: (context, child) {
-              return LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Color.lerp(const Color(0xFFF8FAFC), const Color(0xFF667EEA), _backgroundAnimation.value * 0.1) ?? const Color(0xFFF8FAFC),
-                  Color.lerp(Colors.white, const Color(0xFF764BA2), _backgroundAnimation.value * 0.05) ?? Colors.white,
-                  Color.lerp(const Color(0xFFF1F5F9), const Color(0xFF667EEA), _backgroundAnimation.value * 0.08) ?? const Color(0xFFF1F5F9),
-                ],
-                stops: const [0.0, 0.5, 1.0],
-              );
-            },
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Color(0xFFF8FAFC),
+              Colors.white,
+              Color(0xFFF1F5F9),
+            ],
+            stops: [0.0, 0.5, 1.0],
           ),
         ),
         child: SafeArea(
@@ -285,10 +275,11 @@ class _SplashScreenState extends State<SplashScreen>
                                   ),
                                 ],
                               ),
-                              child: TickLogoLarge(
+                              child: TickLogo(
                                 size: 80,
-                                tickColor: Colors.white,
+                                color: Colors.white,
                                 backgroundColor: Colors.transparent,
+                                showBackground: false,
                               ),
                             ),
                           ),
@@ -522,194 +513,6 @@ class _SplashScreenState extends State<SplashScreen>
       ),
     );
   }
-                            ),
-                            const SizedBox(width: 12),
-                            Text(
-                              'TaskSync',
-                              style: AppTheme.headingLarge.copyWith(
-                                fontSize: 36,
-                                fontWeight: FontWeight.bold,
-                                color: AppTheme.textPrimary,
-                                letterSpacing: -0.5,
-                              ),
-                            ),
-                          ],
-                        ),
-                        
-                        const SizedBox(height: 12),
-                        
-                        // Subtitle with decorative lines
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            _buildDecorativeLine(),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                              child: Text(
-                                'PROJECT MANAGEMENT',
-                                style: AppTheme.bodySmall.copyWith(
-                                  fontSize: 13,
-                                  letterSpacing: 2.0,
-                                  color: AppTheme.textSecondary,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                            _buildDecorativeLine(),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            ),
-            
-            const Spacer(flex: 2),
-            
-            // Animated Progress Section
-            AnimatedBuilder(
-              animation: _progressController,
-              builder: (context, child) {
-                return Column(
-                  children: [
-                    // Loading text
-                    FadeTransition(
-                      opacity: _textFadeAnimation,
-                      child: Text(
-                        'Loading...',
-                        style: AppTheme.bodyMedium.copyWith(
-                          color: AppTheme.textSecondary,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ),
-                    
-                    const SizedBox(height: 24),
-                    
-                    // Animated progress bar
-                    Container(
-                      width: 200,
-                      height: 4,
-                      decoration: BoxDecoration(
-                        color: AppTheme.backgroundLight,
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                      child: Stack(
-                        children: [
-                          Container(
-                            width: 200 * _progressAnimation.value,
-                            height: 4,
-                            decoration: BoxDecoration(
-                              gradient: const LinearGradient(
-                                colors: [
-                                  AppTheme.primaryBlue,
-                                  AppTheme.primaryLight,
-                                ],
-                              ),
-                              borderRadius: BorderRadius.circular(2),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: AppTheme.primaryBlue.withOpacity(0.4),
-                                  blurRadius: 8,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    
-                    const SizedBox(height: 16),
-                    
-                    // Percentage text
-                    Text(
-                      '${(_progressAnimation.value * 100).toInt()}%',
-                      style: AppTheme.bodyMedium.copyWith(
-                        color: AppTheme.primaryBlue,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                );
-              },
-            ),
-            
-            const Spacer(),
-            
-            // Footer
-            Padding(
-              padding: const EdgeInsets.only(bottom: 40),
-              child: FadeTransition(
-                opacity: _textFadeAnimation,
-                child: Column(
-                  children: [
-                    Text(
-                      'Streamline Your Workflow',
-                      style: AppTheme.bodySmall.copyWith(
-                        color: AppTheme.textLight,
-                        fontSize: 14,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        _buildFooterDot(),
-                        const SizedBox(width: 8),
-                        _buildFooterDot(),
-                        const SizedBox(width: 8),
-                        _buildFooterDot(),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDecorativeLine() {
-    return AnimatedBuilder(
-      animation: _progressController,
-      builder: (context, child) {
-        return Container(
-          width: 40 * _progressAnimation.value,
-          height: 2,
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [
-                AppTheme.primaryBlue,
-                AppTheme.primaryLight,
-              ],
-            ),
-            borderRadius: BorderRadius.circular(1),
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildFooterDot() {
-    return AnimatedBuilder(
-      animation: _progressController,
-      builder: (context, child) {
-        return Container(
-          width: 6,
-          height: 6,
-          decoration: BoxDecoration(
-            color: AppTheme.primaryBlue.withOpacity(
-              0.3 + (0.7 * _progressAnimation.value),
-            ),
-            shape: BoxShape.circle,
-          ),
-        );
-      },
-    );
   
   // Helper method to build decorative lines
   Widget _buildDecorativeLine() {
