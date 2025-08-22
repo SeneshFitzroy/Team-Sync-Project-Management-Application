@@ -126,12 +126,28 @@ class _CreateAccountState extends State<CreateAccount> {
            password.contains(RegExp(r'[@$!%*?&]'));
   }
 
-  String? _validateName(String? value) {
+  String? _validateFirstName(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Full name is required';
+      return 'First name is required';
     }
     if (value.trim().length < 2) {
-      return 'Name must be at least 2 characters';
+      return 'First name must be at least 2 characters';
+    }
+    if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(value.trim())) {
+      return 'First name can only contain letters';
+    }
+    return null;
+  }
+
+  String? _validateLastName(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Last name is required';
+    }
+    if (value.trim().length < 2) {
+      return 'Last name must be at least 2 characters';
+    }
+    if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(value.trim())) {
+      return 'Last name can only contain letters';
     }
     return null;
   }
@@ -144,44 +160,6 @@ class _CreateAccountState extends State<CreateAccount> {
       return 'Please enter a valid email';
     }
     return null;
-  }
-
-  void _calculatePasswordStrength(String password) {
-    int criteria = 0;
-    
-    if (password.length >= 8) criteria++;
-    if (RegExp(r'[A-Z]').hasMatch(password)) criteria++;
-    if (RegExp(r'[a-z]').hasMatch(password)) criteria++;
-    if (RegExp(r'[0-9]').hasMatch(password)) criteria++;
-    if (RegExp(r'[@$!%*?&]').hasMatch(password)) criteria++;
-    
-    setState(() {
-      _passwordStrength = criteria / 5.0;
-      
-      switch (criteria) {
-        case 0:
-        case 1:
-          _passwordStrengthText = 'Very Weak';
-          _passwordStrengthColor = AppTheme.error;
-          break;
-        case 2:
-          _passwordStrengthText = 'Weak';
-          _passwordStrengthColor = Colors.orange;
-          break;
-        case 3:
-          _passwordStrengthText = 'Fair';
-          _passwordStrengthColor = Colors.yellow.shade700;
-          break;
-        case 4:
-          _passwordStrengthText = 'Good';
-          _passwordStrengthColor = Colors.lightGreen;
-          break;
-        case 5:
-          _passwordStrengthText = 'Strong';
-          _passwordStrengthColor = AppTheme.success;
-          break;
-      }
-    });
   }
 
   String? _validatePassword(String? value) {
@@ -236,6 +214,18 @@ class _CreateAccountState extends State<CreateAccount> {
   Future<void> _handleCreateAccount() async {
     if (!_formKey.currentState!.validate()) return;
 
+    // Additional check for password strength
+    if (!_isPasswordValid()) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Password does not meet all security requirements'),
+          backgroundColor: AppTheme.error,
+          duration: Duration(seconds: 3),
+        ),
+      );
+      return;
+    }
+
     setState(() {
       _isLoading = true;
     });
@@ -249,34 +239,50 @@ class _CreateAccountState extends State<CreateAccount> {
 
       if (credential.user != null) {
         // Update user display name
-        await credential.user!.updateDisplayName(_nameController.text.trim());
+        String fullName = '${_firstNameController.text.trim()} ${_lastNameController.text.trim()}';
+        await credential.user!.updateDisplayName(fullName);
         
         // Store additional user data in Firestore
         await FirebaseFirestore.instance.collection('users').doc(credential.user!.uid).set({
           'uid': credential.user!.uid,
-          'name': _nameController.text.trim(),
+          'firstName': _firstNameController.text.trim(),
+          'lastName': _lastNameController.text.trim(),
+          'fullName': fullName,
           'email': _emailController.text.trim(),
           'createdAt': FieldValue.serverTimestamp(),
           'lastLoginAt': FieldValue.serverTimestamp(),
           'isActive': true,
           'role': 'user',
           'profileCompleted': true,
+          'emailVerified': false,
         });
 
+        // Send welcome email verification
+        await credential.user!.sendEmailVerification();
+
         if (mounted) {
-          // Navigate directly to main app since user is already authenticated
+          // Show success message
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Welcome ${_firstNameController.text.trim()}! Account created successfully.'),
+                  SizedBox(height: 4),
+                  Text('A verification email has been sent to ${_emailController.text.trim()}'),
+                ],
+              ),
+              backgroundColor: AppTheme.success,
+              duration: const Duration(seconds: 5),
+            ),
+          );
+
+          // Navigate to main app
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
               builder: (context) => const MainAppNavigator(),
-            ),
-          );
-          
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Welcome ${_nameController.text.trim()}! Account created successfully.'),
-              backgroundColor: AppTheme.success,
-              duration: const Duration(seconds: 3),
             ),
           );
         }
@@ -289,7 +295,7 @@ class _CreateAccountState extends State<CreateAccount> {
           message = 'The password provided is too weak.';
           break;
         case 'email-already-in-use':
-          message = 'An account already exists with this email.';
+          message = 'An account already exists with this email. Please sign in instead.';
           break;
         case 'invalid-email':
           message = 'The email address is not valid.';
@@ -373,13 +379,26 @@ class _CreateAccountState extends State<CreateAccount> {
                 
                 const SizedBox(height: 32),
                 
-                // Name field
+                // First Name field
                 TextFormField(
-                  controller: _nameController,
-                  validator: _validateName,
+                  controller: _firstNameController,
+                  validator: _validateFirstName,
                   style: AppTheme.bodyLarge,
                   decoration: InputDecoration(
-                    labelText: 'Full Name',
+                    labelText: 'First Name',
+                    prefixIcon: Icon(Icons.person_outlined, color: AppTheme.textSecondary),
+                  ),
+                ),
+                
+                const SizedBox(height: 20),
+                
+                // Last Name field
+                TextFormField(
+                  controller: _lastNameController,
+                  validator: _validateLastName,
+                  style: AppTheme.bodyLarge,
+                  decoration: InputDecoration(
+                    labelText: 'Last Name',
                     prefixIcon: Icon(Icons.person_outlined, color: AppTheme.textSecondary),
                   ),
                 ),
@@ -408,7 +427,7 @@ class _CreateAccountState extends State<CreateAccount> {
                   style: AppTheme.bodyLarge,
                   onChanged: (value) {
                     // Trigger real-time validation and password strength calculation
-                    _calculatePasswordStrength(value);
+                    _updatePasswordStrength();
                     _formKey.currentState?.validate();
                   },
                   decoration: InputDecoration(
@@ -452,6 +471,33 @@ class _CreateAccountState extends State<CreateAccount> {
                         ),
                       ),
                     ],
+                  ),
+                  const SizedBox(height: 8),
+                  // Password criteria checklist
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: _passwordCriteria.map((criterion) {
+                      bool isMet = criterion.startsWith('✓');
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 2),
+                        child: Row(
+                          children: [
+                            Icon(
+                              isMet ? Icons.check_circle : Icons.radio_button_unchecked,
+                              size: 16,
+                              color: isMet ? AppTheme.success : AppTheme.textSecondary,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              criterion.substring(2), // Remove ✓ or ✗
+                              style: AppTheme.bodySmall.copyWith(
+                                color: isMet ? AppTheme.success : AppTheme.textSecondary,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }).toList(),
                   ),
                 ],
                 
