@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../theme/app_theme.dart';
 import '../widgets/TickLogo.dart';
 import '../Screens/MainAppNavigator.dart';
+import '../Screens/create account.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -271,12 +272,9 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   TextButton(
                     onPressed: () {
-                      // TODO: Implement create account functionality
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Create account functionality will be available soon'),
-                          backgroundColor: AppTheme.primaryBlue,
-                        ),
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => CreateAccount()),
                       );
                     },
                     child: Text(
