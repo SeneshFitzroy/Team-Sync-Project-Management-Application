@@ -47,9 +47,14 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Password reset email sent! Check your inbox for instructions.'),
+            content: Text(
+              '✅ Password reset email sent successfully!\n\n'
+              '📧 Check your email inbox for reset instructions\n'
+              '🔗 Click the link in the email to reset your password\n'
+              '⏰ The link will expire in 1 hour for security',
+            ),
             backgroundColor: AppTheme.success,
-            duration: const Duration(seconds: 4),
+            duration: const Duration(seconds: 6),
           ),
         );
         
