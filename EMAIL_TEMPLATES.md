@@ -10,14 +10,9 @@
 
 ### Template Content:
 
-**Subject Option 1 (Recommended):**
+**Subject:**
 ```
-🎉 Welcome to TaskSync - Let's Boost Your Productivity!
-```
-
-**Subject Option 2 (Alternative):**
-```
-Your TaskSync Account is Ready - Start Managing Projects Now! 🚀
+Welcome to TaskSync - Your Account is Ready! 🎉
 ```
 
 **Email Body (HTML):**
@@ -133,14 +128,9 @@ Your TaskSync Account is Ready - Start Managing Projects Now! 🚀
 
 ### Template Content:
 
-**Subject Option 1 (Recommended):**
+**Subject:**
 ```
-🔐 Reset Your TaskSync Password - Secure & Easy
-```
-
-**Subject Option 2 (Alternative):**
-```
-TaskSync Password Reset Request - Action Required �
+Reset Your TaskSync Password 🔐
 ```
 
 **Email Body (HTML):**

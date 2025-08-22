@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../theme/app_theme.dart';
 import '../widgets/TickLogo.dart';
-import '../services/email_service.dart';
-import '../config/api_config.dart';
 
 class ForgetPasswordPage extends StatefulWidget {
   const ForgetPasswordPage({super.key});
@@ -41,42 +39,17 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
     });
 
     try {
-      // Send Firebase password reset email
+      // Send Firebase password reset email (only)
       await FirebaseAuth.instance.sendPasswordResetEmail(
         email: _emailController.text.trim(),
       );
-
-      // Send custom email notification via EmailJS
-      bool customEmailSent = await EmailService.sendPasswordResetEmail(
-        toEmail: _emailController.text.trim(),
-        resetLink: '${ApiConfig.appDomain}/reset-password',
-        firstName: 'User', // Could be retrieved from Firestore if needed
-      );
       
       if (mounted) {
-        List<String> messages = [
-          'Password reset instructions sent!',
-          '📧 Check your email for Firebase reset link',
-        ];
-        
-        if (customEmailSent) {
-          messages.add('✅ Additional reset instructions sent');
-        } else {
-          messages.add('⚠️ Custom email failed, but Firebase email sent');
-        }
-
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: messages.map((msg) => Padding(
-                padding: const EdgeInsets.symmetric(vertical: 2),
-                child: Text(msg, style: TextStyle(fontSize: 13)),
-              )).toList(),
-            ),
+            content: Text('Password reset email sent! Check your inbox for instructions.'),
             backgroundColor: AppTheme.success,
-            duration: const Duration(seconds: 6),
+            duration: const Duration(seconds: 4),
           ),
         );
         
