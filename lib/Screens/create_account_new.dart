@@ -296,20 +296,32 @@ class _CreateAccountState extends State<CreateAccount> {
         // Send Firebase email verification
         await credential.user!.sendEmailVerification();
 
-        // Send WhatsApp welcome message (fire and forget)
-        WhatsAppService.sendWelcomeMessage(
-          phoneNumber: formattedPhoneNumber,
-          firstName: _firstNameController.text.trim(),
-          lastName: _lastNameController.text.trim(),
-        );
+        // Send WhatsApp welcome message (await to ensure it completes)
+        bool whatsappSent = false;
+        try {
+          whatsappSent = await WhatsAppService.sendWelcomeMessage(
+            phoneNumber: formattedPhoneNumber,
+            firstName: _firstNameController.text.trim(),
+            lastName: _lastNameController.text.trim(),
+          );
+          print('📱 WhatsApp message ${whatsappSent ? "sent" : "failed"}');
+        } catch (e) {
+          print('📱 WhatsApp error: $e');
+        }
 
-        // Send Email welcome message (fire and forget)
-        EmailService.sendWelcomeEmail(
-          toEmail: _emailController.text.trim(),
-          firstName: _firstNameController.text.trim(),
-          lastName: _lastNameController.text.trim(),
-          phoneNumber: formattedPhoneNumber,
-        );
+        // Send Email welcome message (await to ensure it completes)
+        bool emailSent = false;
+        try {
+          emailSent = await EmailService.sendWelcomeEmail(
+            toEmail: _emailController.text.trim(),
+            firstName: _firstNameController.text.trim(),
+            lastName: _lastNameController.text.trim(),
+            phoneNumber: formattedPhoneNumber,
+          );
+          print('📧 Welcome email ${emailSent ? "sent successfully" : "failed"} to ${_emailController.text.trim()}');
+        } catch (e) {
+          print('📧 Email service error: $e');
+        }
 
         if (mounted) {
           // Navigate directly to dashboard without any persistent messages
