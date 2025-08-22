@@ -114,6 +114,16 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+  // Navigate to Forgot Password page
+  void _navigateToForgotPassword() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const ForgetPasswordPage(),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
