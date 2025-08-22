@@ -17,6 +17,9 @@ class EmailService {
     required String phoneNumber,
   }) async {
     try {
+      print('📧 Starting email send process...');
+      print('📧 EmailJS Config: Service=$_serviceId, Template=$_templateId');
+      
       // EmailJS API endpoint
       const String url = 'https://api.emailjs.com/api/v1.0/email/send';
 
@@ -32,8 +35,9 @@ class EmailService {
         'last_name': lastName,
         'phone_number': phoneNumber,
         'registration_date': formattedDate,
-        'to_email': toEmail, // Additional mapping for safety
       };
+
+      print('📧 Template params: $templateParams');
 
       // Request body for EmailJS API
       Map<String, dynamic> body = {
@@ -44,6 +48,8 @@ class EmailService {
         'template_params': templateParams,
       };
 
+      print('📧 Sending email to: $toEmail');
+
       // Send HTTP POST request
       final response = await http.post(
         Uri.parse(url),
@@ -53,16 +59,19 @@ class EmailService {
         body: jsonEncode(body),
       );
 
+      print('📧 EmailJS Response: ${response.statusCode}');
+      
       if (response.statusCode == 200) {
         print('✅ Welcome email sent successfully to $toEmail');
         return true;
       } else {
         print('❌ Failed to send email: ${response.statusCode}');
-        print('Response: ${response.body}');
+        print('❌ Response body: ${response.body}');
         return false;
       }
     } catch (e) {
       print('❌ Error sending welcome email: $e');
+      print('❌ Stack trace: ${StackTrace.current}');
       return false;
     }
   }
