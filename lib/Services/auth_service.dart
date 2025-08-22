@@ -73,8 +73,22 @@ class AuthService {
   // Sign out
   static Future<void> signOut() async {
     try {
+      // Get current user info for logging
+      final user = _auth.currentUser;
+      print('🚪 Signing out user: ${user?.email ?? "Unknown"}');
+      
+      // Sign out from Firebase
       await _auth.signOut();
+      
+      // Verify sign out was successful
+      if (_auth.currentUser == null) {
+        print('✅ User successfully signed out');
+      } else {
+        print('⚠️ Warning: User may not have signed out completely');
+      }
+      
     } catch (e) {
+      print('❌ Error during sign out: $e');
       throw Exception('Error signing out: $e');
     }
   }
