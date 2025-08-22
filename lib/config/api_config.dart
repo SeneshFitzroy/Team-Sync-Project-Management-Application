@@ -1,7 +1,7 @@
 class ApiConfig {
   // GreenAPI WhatsApp Configuration - YOUR ACTUAL CREDENTIALS
   static const String greenApiInstanceId = '7105307387';
-  static const String greenApiAccessToken = 'YOUR_API_TOKEN_FROM_GREENAPI'; // Get this from your GreenAPI dashboard
+  static const String greenApiAccessToken = '29158cf0aff0400f997dbe5fbe9d604e551b120d46814dcaa4';
   
   // EmailJS Configuration - YOUR ACTUAL CREDENTIALS  
   static const String emailJsServiceId = 'YOUR_SERVICE_ID'; // From EmailJS dashboard
