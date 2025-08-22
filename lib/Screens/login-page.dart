@@ -227,12 +227,7 @@ class _LoginPageState extends State<LoginPage> {
               Align(
                 alignment: Alignment.centerRight,
                 child: TextButton(
-                  onPressed: () {
-                    // TODO: Navigate to forgot password page when available
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Forgot password feature coming soon')),
-                    );
-                  },
+                  onPressed: _navigateToForgotPassword,
                   child: Text(
                     'Forgot Password?',
                     style: AppTheme.bodyMedium.copyWith(color: AppTheme.primaryBlue),
