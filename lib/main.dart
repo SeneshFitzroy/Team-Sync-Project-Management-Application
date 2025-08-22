@@ -4,6 +4,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'theme/app_theme.dart';
 import 'Screens/splash_screen.dart';
+import 'Screens/login-page.dart';
+import 'Screens/ResetPasswordPage.dart';
 
 void main() async {
   // Ensure Flutter is initialized
@@ -35,6 +37,14 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       home: const SplashScreen(),
+      routes: {
+        '/login': (context) => const LoginPage(),
+        '/reset-password': (context) {
+          final args = ModalRoute.of(context)!.settings.arguments as Map<String, String>?;
+          final actionCode = args?['actionCode'] ?? '';
+          return ResetPasswordPage(actionCode: actionCode);
+        },
+      },
     );
   }
 }

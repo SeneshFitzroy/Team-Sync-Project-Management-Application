@@ -212,7 +212,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.backgroundPrimary,
+      backgroundColor: AppTheme.backgroundWhite,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -222,7 +222,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
         ),
         title: Text(
           'Reset Password',
-          style: AppTheme.headlineSmall.copyWith(
+          style: AppTheme.headingMedium.copyWith(
             color: AppTheme.textPrimary,
             fontWeight: FontWeight.w600,
           ),
@@ -246,7 +246,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                 // Title
                 Text(
                   'Set New Password',
-                  style: AppTheme.headlineLarge.copyWith(
+                  style: AppTheme.headingLarge.copyWith(
                     color: AppTheme.textPrimary,
                     fontWeight: FontWeight.bold,
                   ),
@@ -354,7 +354,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                   child: ElevatedButton(
                     onPressed: _isLoading ? null : _resetPassword,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppTheme.primary,
+                      backgroundColor: AppTheme.primaryBlue,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -372,7 +372,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                           )
                         : Text(
                             'Update Password',
-                            style: AppTheme.titleMedium.copyWith(
+                            style: AppTheme.bodyLarge.copyWith(
                               color: Colors.white,
                               fontWeight: FontWeight.w600,
                             ),
@@ -386,10 +386,10 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: AppTheme.backgroundSecondary,
+                    color: AppTheme.backgroundLight,
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color: AppTheme.primary.withOpacity(0.2),
+                      color: AppTheme.primaryBlue.withOpacity(0.2),
                     ),
                   ),
                   child: Column(
@@ -399,14 +399,14 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                         children: [
                           Icon(
                             Icons.security,
-                            color: AppTheme.primary,
+                            color: AppTheme.primaryBlue,
                             size: 20,
                           ),
                           const SizedBox(width: 8),
                           Text(
                             'Security Tips',
-                            style: AppTheme.titleSmall.copyWith(
-                              color: AppTheme.primary,
+                            style: AppTheme.bodyMedium.copyWith(
+                              color: AppTheme.primaryBlue,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
