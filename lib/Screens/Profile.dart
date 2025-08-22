@@ -326,9 +326,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       showDialog(
                         context: context,
                         barrierDismissible: false,
-                        builder: (context) => const Center(
-                          child: CircularProgressIndicator(
-                            color: AppTheme.primaryBlue,
+                        builder: (context) => const AlertDialog(
+                          content: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              CircularProgressIndicator(
+                                color: AppTheme.primaryBlue,
+                              ),
+                              SizedBox(width: 20),
+                              Text(
+                                'Logging out...',
+                                style: TextStyle(fontFamily: AppTheme.fontFamily),
+                              ),
+                            ],
                           ),
                         ),
                       );
@@ -345,21 +355,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         // Close loading dialog
                         Navigator.pop(context);
                         
-                        // Navigate to login page and clear all previous routes
+                        // Navigate to welcome page and clear all previous routes
+                        // Using pushNamedAndRemoveUntil to ensure clean navigation stack
                         Navigator.pushNamedAndRemoveUntil(
                           context,
-                          '/login',
+                          '/',
                           (route) => false, // This removes all previous routes
                         );
                         
-                        // Show success message
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Successfully logged out'),
-                            backgroundColor: AppTheme.success,
-                            duration: Duration(seconds: 2),
-                          ),
-                        );
+                        // The AuthWrapper will automatically handle the redirect
+                        // to WelcomePage1 since user is no longer authenticated
                       }
                     } catch (e) {
                       if (context.mounted) {
