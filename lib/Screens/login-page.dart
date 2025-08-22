@@ -271,9 +271,12 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   TextButton(
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const CreateAccount()),
+                      // TODO: Implement create account functionality
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Create account functionality will be available soon'),
+                          backgroundColor: AppTheme.primaryBlue,
+                        ),
                       );
                     },
                     child: Text(
