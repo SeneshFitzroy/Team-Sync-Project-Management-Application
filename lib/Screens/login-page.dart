@@ -5,6 +5,7 @@ import '../theme/app_theme.dart';
 import '../widgets/TickLogo.dart';
 import '../Screens/MainAppNavigator.dart';
 import 'create_account_new.dart';
+import 'ForgetPassword.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
