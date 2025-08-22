@@ -82,9 +82,9 @@ class _CreateAccountState extends State<CreateAccount> {
     
     if (password.contains(RegExp(r'[@$!%*?&]'))) {
       score++;
-      criteria.add('✓ Special character (@$!%*?&)');
+      criteria.add('✓ Special character (@\$!%*?&)');
     } else {
-      criteria.add('✗ Special character (@$!%*?&)');
+      criteria.add('✗ Special character (@\$!%*?&)');
     }
 
     setState(() {
