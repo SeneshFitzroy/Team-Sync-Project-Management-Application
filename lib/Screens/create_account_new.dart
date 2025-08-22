@@ -231,7 +231,7 @@ class _CreateAccountState extends State<CreateAccount> with TickerProviderStateM
       print('🚀 Starting account creation process...');
 
       // Create Firebase Auth account
-      UserCredential result = await AuthService.createUserWithEmailAndPassword(
+      UserCredential? result = await AuthService.createUserWithEmailAndPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text,
         fullName: '${_firstNameController.text.trim()} ${_lastNameController.text.trim()}',
@@ -471,17 +471,17 @@ class _CreateAccountState extends State<CreateAccount> with TickerProviderStateM
                                             color: Colors.grey.shade50,
                                           ),
                                           child: DropdownButtonHideUnderline(
-                                            child: DropdownButton<CountryData>(
+                                            child: DropdownButton<CountryCode>(
                                               value: _selectedCountry,
                                               isExpanded: true,
                                               icon: Icon(Icons.arrow_drop_down, color: AppTheme.primaryBlue),
-                                              onChanged: (CountryData? newValue) {
+                                              onChanged: (CountryCode? newValue) {
                                                 setState(() {
                                                   _selectedCountry = newValue!;
                                                 });
                                               },
-                                              items: CountryCodeService.getAllCountries().map<DropdownMenuItem<CountryData>>((CountryData country) {
-                                                return DropdownMenuItem<CountryData>(
+                                              items: CountryCodeService.countries.map<DropdownMenuItem<CountryCode>>((CountryCode country) {
+                                                return DropdownMenuItem<CountryCode>(
                                                   value: country,
                                                   child: Row(
                                                     children: [
