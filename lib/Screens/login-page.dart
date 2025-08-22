@@ -1,4 +1,6 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../theme/app_theme.dart';
@@ -14,11 +16,85 @@ class LoginPage extends StatefulWidget {
   State<LoginPage> createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _obscureText = true;
   bool _isLoading = false;
+
+  late AnimationController _fadeController;
+  late AnimationController _slideController;
+  late AnimationController _particleController;
+
+  late Animation<double> _fadeAnimation;
+  late Animation<Offset> _slideAnimation;
+  late Animation<double> _particleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeAnimations();
+    _startAnimations();
+  }
+
+  void _initializeAnimations() {
+    _fadeController = AnimationController(
+      duration: const Duration(milliseconds: 1000),
+      vsync: this,
+    );
+
+    _slideController = AnimationController(
+      duration: const Duration(milliseconds: 1200),
+      vsync: this,
+    );
+
+    _particleController = AnimationController(
+      duration: const Duration(milliseconds: 4000),
+      vsync: this,
+    );
+
+    _fadeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _fadeController,
+      curve: Curves.easeOut,
+    ));
+
+    _slideAnimation = Tween<Offset>(
+      begin: const Offset(0, 0.3),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(
+      parent: _slideController,
+      curve: Curves.easeOutCubic,
+    ));
+
+    _particleAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _particleController,
+      curve: Curves.linear,
+    ));
+  }
+
+  void _startAnimations() async {
+    HapticFeedback.lightImpact();
+    _particleController.repeat();
+    _fadeController.forward();
+    await Future.delayed(const Duration(milliseconds: 200));
+    _slideController.forward();
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    _fadeController.dispose();
+    _slideController.dispose();
+    _particleController.dispose();
+    super.dispose();
+  }
 
   Future<void> _signIn() async {
     setState(() {
@@ -127,42 +203,145 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.backgroundWhite,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Color(0xFFF8FAFC),
+              Colors.white,
+              Color(0xFFF1F5F9),
+            ],
+            stops: [0.0, 0.5, 1.0],
+          ),
+        ),
+        child: SafeArea(
+          child: Stack(
             children: [
-              const Spacer(),
-              
-              // Logo
-              const Center(
-                child: TickLogo(size: 120),
+              // Animated background particles (consistent design)
+              AnimatedBuilder(
+                animation: _particleAnimation,
+                builder: (context, child) {
+                  return CustomPaint(
+                    painter: ParticlePainter(_particleAnimation.value),
+                    size: MediaQuery.of(context).size,
+                  );
+                },
               ),
               
-              const SizedBox(height: 48),
-              
-              // Welcome Text
-              Text(
-                'Welcome Back',
-                style: AppTheme.headingLarge.copyWith(
-                  color: AppTheme.textPrimary,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              
-              const SizedBox(height: 8),
-              
-              Text(
-                'Sign in to your account',
-                style: AppTheme.bodyLarge.copyWith(
-                  color: AppTheme.textSecondary,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              
-              const SizedBox(height: 48),
+              // Main content
+              SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const SizedBox(height: 60),
+                    
+                    // Consistent Logo Design (blue-purple gradient ball with tick)
+                    FadeTransition(
+                      opacity: _fadeAnimation,
+                      child: Center(
+                        child: Container(
+                          padding: const EdgeInsets.all(24),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            gradient: RadialGradient(
+                              colors: [
+                                AppTheme.primaryBlue.withOpacity(0.1),
+                                AppTheme.primaryBlue.withOpacity(0.05),
+                                Colors.transparent,
+                              ],
+                              stops: const [0.0, 0.7, 1.0],
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: AppTheme.primaryBlue.withOpacity(0.2),
+                                spreadRadius: 15,
+                                blurRadius: 30,
+                                offset: const Offset(0, 10),
+                              ),
+                            ],
+                          ),
+                          child: Container(
+                            padding: const EdgeInsets.all(20),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              gradient: const LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: [
+                                  AppTheme.primaryBlue,
+                                  Color(0xFF764BA2),
+                                ],
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: AppTheme.primaryBlue.withOpacity(0.4),
+                                  spreadRadius: 2,
+                                  blurRadius: 15,
+                                  offset: const Offset(0, 8),
+                                ),
+                              ],
+                            ),
+                            child: const TickLogo(
+                              size: 80,
+                              color: Colors.white,
+                              backgroundColor: Colors.transparent,
+                              showBackground: false,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    
+                    const SizedBox(height: 40),
+                    
+                    // Welcome Text with consistent styling
+                    SlideTransition(
+                      position: _slideAnimation,
+                      child: FadeTransition(
+                        opacity: _fadeAnimation,
+                        child: Column(
+                          children: [
+                            ShaderMask(
+                              shaderCallback: (bounds) {
+                                return const LinearGradient(
+                                  colors: [
+                                    AppTheme.primaryBlue,
+                                    Color(0xFF764BA2),
+                                  ],
+                                ).createShader(bounds);
+                              },
+                              child: Text(
+                                'Welcome Back',
+                                style: AppTheme.headingLarge.copyWith(
+                                  fontSize: 32,
+                                  fontWeight: FontWeight.w800,
+                                  color: Colors.white,
+                                  letterSpacing: -0.5,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                            
+                            const SizedBox(height: 8),
+                            
+                            Text(
+                              'Sign in to your account',
+                              style: AppTheme.bodyLarge.copyWith(
+                                color: AppTheme.textSecondary,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    
+                    const SizedBox(height: 48),
               
               // Email Field
               TextFormField(
