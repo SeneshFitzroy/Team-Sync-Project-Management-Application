@@ -709,5 +709,105 @@ class _SplashScreenState extends State<SplashScreen>
         );
       },
     );
+  
+  // Helper method to build decorative lines
+  Widget _buildDecorativeLine() {
+    return Container(
+      width: 40,
+      height: 2,
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [
+            Colors.transparent,
+            AppTheme.primaryBlue,
+            Colors.transparent,
+          ],
+        ),
+        borderRadius: BorderRadius.circular(1),
+      ),
+    );
   }
+  
+  // Helper method to build footer dots
+  Widget _buildFooterDot(int index) {
+    return AnimatedBuilder(
+      animation: _progressController,
+      builder: (context, child) {
+        double animationValue = (_progressAnimation.value * 3 - index).clamp(0.0, 1.0);
+        return Container(
+          width: 8,
+          height: 8,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: AppTheme.primaryBlue.withOpacity(0.3 + (0.7 * animationValue)),
+            boxShadow: animationValue > 0.5 ? [
+              BoxShadow(
+                color: AppTheme.primaryBlue.withOpacity(0.5),
+                blurRadius: 8,
+                spreadRadius: 1,
+              ),
+            ] : null,
+          ),
+        );
+      },
+    );
+  }
+}
+
+// Custom painter for animated background particles
+class ParticlePainter extends CustomPainter {
+  final double animationValue;
+  
+  ParticlePainter(this.animationValue);
+  
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..style = PaintingStyle.fill;
+    
+    // Generate consistent particles based on screen size
+    final random = Random(42); // Fixed seed for consistent positions
+    
+    for (int i = 0; i < 20; i++) {
+      final x = random.nextDouble() * size.width;
+      final y = random.nextDouble() * size.height;
+      final radius = 1.5 + (random.nextDouble() * 3);
+      
+      // Animate opacity and position
+      final opacity = (0.1 + (random.nextDouble() * 0.3)) * 
+                     (0.5 + 0.5 * sin(animationValue * 2 * pi + i));
+      final offsetY = sin(animationValue * 2 * pi + i * 0.5) * 10;
+      
+      paint.color = AppTheme.primaryBlue.withOpacity(opacity);
+      
+      canvas.drawCircle(
+        Offset(x, y + offsetY),
+        radius,
+        paint,
+      );
+    }
+    
+    // Add some larger, slower moving particles
+    for (int i = 0; i < 8; i++) {
+      final x = random.nextDouble() * size.width;
+      final y = random.nextDouble() * size.height;
+      final radius = 2.0 + (random.nextDouble() * 4);
+      
+      final opacity = (0.05 + (random.nextDouble() * 0.15)) * 
+                     (0.3 + 0.7 * sin(animationValue * pi + i * 0.3));
+      final offsetY = cos(animationValue * pi + i * 0.7) * 15;
+      final offsetX = sin(animationValue * 0.5 * pi + i * 0.4) * 5;
+      
+      paint.color = const Color(0xFF764BA2).withOpacity(opacity);
+      
+      canvas.drawCircle(
+        Offset(x + offsetX, y + offsetY),
+        radius,
+        paint,
+      );
+    }
+  }
+  
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }
