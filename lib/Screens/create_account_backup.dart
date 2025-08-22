@@ -1,4 +1,43 @@
-import 'package:flutter/material.dart';  String? _validateName(String? value) {
+import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import '../widgets/TickLogo.dart';
+import '../theme/app_theme.dart';
+import '../Screens/MainAppNavigator.dart';
+
+class CreateAccount extends StatefulWidget {
+  const CreateAccount({super.key});
+  
+  @override
+  _CreateAccountState createState() => _CreateAccountState();
+}
+
+class _CreateAccountState extends State<CreateAccount> {
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
+  
+  bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
+  bool _isLoading = false;
+  
+  // Password strength tracking
+  double _passwordStrength = 0.0;
+  String _passwordStrengthText = '';
+  Color _passwordStrengthColor = AppTheme.textSecondary;
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
+  }
+
+  String? _validateName(String? value) {
     if (value == null || value.isEmpty) {
       return 'Full name is required';
     }
@@ -54,62 +93,6 @@ import 'package:flutter/material.dart';  String? _validateName(String? value) {
           break;
       }
     });
-  }irebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import '../widgets/TickLogo.dart';
-import '../theme/app_theme.dart';
-import '../Screens/MainAppNavigator.dart';
-
-class CreateAccount extends StatefulWidget {
-  const CreateAccount({super.key});
-  
-  @override
-  _CreateAccountState createState() => _CreateAccountState();
-}
-
-class _CreateAccountState extends State<CreateAccount> {
-  final _formKey = GlobalKey<FormState>();
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
-  
-  bool _obscurePassword = true;
-  bool _obscureConfirmPassword = true;
-  bool _isLoading = false;
-  
-  // Password strength tracking
-  double _passwordStrength = 0.0;
-  String _passwordStrengthText = '';
-  Color _passwordStrengthColor = AppTheme.textSecondary;
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _emailController.dispose();
-    _passwordController.dispose();
-    _confirmPasswordController.dispose();
-    super.dispose();
-  }
-
-  String? _validateName(String? value) {
-    if (value == null || value.trim().isEmpty) {
-      return 'Name is required';
-    }
-    if (value.trim().length < 2) {
-      return 'Name must be at least 2 characters';
-    }
-    return null;
-  }
-
-  String? _validateEmail(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Email is required';
-    }
-    if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
-      return 'Please enter a valid email';
-    }
-    return null;
   }
 
   String? _validatePassword(String? value) {
@@ -268,20 +251,7 @@ class _CreateAccountState extends State<CreateAccount> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const SizedBox(height: 20),
-                
-                // Back button
-                Row(
-                  children: [
-                    IconButton(
-                      icon: Icon(Icons.arrow_back, color: AppTheme.textSecondary),
-                      onPressed: () => Navigator.pop(context),
-                    ),
-                    const Spacer(),
-                  ],
-                ),
-                
-                const SizedBox(height: 20),
+                const SizedBox(height: 40),
                 
                 // Logo
                 Center(
@@ -348,7 +318,8 @@ class _CreateAccountState extends State<CreateAccount> {
                   validator: _validatePassword,
                   style: AppTheme.bodyLarge,
                   onChanged: (value) {
-                    // Trigger real-time validation
+                    // Trigger real-time validation and password strength calculation
+                    _calculatePasswordStrength(value);
                     _formKey.currentState?.validate();
                   },
                   decoration: InputDecoration(
@@ -369,6 +340,31 @@ class _CreateAccountState extends State<CreateAccount> {
                     ),
                   ),
                 ),
+                
+                // Password strength indicator
+                if (_passwordController.text.isNotEmpty) ...[
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: LinearProgressIndicator(
+                          value: _passwordStrength,
+                          backgroundColor: AppTheme.backgroundLight,
+                          valueColor: AlwaysStoppedAnimation<Color>(_passwordStrengthColor),
+                          minHeight: 4,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Text(
+                        _passwordStrengthText,
+                        style: AppTheme.bodySmall.copyWith(
+                          color: _passwordStrengthColor,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
                 
                 const SizedBox(height: 20),
                 
@@ -409,14 +405,21 @@ class _CreateAccountState extends State<CreateAccount> {
                     onPressed: _isLoading ? null : _handleCreateAccount,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppTheme.primaryBlue,
-                      foregroundColor: AppTheme.textWhite,
+                      foregroundColor: Colors.white,
+                      elevation: 0,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
+                      disabledBackgroundColor: AppTheme.backgroundLight,
                     ),
                     child: _isLoading
-                        ? CircularProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation<Color>(AppTheme.textWhite),
+                        ? const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                            ),
                           )
                         : Text(
                             'Create Account',
@@ -425,7 +428,7 @@ class _CreateAccountState extends State<CreateAccount> {
                   ),
                 ),
                 
-                const SizedBox(height: 30),
+                const SizedBox(height: 20),
                 
                 // Login link
                 Row(
@@ -433,14 +436,16 @@ class _CreateAccountState extends State<CreateAccount> {
                   children: [
                     Text(
                       'Already have an account? ',
-                      style: AppTheme.bodyMedium,
+                      style: AppTheme.bodyMedium.copyWith(
+                        color: AppTheme.textSecondary,
+                      ),
                     ),
                     TextButton(
-                      onPressed: () {
+                      onPressed: _isLoading ? null : () {
                         Navigator.pop(context);
                       },
                       child: Text(
-                        'Login',
+                        'Sign In',
                         style: AppTheme.bodyMedium.copyWith(
                           color: AppTheme.primaryBlue,
                           fontWeight: FontWeight.w600,
