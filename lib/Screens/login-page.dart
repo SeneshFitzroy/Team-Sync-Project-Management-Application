@@ -488,3 +488,26 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     super.dispose();
   }
 }
+
+// Particle painter for background animation
+class ParticlePainter extends CustomPainter {
+  final double animationValue;
+
+  ParticlePainter(this.animationValue);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.white.withOpacity(0.1)
+      ..strokeWidth = 2.0;
+
+    for (int i = 0; i < 50; i++) {
+      final x = (i * 37.0 + animationValue * 50) % size.width;
+      final y = (i * 43.0 + animationValue * 30) % size.height;
+      canvas.drawCircle(Offset(x, y), 2.0, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
+}
