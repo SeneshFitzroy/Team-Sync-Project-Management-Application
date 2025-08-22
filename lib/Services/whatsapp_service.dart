@@ -1,11 +1,11 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import '../config/api_config.dart';
 
 class WhatsAppService {
-  // GreenAPI Configuration
-  // Replace these with your actual GreenAPI credentials
-  static const String _instanceId = 'YOUR_INSTANCE_ID'; // Replace with your instance ID
-  static const String _accessToken = 'YOUR_ACCESS_TOKEN'; // Replace with your access token
+  // GreenAPI Configuration from config file
+  static const String _instanceId = ApiConfig.greenApiInstanceId;
+  static const String _accessToken = ApiConfig.greenApiAccessToken;
   static const String _baseUrl = 'https://api.green-api.com';
 
   /// Send WhatsApp welcome message to user
@@ -17,9 +17,9 @@ class WhatsAppService {
     try {
       // Format phone number (remove + and ensure it starts with country code)
       String formattedPhone = phoneNumber.replaceAll('+', '').replaceAll(' ', '');
-      if (!formattedPhone.startsWith('94') && !formattedPhone.startsWith('1')) {
-        // Add default country code if missing (adjust as needed)
-        formattedPhone = '94$formattedPhone'; // Sri Lanka code, change as needed
+      if (!formattedPhone.startsWith(ApiConfig.defaultCountryCode) && !formattedPhone.startsWith('1')) {
+        // Add default country code if missing
+        formattedPhone = '${ApiConfig.defaultCountryCode}$formattedPhone';
       }
 
       // Ensure phone number has @c.us suffix for WhatsApp
@@ -89,8 +89,8 @@ Need help? Reply to this message or contact support.
   static Future<bool> testConnection(String phoneNumber) async {
     try {
       String formattedPhone = phoneNumber.replaceAll('+', '').replaceAll(' ', '');
-      if (!formattedPhone.startsWith('94') && !formattedPhone.startsWith('1')) {
-        formattedPhone = '94$formattedPhone';
+      if (!formattedPhone.startsWith(ApiConfig.defaultCountryCode) && !formattedPhone.startsWith('1')) {
+        formattedPhone = '${ApiConfig.defaultCountryCode}$formattedPhone';
       }
       String chatId = '${formattedPhone}@c.us';
 

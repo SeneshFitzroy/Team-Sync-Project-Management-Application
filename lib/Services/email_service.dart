@@ -1,13 +1,13 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import '../config/api_config.dart';
 
 class EmailService {
-  // EmailJS Configuration
-  // Replace these with your actual EmailJS credentials
-  static const String _serviceId = 'YOUR_SERVICE_ID'; // Replace with your EmailJS service ID
-  static const String _templateId = 'YOUR_TEMPLATE_ID'; // Replace with your EmailJS template ID
-  static const String _userId = 'YOUR_USER_ID'; // Replace with your EmailJS user ID
-  static const String _accessToken = 'YOUR_ACCESS_TOKEN'; // Replace with your EmailJS access token
+  // EmailJS Configuration from config file
+  static const String _serviceId = ApiConfig.emailJsServiceId;
+  static const String _templateId = ApiConfig.emailJsTemplateId;
+  static const String _userId = ApiConfig.emailJsUserId;
+  static const String _accessToken = ApiConfig.emailJsAccessToken;
 
   /// Send welcome email to new user
   static Future<bool> sendWelcomeEmail({
