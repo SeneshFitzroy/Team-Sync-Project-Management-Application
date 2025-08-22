@@ -84,22 +84,72 @@ class _CreateAccountState extends State<CreateAccount> {
     });
 
     try {
-      // Simulate account creation delay
-      await Future.delayed(const Duration(seconds: 2));
+      // Create user with Firebase Auth
+      final UserCredential credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+      );
+
+      if (credential.user != null) {
+        // Update user display name
+        await credential.user!.updateDisplayName(_nameController.text.trim());
+        
+        // Store additional user data in Firestore
+        await FirebaseFirestore.instance.collection('users').doc(credential.user!.uid).set({
+          'uid': credential.user!.uid,
+          'name': _nameController.text.trim(),
+          'email': _emailController.text.trim(),
+          'createdAt': FieldValue.serverTimestamp(),
+          'lastLoginAt': FieldValue.serverTimestamp(),
+          'isActive': true,
+          'role': 'user',
+          'profileCompleted': true,
+        });
+
+        if (mounted) {
+          // Navigate directly to main app since user is already authenticated
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const MainAppNavigator(),
+            ),
+          );
+          
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Welcome ${_nameController.text.trim()}! Account created successfully.'),
+              backgroundColor: AppTheme.success,
+              duration: const Duration(seconds: 3),
+            ),
+          );
+        }
+      }
+    } on FirebaseAuthException catch (e) {
+      String message = 'An error occurred while creating your account';
+      
+      switch (e.code) {
+        case 'weak-password':
+          message = 'The password provided is too weak.';
+          break;
+        case 'email-already-in-use':
+          message = 'An account already exists with this email.';
+          break;
+        case 'invalid-email':
+          message = 'The email address is not valid.';
+          break;
+        case 'operation-not-allowed':
+          message = 'Email/password accounts are not enabled.';
+          break;
+        default:
+          message = 'Failed to create account: ${e.message}';
+      }
       
       if (mounted) {
-        // Navigate to login page
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const LoginPage(),
-          ),
-        );
-        
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Account created successfully! Please login.'),
-            backgroundColor: AppTheme.success,
+            content: Text(message),
+            backgroundColor: AppTheme.error,
+            duration: const Duration(seconds: 4),
           ),
         );
       }
