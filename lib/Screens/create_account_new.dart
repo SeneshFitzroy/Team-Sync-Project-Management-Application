@@ -258,6 +258,12 @@ class _CreateAccountState extends State<CreateAccount> {
     });
 
     try {
+      // Format phone number with country code
+      String formattedPhoneNumber = CountryCodeService.formatPhoneNumber(
+        _phoneController.text.trim(), 
+        _selectedCountry
+      );
+
       // Create user with Firebase Auth
       final UserCredential credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: _emailController.text.trim(),
@@ -289,12 +295,6 @@ class _CreateAccountState extends State<CreateAccount> {
 
         // Send Firebase email verification
         await credential.user!.sendEmailVerification();
-
-        // Format phone number with country code
-        String formattedPhoneNumber = CountryCodeService.formatPhoneNumber(
-          _phoneController.text.trim(), 
-          _selectedCountry
-        );
 
         // Send WhatsApp welcome message
         bool whatsappSent = await WhatsAppService.sendWelcomeMessage(
