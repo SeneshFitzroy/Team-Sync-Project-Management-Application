@@ -14,40 +14,26 @@ class EmailService {
     required String toEmail,
     required String firstName,
     required String lastName,
+    required String phoneNumber,
   }) async {
     try {
       // EmailJS API endpoint
       const String url = 'https://api.emailjs.com/api/v1.0/email/send';
 
-      // Email template parameters
+      // Current date formatting
+      DateTime now = DateTime.now();
+      String formattedDate = '${now.day}/${now.month}/${now.year}';
+
+      // Email template parameters matching your EmailJS template
       Map<String, dynamic> templateParams = {
+        'to_name': firstName,
         'to_email': toEmail,
-        'to_name': '$firstName $lastName',
-        'first_name': firstName,
-        'last_name': lastName,
-        'subject': 'Welcome to TaskSync - Your Account is Ready! 🎉',
-        'message': '''
-Hello $firstName,
-
-Welcome to TaskSync! 🎉
-
-We're thrilled to have you join our community of productive professionals and teams.
-
-Your account has been successfully created with the following details:
-• Name: $firstName $lastName
-• Email: $toEmail
-• Account Status: Active ✅
-
-What's next?
-1. ✅ Verify your email address (check your inbox)
-2. 🚀 Complete your profile setup
-3. 📋 Create your first project
-4. 👥 Invite team members to collaborate
-
-Key Features Waiting for You:
-• 📊 Project Management Dashboard
-• ⏰ Task Scheduling & Deadlines
-• 👥 Team Collaboration Tools
+        'firstName': firstName,
+        'lastName': lastName,
+        'email': toEmail,
+        'phone': phoneNumber,
+        'date': formattedDate,
+      };
 • 📈 Progress Tracking & Reports
 • 🔔 Smart Notifications
 • 📱 Cross-platform Access
