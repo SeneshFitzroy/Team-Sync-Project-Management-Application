@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'login-page.dart';
 import '../widgets/TickLogo.dart';
 import '../theme/app_theme.dart';
+import '../Screens/MainAppNavigator.dart';
 
 class CreateAccount extends StatefulWidget {
   const CreateAccount({super.key});
@@ -54,8 +57,11 @@ class _CreateAccountState extends State<CreateAccount> {
     if (value == null || value.isEmpty) {
       return 'Password is required';
     }
-    if (value.length < 6) {
-      return 'Password must be at least 6 characters';
+    if (value.length < 8) {
+      return 'Password must be at least 8 characters';
+    }
+    if (!RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]').hasMatch(value)) {
+      return 'Password must contain:\n• At least one uppercase letter\n• At least one lowercase letter\n• At least one number\n• At least one special character (@\$!%*?&)';
     }
     return null;
   }
