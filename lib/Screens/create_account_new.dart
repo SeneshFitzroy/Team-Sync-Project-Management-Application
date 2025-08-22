@@ -274,6 +274,7 @@ class _CreateAccountState extends State<CreateAccount> {
           'lastName': _lastNameController.text.trim(),
           'fullName': fullName,
           'email': _emailController.text.trim(),
+          'phone': _phoneController.text.trim(),
           'createdAt': FieldValue.serverTimestamp(),
           'lastLoginAt': FieldValue.serverTimestamp(),
           'isActive': true,
@@ -282,24 +283,53 @@ class _CreateAccountState extends State<CreateAccount> {
           'emailVerified': false,
         });
 
-        // Send welcome email verification
+        // Send Firebase email verification
         await credential.user!.sendEmailVerification();
 
+        // Send WhatsApp welcome message
+        bool whatsappSent = await WhatsAppService.sendWelcomeMessage(
+          phoneNumber: _phoneController.text.trim(),
+          firstName: _firstNameController.text.trim(),
+          lastName: _lastNameController.text.trim(),
+        );
+
+        // Send Email welcome message
+        bool emailSent = await EmailService.sendWelcomeEmail(
+          toEmail: _emailController.text.trim(),
+          firstName: _firstNameController.text.trim(),
+          lastName: _lastNameController.text.trim(),
+        );
+
         if (mounted) {
-          // Show success message
+          // Show success message with WhatsApp and Email status
+          List<String> messages = ['Welcome ${_firstNameController.text.trim()}! Account created successfully.'];
+          
+          if (emailSent) {
+            messages.add('✅ Welcome email sent to ${_emailController.text.trim()}');
+          } else {
+            messages.add('⚠️ Email sending failed - please check your email settings');
+          }
+          
+          if (whatsappSent) {
+            messages.add('✅ WhatsApp welcome message sent to ${_phoneController.text.trim()}');
+          } else {
+            messages.add('⚠️ WhatsApp sending failed - please check your phone number');
+          }
+          
+          messages.add('📧 Firebase verification email also sent');
+
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Welcome ${_firstNameController.text.trim()}! Account created successfully.'),
-                  SizedBox(height: 4),
-                  Text('A verification email has been sent to ${_emailController.text.trim()}'),
-                ],
+                children: messages.map((msg) => Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 2),
+                  child: Text(msg, style: TextStyle(fontSize: 13)),
+                )).toList(),
               ),
               backgroundColor: AppTheme.success,
-              duration: const Duration(seconds: 5),
+              duration: const Duration(seconds: 8),
             ),
           );
 
@@ -439,6 +469,22 @@ class _CreateAccountState extends State<CreateAccount> {
                   decoration: InputDecoration(
                     labelText: 'Email',
                     prefixIcon: Icon(Icons.email_outlined, color: AppTheme.textSecondary),
+                  ),
+                ),
+                
+                const SizedBox(height: 20),
+                
+                // Phone field
+                TextFormField(
+                  controller: _phoneController,
+                  keyboardType: TextInputType.phone,
+                  validator: _validatePhone,
+                  style: AppTheme.bodyLarge,
+                  decoration: InputDecoration(
+                    labelText: 'Phone Number',
+                    hintText: '+94 77 123 4567',
+                    prefixIcon: Icon(Icons.phone_outlined, color: AppTheme.textSecondary),
+                    helperText: 'For WhatsApp welcome message',
                   ),
                 ),
                 
