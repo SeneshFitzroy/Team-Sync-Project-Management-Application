@@ -1,23 +1,20 @@
 class ApiConfig {
-  // GreenAPI WhatsApp Configuration
-  // IMPORTANT: Replace these with your actual GreenAPI credentials
-  // Get them from: https://green-api.com/
-  static const String greenApiInstanceId = 'YOUR_INSTANCE_ID'; // Example: '1101123456'
-  static const String greenApiAccessToken = 'YOUR_ACCESS_TOKEN'; // Example: 'abc123def456...'
+  // GreenAPI WhatsApp Configuration - YOUR ACTUAL CREDENTIALS
+  static const String greenApiInstanceId = '7105307387';
+  static const String greenApiAccessToken = 'YOUR_API_TOKEN_FROM_GREENAPI'; // Get this from your GreenAPI dashboard
   
-  // EmailJS Configuration  
-  // IMPORTANT: Replace these with your actual EmailJS credentials
-  // Get them from: https://emailjs.com/
-  static const String emailJsServiceId = 'YOUR_SERVICE_ID'; // Example: 'service_abc123'
-  static const String emailJsTemplateId = 'YOUR_TEMPLATE_ID'; // Example: 'template_def456'
-  static const String emailJsUserId = 'YOUR_USER_ID'; // Example: 'user_ghi789'
-  static const String emailJsAccessToken = 'YOUR_ACCESS_TOKEN'; // Example: 'jkl012mno345'
+  // EmailJS Configuration - YOUR ACTUAL CREDENTIALS  
+  static const String emailJsServiceId = 'YOUR_SERVICE_ID'; // From EmailJS dashboard
+  static const String emailJsTemplateId = 'YOUR_TEMPLATE_ID'; // Create welcome template
+  static const String emailJsUserId = 'YOUR_USER_ID'; // From EmailJS account settings
+  static const String emailJsAccessToken = 'YOUR_ACCESS_TOKEN'; // From EmailJS account settings
   
   // App Domain (for password reset links)
-  static const String appDomain = 'https://your-app-domain.com';
+  static const String appDomain = 'https://tasksync-app.com';
   
-  // Default country code for WhatsApp (change as needed)
-  static const String defaultCountryCode = '94'; // Sri Lanka (+94)
+  // Default country code for WhatsApp (Sri Lanka)
+  static const String defaultCountryCode = '94';
+}
   
   /*
   SETUP INSTRUCTIONS:
