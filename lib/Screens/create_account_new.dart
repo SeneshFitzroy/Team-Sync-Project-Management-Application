@@ -257,6 +257,9 @@ class _CreateAccountState extends State<CreateAccount> {
       _isLoading = true;
     });
 
+    // Debug: Check email service configuration
+    EmailService.debugConfiguration();
+
     try {
       // Format phone number with country code
       String formattedPhoneNumber = CountryCodeService.formatPhoneNumber(
