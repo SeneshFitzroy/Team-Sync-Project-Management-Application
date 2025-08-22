@@ -4,6 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../widgets/TickLogo.dart';
 import '../theme/app_theme.dart';
 import '../Screens/MainAppNavigator.dart';
+import '../services/whatsapp_service.dart';
+import '../services/email_service.dart';
 
 class CreateAccount extends StatefulWidget {
   const CreateAccount({super.key});
@@ -17,6 +19,7 @@ class _CreateAccountState extends State<CreateAccount> {
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
   
@@ -41,6 +44,7 @@ class _CreateAccountState extends State<CreateAccount> {
     _firstNameController.dispose();
     _lastNameController.dispose();
     _emailController.dispose();
+    _phoneController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
@@ -159,6 +163,27 @@ class _CreateAccountState extends State<CreateAccount> {
     if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
       return 'Please enter a valid email';
     }
+    return null;
+  }
+
+  String? _validatePhone(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Phone number is required';
+    }
+    
+    // Remove spaces, dashes, and parentheses
+    String cleaned = value.replaceAll(RegExp(r'[\s\-\(\)]'), '');
+    
+    // Remove country code if it starts with +
+    if (cleaned.startsWith('+')) {
+      cleaned = cleaned.substring(1);
+    }
+    
+    // Check if it's a valid phone number (8-15 digits)
+    if (!RegExp(r'^[0-9]{8,15}$').hasMatch(cleaned)) {
+      return 'Please enter a valid phone number';
+    }
+    
     return null;
   }
 
