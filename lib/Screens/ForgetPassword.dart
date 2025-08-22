@@ -49,7 +49,7 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
       // Send custom email notification via EmailJS
       bool customEmailSent = await EmailService.sendPasswordResetEmail(
         toEmail: _emailController.text.trim(),
-        resetLink: 'https://your-app-domain.com/reset-password', // Replace with your actual domain
+        resetLink: '${ApiConfig.appDomain}/reset-password',
         firstName: 'User', // Could be retrieved from Firestore if needed
       );
       
