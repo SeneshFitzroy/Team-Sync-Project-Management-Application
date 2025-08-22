@@ -41,7 +41,7 @@ class _CreateAccountState extends State<CreateAccount> with TickerProviderStateM
   bool _isLoading = false;
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
-  CountryData _selectedCountry = CountryCodeService.getDefaultCountry();
+  CountryCode _selectedCountry = CountryCodeService.getDefaultCountry();
   
   // Password strength
   double _passwordStrength = 0.0;
@@ -231,14 +231,12 @@ class _CreateAccountState extends State<CreateAccount> with TickerProviderStateM
       print('🚀 Starting account creation process...');
 
       // Create Firebase Auth account
-      UserCredential result = await AuthService.createAccount(
-        _phoneController.text.trim(),
-        _selectedCountry
-      ).then((userCred) async {
-        await userCred.user!.updateEmail(_emailController.text.trim());
-        await userCred.user!.updatePassword(_passwordController.text);
-        return userCred;
-      });
+      UserCredential result = await AuthService.createUserWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+        fullName: '${_firstNameController.text.trim()} ${_lastNameController.text.trim()}',
+        phoneNumber: _phoneController.text.trim(),
+      );
 
       if (result.user != null) {
         String fullName = '${_firstNameController.text.trim()} ${_lastNameController.text.trim()}';
