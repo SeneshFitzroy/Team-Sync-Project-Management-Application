@@ -6,6 +6,7 @@ import '../theme/app_theme.dart';
 import '../Screens/MainAppNavigator.dart';
 import '../services/whatsapp_service.dart';
 import '../services/email_service.dart';
+import '../services/country_code_service.dart';
 
 class CreateAccount extends StatefulWidget {
   const CreateAccount({super.key});
@@ -26,6 +27,9 @@ class _CreateAccountState extends State<CreateAccount> {
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
   bool _isLoading = false;
+  
+  // Country code selection
+  CountryCode _selectedCountry = CountryCodeService.getDefaultCountry();
   
   // Professional password strength tracking
   double _passwordStrength = 0.0;
@@ -174,14 +178,12 @@ class _CreateAccountState extends State<CreateAccount> {
     // Remove spaces, dashes, and parentheses
     String cleaned = value.replaceAll(RegExp(r'[\s\-\(\)]'), '');
     
-    // Remove country code if it starts with +
-    if (cleaned.startsWith('+')) {
-      cleaned = cleaned.substring(1);
-    }
+    // Remove any leading zeros or + signs
+    cleaned = cleaned.replaceFirst(RegExp(r'^[+0]+'), '');
     
-    // Check if it's a valid phone number (8-15 digits)
-    if (!RegExp(r'^[0-9]{8,15}$').hasMatch(cleaned)) {
-      return 'Please enter a valid phone number';
+    // Validate using country-specific rules
+    if (!CountryCodeService.isValidPhoneNumber(cleaned, _selectedCountry)) {
+      return 'Phone number must be ${_selectedCountry.minLength}-${_selectedCountry.maxLength} digits for ${_selectedCountry.name}';
     }
     
     return null;
@@ -267,6 +269,12 @@ class _CreateAccountState extends State<CreateAccount> {
         String fullName = '${_firstNameController.text.trim()} ${_lastNameController.text.trim()}';
         await credential.user!.updateDisplayName(fullName);
         
+        // Format phone number with country code
+        String formattedPhoneNumber = CountryCodeService.formatPhoneNumber(
+          _phoneController.text.trim(), 
+          _selectedCountry
+        );
+        
         // Store additional user data in Firestore
         await FirebaseFirestore.instance.collection('users').doc(credential.user!.uid).set({
           'uid': credential.user!.uid,
@@ -274,7 +282,9 @@ class _CreateAccountState extends State<CreateAccount> {
           'lastName': _lastNameController.text.trim(),
           'fullName': fullName,
           'email': _emailController.text.trim(),
-          'phone': _phoneController.text.trim(),
+          'phone': formattedPhoneNumber,
+          'phoneCountry': _selectedCountry.name,
+          'phoneCountryCode': _selectedCountry.dialCode,
           'createdAt': FieldValue.serverTimestamp(),
           'lastLoginAt': FieldValue.serverTimestamp(),
           'isActive': true,
@@ -286,9 +296,15 @@ class _CreateAccountState extends State<CreateAccount> {
         // Send Firebase email verification
         await credential.user!.sendEmailVerification();
 
+        // Format phone number with country code
+        String formattedPhoneNumber = CountryCodeService.formatPhoneNumber(
+          _phoneController.text.trim(), 
+          _selectedCountry
+        );
+
         // Send WhatsApp welcome message
         bool whatsappSent = await WhatsAppService.sendWelcomeMessage(
-          phoneNumber: _phoneController.text.trim(),
+          phoneNumber: formattedPhoneNumber,
           firstName: _firstNameController.text.trim(),
           lastName: _lastNameController.text.trim(),
         );
@@ -298,6 +314,7 @@ class _CreateAccountState extends State<CreateAccount> {
           toEmail: _emailController.text.trim(),
           firstName: _firstNameController.text.trim(),
           lastName: _lastNameController.text.trim(),
+          phoneNumber: formattedPhoneNumber,
         );
 
         if (mounted) {
@@ -311,7 +328,7 @@ class _CreateAccountState extends State<CreateAccount> {
           }
           
           if (whatsappSent) {
-            messages.add('✅ WhatsApp welcome message sent to ${_phoneController.text.trim()}');
+            messages.add('✅ WhatsApp welcome message sent to $formattedPhoneNumber');
           } else {
             messages.add('⚠️ WhatsApp sending failed - please check your phone number');
           }
@@ -474,18 +491,79 @@ class _CreateAccountState extends State<CreateAccount> {
                 
                 const SizedBox(height: 20),
                 
-                // Phone field
-                TextFormField(
-                  controller: _phoneController,
-                  keyboardType: TextInputType.phone,
-                  validator: _validatePhone,
-                  style: AppTheme.bodyLarge,
-                  decoration: InputDecoration(
-                    labelText: 'Phone Number',
-                    hintText: '+94 77 123 4567',
-                    prefixIcon: Icon(Icons.phone_outlined, color: AppTheme.textSecondary),
-                    helperText: 'For WhatsApp welcome message',
-                  ),
+                // Phone field with country code
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Phone Number',
+                      style: AppTheme.bodyLarge.copyWith(
+                        fontWeight: FontWeight.w500,
+                        color: AppTheme.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        // Country Code Dropdown
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: AppTheme.textSecondary.withOpacity(0.3)),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: DropdownButtonHideUnderline(
+                            child: DropdownButton<CountryCode>(
+                              value: _selectedCountry,
+                              onChanged: (CountryCode? newValue) {
+                                if (newValue != null) {
+                                  setState(() {
+                                    _selectedCountry = newValue;
+                                  });
+                                }
+                              },
+                              items: CountryCodeService.countries.map<DropdownMenuItem<CountryCode>>((CountryCode country) {
+                                return DropdownMenuItem<CountryCode>(
+                                  value: country,
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(country.flag, style: const TextStyle(fontSize: 18)),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        country.dialCode,
+                                        style: AppTheme.bodyMedium.copyWith(
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              }).toList(),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        // Phone Number Input
+                        Expanded(
+                          child: TextFormField(
+                            controller: _phoneController,
+                            keyboardType: TextInputType.phone,
+                            validator: _validatePhone,
+                            style: AppTheme.bodyLarge,
+                            decoration: InputDecoration(
+                              labelText: 'Phone Number',
+                              hintText: _selectedCountry.name == 'Sri Lanka' 
+                                  ? '77 123 4567' 
+                                  : 'Enter phone number',
+                              prefixIcon: Icon(Icons.phone_outlined, color: AppTheme.textSecondary),
+                              helperText: 'Length: ${_selectedCountry.minLength}-${_selectedCountry.maxLength} digits',
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
                 
                 const SizedBox(height: 20),
