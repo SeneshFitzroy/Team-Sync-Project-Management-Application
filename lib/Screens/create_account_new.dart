@@ -6,10 +6,9 @@ import '../Services/auth_service.dart';
 import '../Services/whatsapp_service.dart';
 import '../Services/email_service.dart';
 import '../Services/country_code_service.dart';
-import '../models/country.dart';
 import '../theme/app_theme.dart';
-import '../widgets/tick_logo.dart';
-import 'main-app-navigator.dart';
+import '../widgets/TickLogo.dart';
+import 'MainAppNavigator.dart';
 import 'login-page.dart';
 
 class CreateAccount extends StatefulWidget {
