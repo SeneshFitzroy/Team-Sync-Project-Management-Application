@@ -1,8 +1,10 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../theme/app_theme.dart';
-import '../widgets/TickLogo.dart';
+import '../widgets/ConsistentHeader.dart';
 import '../Screens/MainAppNavigator.dart';
 import 'create_account_new.dart';
 import 'ForgetPassword.dart';
@@ -14,11 +16,57 @@ class LoginPage extends StatefulWidget {
   State<LoginPage> createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _obscureText = true;
   bool _isLoading = false;
+
+  late AnimationController _particleController;
+  late AnimationController _formController;
+  late Animation<double> _particleAnimation;
+  late Animation<double> _formAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeAnimations();
+    _startAnimations();
+  }
+
+  void _initializeAnimations() {
+    _particleController = AnimationController(
+      duration: const Duration(milliseconds: 4000),
+      vsync: this,
+    );
+
+    _formController = AnimationController(
+      duration: const Duration(milliseconds: 1000),
+      vsync: this,
+    );
+
+    _particleAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _particleController,
+      curve: Curves.linear,
+    ));
+
+    _formAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _formController,
+      curve: Curves.easeOut,
+    ));
+  }
+
+  void _startAnimations() async {
+    _particleController.repeat();
+    await Future.delayed(const Duration(milliseconds: 500));
+    _formController.forward();
+  }
 
   Future<void> _signIn() async {
     setState(() {
