@@ -341,6 +341,7 @@ class _CreateAccountState extends State<CreateAccount> {
           
           messages.add('📧 Firebase verification email also sent');
 
+          // Show success message briefly, then navigate
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Column(
@@ -352,17 +353,22 @@ class _CreateAccountState extends State<CreateAccount> {
                 )).toList(),
               ),
               backgroundColor: AppTheme.success,
-              duration: const Duration(seconds: 8),
+              duration: const Duration(seconds: 3), // Reduced duration
             ),
           );
 
-          // Navigate to main app
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const MainAppNavigator(),
-            ),
-          );
+          // Navigate immediately without waiting for SnackBar
+          Future.delayed(const Duration(milliseconds: 500), () {
+            if (mounted) {
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const MainAppNavigator(),
+                ),
+                (route) => false, // Clear all previous routes
+              );
+            }
+          });
         }
       }
     } on FirebaseAuthException catch (e) {
