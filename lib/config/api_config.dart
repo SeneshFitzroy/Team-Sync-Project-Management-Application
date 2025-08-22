@@ -14,7 +14,6 @@ class ApiConfig {
   
   // Default country code for WhatsApp (Sri Lanka)
   static const String defaultCountryCode = '94';
-}
   
   /*
   SETUP INSTRUCTIONS:
