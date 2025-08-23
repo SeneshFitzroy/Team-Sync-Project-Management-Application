@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../models/project.dart';
-import '../models/user_model.dart';
 import '../blocs/project_bloc.dart';
 import '../Services/firebase_service.dart';
-import '../theme/app_theme.dart';
 
 class ProjectsPage extends StatefulWidget {
   const ProjectsPage({super.key});

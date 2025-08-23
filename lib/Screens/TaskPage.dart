@@ -2,11 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../models/task.dart';
-import '../models/project.dart';
 import '../blocs/task_bloc.dart';
 import '../blocs/project_bloc.dart';
 import '../Services/firebase_service.dart';
-import '../theme/app_theme.dart';
 
 class TaskPage extends StatefulWidget {
   const TaskPage({super.key});
