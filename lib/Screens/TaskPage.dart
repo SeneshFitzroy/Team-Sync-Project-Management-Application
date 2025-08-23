@@ -75,6 +75,12 @@ class _TaskPageState extends State<TaskPage> with TickerProviderStateMixin {
 
   void _loadData() {
     print('🔄 Loading tasks and projects...');
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+    print('👤 Current user ID: $userId');
+    if (userId == null) {
+      print('❌ User not authenticated!');
+      return;
+    }
     context.read<TaskBloc>().add(LoadTasks());
     context.read<ProjectBloc>().add(LoadProjects());
   }
@@ -211,7 +217,10 @@ class _TaskPageState extends State<TaskPage> with TickerProviderStateMixin {
                       backgroundColor: AppTheme.primaryBlue,
                       child: BlocBuilder<TaskBloc, TaskState>(
                         builder: (context, state) {
+                          print('🔄 TaskBloc state changed: ${state.runtimeType}');
+                          
                           if (state is TaskLoading) {
+                            print('⏳ TaskLoading state - showing loader');
                             return Center(
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -223,6 +232,41 @@ class _TaskPageState extends State<TaskPage> with TickerProviderStateMixin {
                                   Text(
                                     'Loading tasks...',
                                     style: AppTheme.bodyMedium,
+                                  ),
+                                ],
+                              ),
+                            );
+                          }
+
+                          if (state is TaskError) {
+                            print('❌ TaskError state: ${state.message}');
+                            return Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.error_outline,
+                                    size: 64,
+                                    color: AppTheme.urgentPriority,
+                                  ),
+                                  SizedBox(height: 16),
+                                  Text(
+                                    'Error loading tasks',
+                                    style: AppTheme.headingSmall,
+                                  ),
+                                  SizedBox(height: 8),
+                                  Text(
+                                    state.message,
+                                    style: AppTheme.bodyMedium,
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  SizedBox(height: 16),
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      print('🔄 Retry button pressed - reloading tasks');
+                                      context.read<TaskBloc>().add(LoadTasks());
+                                    },
+                                    child: Text('Retry'),
                                   ),
                                 ],
                               ),
