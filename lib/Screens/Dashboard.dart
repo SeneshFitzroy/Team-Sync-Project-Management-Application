@@ -589,6 +589,15 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
         
         SizedBox(height: 25),
         
+        // Projects Due Today
+        if (state.projectsDueToday.isNotEmpty) ...[
+          SlideTransition(
+            position: _slideAnimation,
+            child: _buildProjectsDueToday(state.projectsDueToday),
+          ),
+          SizedBox(height: 25),
+        ],
+        
         // Project Progress
         if (state.projectProgress.isNotEmpty) ...[
           SlideTransition(
@@ -1510,6 +1519,136 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
     );
   }
 
+  Widget _buildProjectsDueToday(List<Project> projects) {
+    return Container(
+      padding: EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.15),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.white.withOpacity(0.3)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.today, color: Colors.white, size: 24),
+              SizedBox(width: 8),
+              Text(
+                'Projects Due Today',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Spacer(),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Color(0xFFFFB142),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  '${projects.length}',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 16),
+          ...projects.map((project) => Container(
+            margin: EdgeInsets.only(bottom: 12),
+            padding: EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.white.withOpacity(0.2)),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 8,
+                  height: 8,
+                  decoration: BoxDecoration(
+                    color: Color(0xFFFFB142),
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        project.name,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      if (project.description.isNotEmpty) ...[
+                        SizedBox(height: 4),
+                        Text(
+                          project.description,
+                          style: TextStyle(
+                            color: Colors.white.withOpacity(0.8),
+                            fontSize: 14,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                      SizedBox(height: 8),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.group,
+                            color: Colors.white.withOpacity(0.7),
+                            size: 16,
+                          ),
+                          SizedBox(width: 4),
+                          Text(
+                            '${project.teamMembers.length} members',
+                            style: TextStyle(
+                              color: Colors.white.withOpacity(0.7),
+                              fontSize: 12,
+                            ),
+                          ),
+                          Spacer(),
+                          Container(
+                            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: Color(0xFFFFB142).withOpacity(0.3),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              'Due Today',
+                              style: TextStyle(
+                                color: Color(0xFFFFB142),
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          )).toList(),
+        ],
+      ),
+    );
+  }
+
   Widget _buildCreateProjectButton() {
     return Container(
       padding: EdgeInsets.all(20),
@@ -1567,6 +1706,7 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
   void _showCreateProjectDialog() {
     final nameController = TextEditingController();
     final descriptionController = TextEditingController();
+    DateTime? selectedDueDate;
     List<UserModel> allUsers = [];
     List<String> selectedMemberIds = [];
     
@@ -1577,7 +1717,7 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
           title: Text('Create New Project'),
           content: Container(
             width: double.maxFinite,
-            constraints: BoxConstraints(maxHeight: 500),
+            constraints: BoxConstraints(maxHeight: 600),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -1597,6 +1737,45 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                     border: OutlineInputBorder(),
                   ),
                   maxLines: 3,
+                ),
+                SizedBox(height: 16),
+                // Due Date Field
+                Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey[400]!),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: ListTile(
+                    leading: Icon(Icons.calendar_today),
+                    title: Text(
+                      selectedDueDate == null
+                          ? 'Select Due Date (Optional)'
+                          : 'Due: ${selectedDueDate!.day}/${selectedDueDate!.month}/${selectedDueDate!.year}',
+                    ),
+                    trailing: selectedDueDate != null
+                        ? IconButton(
+                            icon: Icon(Icons.clear),
+                            onPressed: () {
+                              setState(() {
+                                selectedDueDate = null;
+                              });
+                            },
+                          )
+                        : null,
+                    onTap: () async {
+                      final DateTime? picked = await showDatePicker(
+                        context: context,
+                        initialDate: DateTime.now(),
+                        firstDate: DateTime.now(),
+                        lastDate: DateTime.now().add(Duration(days: 365)),
+                      );
+                      if (picked != null) {
+                        setState(() {
+                          selectedDueDate = picked;
+                        });
+                      }
+                    },
+                  ),
                 ),
                 SizedBox(height: 16),
                 Text(
@@ -1671,6 +1850,7 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                   context.read<ProjectBloc>().add(CreateProject(
                     name: nameController.text,
                     description: descriptionController.text,
+                    dueDate: selectedDueDate,
                     teamMembers: selectedMemberIds,
                   ));
                   Navigator.pop(context);

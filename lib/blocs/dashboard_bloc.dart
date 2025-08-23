@@ -43,6 +43,7 @@ class DashboardLoading extends DashboardState {}
 class DashboardLoaded extends DashboardState {
   final Map<String, dynamic> stats;
   final List<Project> recentProjects;
+  final List<Project> projectsDueToday;
   final List<Task> upcomingTasks;
   final List<Task> overdueTasks;
   final List<Map<String, dynamic>> recentActivities;
@@ -53,6 +54,7 @@ class DashboardLoaded extends DashboardState {
   const DashboardLoaded({
     required this.stats,
     required this.recentProjects,
+    required this.projectsDueToday,
     required this.upcomingTasks,
     required this.overdueTasks,
     required this.recentActivities,
@@ -65,6 +67,7 @@ class DashboardLoaded extends DashboardState {
   List<Object?> get props => [
         stats,
         recentProjects,
+        projectsDueToday,
         upcomingTasks,
         overdueTasks,
         recentActivities,
@@ -146,8 +149,10 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
 
       // Load data with simple queries to avoid index requirements
       List<Project> recentProjects = [];
+      List<Project> projectsDueToday = [];
       List<Task> upcomingTasks = [];
       List<Task> overdueTasks = [];
+      List<Task> tasksDueToday = [];
       List<MemberRequest> pendingRequests = [];
       
       try {
@@ -158,9 +163,25 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
             .limit(5)
             .get();
         
-        recentProjects = projectSnapshot.docs
+        final allProjects = projectSnapshot.docs
             .map((doc) => Project.fromMap(doc.data(), doc.id))
             .toList();
+        
+        // Filter projects - get recent ones and projects due today
+        final now = DateTime.now();
+        final today = DateTime(now.year, now.month, now.day);
+        
+        recentProjects = allProjects.take(5).toList();
+        
+        // Find projects due today
+        projectsDueToday = allProjects.where((project) {
+          if (project.dueDate == null) return false;
+          final projectDate = DateTime(project.dueDate!.year, project.dueDate!.month, project.dueDate!.day);
+          return projectDate.isAtSameMomentAs(today);
+        }).toList();
+        
+        print('📅 Projects due today: ${projectsDueToday.length}');
+        
       } catch (e) {
         print('Error loading projects: $e');
       }
@@ -178,13 +199,21 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
             .toList();
         
         final now = DateTime.now();
+        final today = DateTime(now.year, now.month, now.day);
+        final tomorrow = today.add(const Duration(days: 1));
+        
         upcomingTasks = allTasks.where((task) => 
-          task.dueDate.isAfter(now) && task.status != TaskStatus.completed
+          task.dueDate.isAfter(tomorrow) && task.status != TaskStatus.completed
         ).toList();
         
         overdueTasks = allTasks.where((task) => 
-          task.dueDate.isBefore(now) && task.status != TaskStatus.completed
+          task.dueDate.isBefore(today) && task.status != TaskStatus.completed
         ).toList();
+        
+        tasksDueToday = allTasks.where((task) {
+          final taskDate = DateTime(task.dueDate.year, task.dueDate.month, task.dueDate.day);
+          return taskDate.isAtSameMomentAs(today) && task.status != TaskStatus.completed;
+        }).toList();
       } catch (e) {
         print('Error loading tasks: $e');
       }
@@ -208,14 +237,17 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
       // Create simple stats
       final stats = {
         'totalProjects': recentProjects.length,
-        'totalTasks': upcomingTasks.length + overdueTasks.length,
+        'totalTasks': upcomingTasks.length + overdueTasks.length + tasksDueToday.length,
         'completedTasks': 0,
+        'tasksDueToday': tasksDueToday.length,
+        'overdueTasks': overdueTasks.length,
         'overdueItems': overdueTasks.length,
       };
 
       emit(DashboardLoaded(
         stats: stats,
         recentProjects: recentProjects,
+        projectsDueToday: projectsDueToday,
         upcomingTasks: upcomingTasks,
         overdueTasks: overdueTasks,
         recentActivities: const [],
