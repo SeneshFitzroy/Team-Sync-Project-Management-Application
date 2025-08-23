@@ -271,7 +271,7 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> with TickerProv
                             ),
                           ),
                           const Spacer(),
-                          const TickLogo(height: 40, color: Colors.white),
+                          const TickLogo(size: 40, color: Colors.white),
                         ],
                       ),
                     ),
