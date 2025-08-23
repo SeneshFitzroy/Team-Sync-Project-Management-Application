@@ -245,8 +245,26 @@ class _CalendarState extends State<Calendar> with TickerProviderStateMixin {
       final currentUser = AuthService.currentUser;
       if (currentUser == null) return;
 
+      // Convert string priority to TaskPriority enum
+      TaskPriority taskPriority;
+      switch (priority.toLowerCase()) {
+        case 'high':
+          taskPriority = TaskPriority.high;
+          break;
+        case 'medium':
+          taskPriority = TaskPriority.medium;
+          break;
+        case 'low':
+          taskPriority = TaskPriority.low;
+          break;
+        case 'urgent':
+          taskPriority = TaskPriority.urgent;
+          break;
+        default:
+          taskPriority = TaskPriority.medium;
+      }
+
       final task = Task(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
         title: title,
         description: description,
         dueDate: DateTime(
@@ -256,10 +274,12 @@ class _CalendarState extends State<Calendar> with TickerProviderStateMixin {
           time.hour,
           time.minute,
         ),
-        priority: priority,
-        status: 'pending',
+        priority: taskPriority,
+        status: TaskStatus.todo,
         createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
         assignedTo: currentUser.uid,
+        createdBy: currentUser.uid,
       );
 
       await TaskService.createTask(task);
@@ -638,14 +658,16 @@ class _CalendarState extends State<Calendar> with TickerProviderStateMixin {
     );
   }
 
-  Color _getPriorityColor(String priority) {
+  Color _getPriorityColor(TaskPriority priority) {
     switch (priority) {
-      case 'high':
+      case TaskPriority.high:
         return Colors.red;
-      case 'medium':
+      case TaskPriority.medium:
         return Colors.orange;
-      case 'low':
+      case TaskPriority.low:
         return Colors.green;
+      case TaskPriority.urgent:
+        return Colors.purple;
       default:
         return Colors.grey;
     }
