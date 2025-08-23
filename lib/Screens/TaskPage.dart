@@ -890,3 +890,26 @@ class _TaskDetailsDialog extends StatelessWidget {
     }
   }
 }
+  
+// Particle Painter for background animation  
+class ParticlePainter extends CustomPainter {  
+  final double animationValue;  
+  
+  ParticlePainter(this.animationValue);  
+  
+  @override  
+  void paint(Canvas canvas, Size size) {  
+    final paint = Paint()  
+      ..color = AppTheme.primaryBlue.withOpacity(0.1)  
+      ..style = PaintingStyle.fill;  
+  
+    for (int i = 0; i < 50; i++) {  
+      final x = (i * 50 + animationValue * 100) %% size.width;  
+      final y = (i * 30 + animationValue * 50) %% size.height;  
+      canvas.drawCircle(Offset(x, y), 2, paint);  
+    }  
+  }  
+  
+  @override  
+  bool shouldRepaint(CustomPainter oldDelegate) => true;  
+} 
