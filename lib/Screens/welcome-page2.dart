@@ -457,8 +457,8 @@ class ParticlePainter extends CustomPainter {
       final radius = 1.0 + (random.nextDouble() * 2.5);
       
       // Animate opacity and position
-      final opacity = (0.05 + (random.nextDouble() * 0.2)) * 
-                     (0.5 + 0.5 * sin(animationValue * 2 * pi + i));
+      final opacity = ((0.05 + (random.nextDouble() * 0.2)) * 
+                     (0.5 + 0.5 * sin(animationValue * 2 * pi + i))).clamp(0.0, 1.0);
       final offsetY = sin(animationValue * 2 * pi + i * 0.5) * 8;
       
       paint.color = AppTheme.primaryBlue.withOpacity(opacity);
