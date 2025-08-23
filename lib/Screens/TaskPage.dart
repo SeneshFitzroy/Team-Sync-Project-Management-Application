@@ -345,7 +345,7 @@ class _TaskPageState extends State<TaskPage> with TickerProviderStateMixin {
       case TaskStatus.todo:
         return AppTheme.todoColor;
       case TaskStatus.inProgress:
-        return Colors.blue;
+        return AppTheme.inProgressColor;
       case TaskStatus.completed:
         return Colors.green;
       case TaskStatus.review:
@@ -567,7 +567,7 @@ class _TaskCard extends StatelessWidget {
       case TaskStatus.todo:
         return AppTheme.todoColor;
       case TaskStatus.inProgress:
-        return Colors.blue;
+        return AppTheme.inProgressColor;
       case TaskStatus.completed:
         return Colors.green;
       case TaskStatus.review:
@@ -886,7 +886,7 @@ class _TaskDetailsDialog extends StatelessWidget {
       case TaskStatus.todo:
         return AppTheme.todoColor;
       case TaskStatus.inProgress:
-        return Colors.blue;
+        return AppTheme.inProgressColor;
       case TaskStatus.completed:
         return Colors.green;
       case TaskStatus.review:
