@@ -211,12 +211,16 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
   ) async {
     emit(TaskLoading());
     try {
-      final tasksStream = FirebaseService.getUserTasksStream();
-      final createdTasksStream = FirebaseService.getCreatedTasksStream();
+      final userId = FirebaseService.currentUserId;
+      if (userId == null) {
+        emit(const TaskError('User not authenticated'));
+        return;
+      }
 
-      tasksStream.listen((assignedTasks) async {
+      // Create a combined stream that includes both assigned and created tasks
+      final combinedStream = FirebaseService.getUserTasksStream().asyncMap((assignedTasks) async {
         try {
-          final createdTasks = await createdTasksStream.first;
+          final createdTasks = await FirebaseService.getCreatedTasksStream().first;
           
           // Combine assigned and created tasks, removing duplicates
           final allTasksSet = <String, Task>{};
@@ -227,14 +231,21 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
             if (task.id != null) allTasksSet[task.id!] = task;
           }
           
-          _allTasks = allTasksSet.values.toList();
-          _allTasks.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-
-          emit(_buildTasksLoadedState());
+          return allTasksSet.values.toList();
         } catch (e) {
-          emit(TaskError('Failed to load tasks: ${e.toString()}'));
+          return assignedTasks; // Fallback to just assigned tasks
         }
       });
+
+      await emit.forEach<List<Task>>(
+        combinedStream,
+        onData: (allTasks) {
+          _allTasks = allTasks;
+          _allTasks.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+          return _buildTasksLoadedState();
+        },
+        onError: (error, stackTrace) => TaskError('Failed to load tasks: ${error.toString()}'),
+      );
     } catch (e) {
       emit(TaskError('Failed to load tasks: ${e.toString()}'));
     }

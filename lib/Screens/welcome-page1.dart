@@ -650,8 +650,8 @@ class ParticlePainter extends CustomPainter {
       final y = random.nextDouble() * size.height;
       final radius = 1.5 + (random.nextDouble() * 3);
       
-      final opacity = (0.03 + (random.nextDouble() * 0.1)) * 
-                     (0.3 + 0.7 * sin(animationValue * pi + i * 0.3));
+      final opacity = ((0.03 + (random.nextDouble() * 0.1)) * 
+                     (0.3 + 0.7 * sin(animationValue * pi + i * 0.3))).clamp(0.0, 1.0);
       final offsetY = cos(animationValue * pi + i * 0.7) * 12;
       final offsetX = sin(animationValue * 0.5 * pi + i * 0.4) * 4;
       
