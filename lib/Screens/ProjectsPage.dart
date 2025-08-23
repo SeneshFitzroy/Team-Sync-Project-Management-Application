@@ -599,12 +599,12 @@ class _ProjectDetailsDialog extends StatelessWidget {
             ),
             SizedBox(height: 8),
             Text(
-              'Start Date: ${project.startDate.day}/${project.startDate.month}/${project.startDate.year}',
+              'Created: ${project.createdAt.day}/${project.createdAt.month}/${project.createdAt.year}',
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 4),
             Text(
-              'End Date: ${project.endDate.day}/${project.endDate.month}/${project.endDate.year}',
+              'Due Date: ${project.dueDate != null ? "${project.dueDate!.day}/${project.dueDate!.month}/${project.dueDate!.year}" : "Not set"}',
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
           ],
