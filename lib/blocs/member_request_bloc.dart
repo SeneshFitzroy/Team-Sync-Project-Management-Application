@@ -126,21 +126,21 @@ class MemberRequestBloc extends Bloc<MemberRequestEvent, MemberRequestState> {
       final pendingRequestsStream = FirebaseService.getPendingRequestsStream();
       final sentRequestsStream = FirebaseService.getSentRequestsStream();
 
-      await emit.forEach<List<MemberRequest>>(
-        pendingRequestsStream,
-        onData: (pendingRequests) async {
+      pendingRequestsStream.listen((pendingRequests) async {
+        try {
           final sentRequests = await sentRequestsStream.first;
           
           final pendingWithDetails = await _enrichRequestsWithDetails(pendingRequests);
           final sentWithDetails = await _enrichRequestsWithDetails(sentRequests);
 
-          return RequestsLoaded(
+          emit(RequestsLoaded(
             pendingRequests: pendingWithDetails,
             sentRequests: sentWithDetails,
-          );
-        },
-        onError: (error, stackTrace) => MemberRequestError('Failed to load requests: ${error.toString()}'),
-      );
+          ));
+        } catch (e) {
+          emit(MemberRequestError('Failed to load requests: ${e.toString()}'));
+        }
+      });
     } catch (e) {
       emit(MemberRequestError('Failed to load requests: ${e.toString()}'));
     }
@@ -152,9 +152,9 @@ class MemberRequestBloc extends Bloc<MemberRequestEvent, MemberRequestState> {
   ) async {
     try {
       final sentRequestsStream = FirebaseService.getSentRequestsStream();
-      await emit.forEach<List<MemberRequest>>(
-        sentRequestsStream,
-        onData: (sentRequests) async {
+      
+      sentRequestsStream.listen((sentRequests) async {
+        try {
           final sentWithDetails = await _enrichRequestsWithDetails(sentRequests);
           
           // Keep existing pending requests if available
@@ -163,13 +163,14 @@ class MemberRequestBloc extends Bloc<MemberRequestEvent, MemberRequestState> {
             pendingWithDetails = (state as RequestsLoaded).pendingRequests;
           }
 
-          return RequestsLoaded(
+          emit(RequestsLoaded(
             pendingRequests: pendingWithDetails,
             sentRequests: sentWithDetails,
-          );
-        },
-        onError: (error, stackTrace) => MemberRequestError('Failed to load sent requests: ${error.toString()}'),
-      );
+          ));
+        } catch (e) {
+          emit(MemberRequestError('Failed to load sent requests: ${e.toString()}'));
+        }
+      });
     } catch (e) {
       emit(MemberRequestError('Failed to load sent requests: ${e.toString()}'));
     }
