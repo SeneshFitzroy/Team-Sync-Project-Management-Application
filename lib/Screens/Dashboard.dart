@@ -607,12 +607,6 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
           ),
           SizedBox(height: 25),
         ],
-        
-        // Quick Actions
-        SlideTransition(
-          position: _slideAnimation,
-          child: _buildQuickActions(),
-        ),
       ],
     );
   }
