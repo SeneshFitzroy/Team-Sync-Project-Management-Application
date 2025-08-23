@@ -19,7 +19,7 @@ class _TaskPageState extends State<TaskPage> with TickerProviderStateMixin {
   late AnimationController _fadeController;
   late Animation<double> _fadeAnimation;
   String _selectedFilter = 'All';
-  final List<String> _filterOptions = ['All', 'Pending', 'In Progress', 'Completed'];
+  final List<String> _filterOptions = ['All', 'Todo', 'In Progress', 'Completed'];
 
   @override
   void initState() {
@@ -602,10 +602,11 @@ class _AddTaskDialogState extends State<_AddTaskDialog> {
         assignedTo: userId,
         projectId: _selectedProjectId,
         priority: _selectedPriority,
-        status: TaskStatus.pending,
+        status: TaskStatus.todo,
         dueDate: _selectedDate,
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
+        createdBy: userId,
       );
 
       await FirebaseService.createTask(task);
