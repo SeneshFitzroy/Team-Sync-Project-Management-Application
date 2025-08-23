@@ -191,12 +191,12 @@ class _SimpleDatePickerState extends State<SimpleDatePicker> {
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(
-            color: AppTheme.primaryColor,
+            color: AppTheme.primaryBlue,
             width: 2,
           ),
         ),
         filled: true,
-        fillColor: AppTheme.cardBackground,
+        fillColor: AppTheme.backgroundLight,
       ),
       onTap: () => _showCustomDatePicker(context),
     );
