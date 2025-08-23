@@ -6,7 +6,6 @@ import '../blocs/task_bloc.dart';
 import '../blocs/project_bloc.dart';
 import '../Services/firebase_service.dart';
 import '../theme/app_theme.dart';
-import '../widgets/custom_date_picker.dart';
 
 class TaskPage extends StatefulWidget {
   const TaskPage({super.key});
@@ -329,51 +328,6 @@ class _TaskPageState extends State<TaskPage> with TickerProviderStateMixin {
         return tasks.where((task) => task.status == TaskStatus.completed).toList();
       default:
         return tasks;
-    }
-  }
-
-  Color _getPriorityColor(TaskPriority priority) {
-    switch (priority) {
-      case TaskPriority.urgent:
-        return AppTheme.urgentPriority;
-      case TaskPriority.high:
-        return AppTheme.highPriority;
-      case TaskPriority.medium:
-        return AppTheme.mediumPriority;
-      case TaskPriority.low:
-        return AppTheme.lowPriority;
-    }
-  }
-
-  Color _getStatusColor(TaskStatus status) {
-    switch (status) {
-      case TaskStatus.todo:
-        return AppTheme.todoColor;
-      case TaskStatus.inProgress:
-        return AppTheme.inProgressColor;
-      case TaskStatus.completed:
-        return AppTheme.completedColor;
-      case TaskStatus.review:
-        return AppTheme.primaryBlue;
-      case TaskStatus.cancelled:
-        return AppTheme.urgentPriority;
-    }
-  }
-
-  String _formatDate(DateTime date) {
-    final now = DateTime.now();
-    final difference = date.difference(now).inDays;
-    
-    if (difference == 0) {
-      return 'Today';
-    } else if (difference == 1) {
-      return 'Tomorrow';
-    } else if (difference == -1) {
-      return 'Yesterday';
-    } else if (difference > 0) {
-      return 'In $difference days';
-    } else {
-      return '${difference.abs()} days ago';
     }
   }
 
@@ -720,16 +674,94 @@ class _AddTaskDialogState extends State<_AddTaskDialog> {
               },
             ),
             SizedBox(height: 16),
-            // Custom Date Picker with better web compatibility  
-            SimpleDatePicker(
-              selectedDate: _selectedDate,
-              onDateChanged: (DateTime date) {
-                print('📅 Date selected via custom picker: $date');
-                setState(() {
-                  _selectedDate = date;
-                });
+            // Date Picker field
+            TextFormField(
+              readOnly: true,
+              decoration: InputDecoration(
+                labelText: 'Due Date',
+                prefixIcon: Icon(
+                  Icons.calendar_today,
+                  color: AppTheme.primaryBlue,
+                ),
+                suffixIcon: Icon(
+                  Icons.arrow_drop_down,
+                  color: AppTheme.textSecondary,
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(
+                    color: AppTheme.textLight.withOpacity(0.3),
+                    width: 1.5,
+                  ),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(
+                    color: AppTheme.textLight.withOpacity(0.3),
+                    width: 1.5,
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(
+                    color: AppTheme.primaryBlue,
+                    width: 2,
+                  ),
+                ),
+                filled: true,
+                fillColor: AppTheme.backgroundLight,
+              ),
+              controller: TextEditingController(
+                text: '${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}',
+              ),
+              onTap: () async {
+                print('🗓️ Opening date picker, current date: $_selectedDate');
+                try {
+                  final date = await showDatePicker(
+                    context: context,
+                    initialDate: _selectedDate,
+                    firstDate: DateTime.now().subtract(Duration(days: 1)),
+                    lastDate: DateTime.now().add(Duration(days: 365)),
+                    helpText: 'Select due date',
+                    cancelText: 'Cancel',
+                    confirmText: 'OK',
+                    builder: (context, child) {
+                      return Theme(
+                        data: Theme.of(context).copyWith(
+                          colorScheme: ColorScheme.light(
+                            primary: AppTheme.primaryBlue,
+                            onPrimary: Colors.white,
+                            surface: AppTheme.backgroundLight,
+                            onSurface: AppTheme.textPrimary,
+                          ),
+                          textButtonTheme: TextButtonThemeData(
+                            style: TextButton.styleFrom(
+                              foregroundColor: AppTheme.primaryBlue,
+                            ),
+                          ),
+                        ),
+                        child: child!,
+                      );
+                    },
+                  );
+                  if (date != null) {
+                    print('📅 Date selected: $date');
+                    setState(() {
+                      _selectedDate = date;
+                    });
+                  } else {
+                    print('❌ No date selected');
+                  }
+                } catch (e) {
+                  print('❌ Error opening date picker: $e');
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Error selecting date: $e'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
               },
-              labelText: 'Due Date',
             ),
             SizedBox(height: 16),
             BlocBuilder<ProjectBloc, ProjectState>(
