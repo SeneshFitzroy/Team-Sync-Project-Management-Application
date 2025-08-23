@@ -89,160 +89,223 @@ class _TaskPageState extends State<TaskPage> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppTheme.backgroundGray,
       appBar: AppBar(
         title: Text(
           'Tasks',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Theme.of(context).colorScheme.onSurface,
-          ),
+          style: AppTheme.headingMedium.copyWith(color: AppTheme.textWhite),
         ),
-        backgroundColor: Theme.of(context).colorScheme.surface,
+        backgroundColor: AppTheme.primaryBlue,
         elevation: 0,
         actions: [
-          IconButton(
-            icon: Icon(Icons.add),
-            onPressed: _showAddTaskDialog,
+          Container(
+            margin: EdgeInsets.only(right: 16),
+            child: ElevatedButton.icon(
+              onPressed: _showAddTaskDialog,
+              icon: Icon(Icons.add, size: 16),
+              label: Text('Add Task'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppTheme.backgroundWhite,
+                foregroundColor: AppTheme.primaryBlue,
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              ),
+            ),
           ),
         ],
       ),
-      body: FadeTransition(
-        opacity: _fadeAnimation,
-        child: Column(
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              AppTheme.primaryBlue.withOpacity(0.1),
+              AppTheme.backgroundGray,
+            ],
+          ),
+        ),
+        child: Stack(
           children: [
-            // Filter tabs
-            Container(
-              height: 60,
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: _filterOptions.length,
-                itemBuilder: (context, index) {
-                  final filter = _filterOptions[index];
-                  final isSelected = _selectedFilter == filter;
-                  
-                  return Padding(
-                    padding: EdgeInsets.only(right: 12),
-                    child: FilterChip(
-                      label: Text(filter),
-                      selected: isSelected,
-                      onSelected: (selected) {
-                        setState(() {
-                          _selectedFilter = filter;
-                        });
-                      },
-                      selectedColor: Theme.of(context).colorScheme.primary.withOpacity(0.2),
-                      checkmarkColor: Theme.of(context).colorScheme.primary,
-                    ),
-                  );
-                },
-              ),
+            // Animated particle background
+            AnimatedBuilder(
+              animation: _particleAnimation,
+              child: Container(),
+              builder: (context, child) {
+                return CustomPaint(
+                  painter: ParticlePainter(_particleAnimation.value),
+                  size: Size.infinite,
+                );
+              },
             ),
             
-            // Task list
-            Expanded(
-              child: RefreshIndicator(
-                onRefresh: () async {
-                  _loadData();
-                },
-                child: BlocBuilder<TaskBloc, TaskState>(
-                  builder: (context, state) {
-                    if (state is TaskLoading) {
-                      return Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            CircularProgressIndicator(),
-                            SizedBox(height: 16),
-                            Text(
-                              'Loading tasks...',
-                              style: TextStyle(
-                                color: Colors.grey[600],
-                                fontSize: 16,
+            // Main content
+            FadeTransition(
+              opacity: _fadeAnimation,
+              child: Column(
+                children: [
+                  // Filter tabs with slide animation
+                  SlideTransition(
+                    position: _slideAnimation,
+                    child: Container(
+                      height: 80,
+                      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: _filterOptions.length,
+                        itemBuilder: (context, index) {
+                          final filter = _filterOptions[index];
+                          final isSelected = _selectedFilter == filter;
+                          
+                          return Padding(
+                            padding: EdgeInsets.only(right: 12),
+                            child: GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  _selectedFilter = filter;
+                                });
+                              },
+                              child: AnimatedContainer(
+                                duration: Duration(milliseconds: 300),
+                                curve: Curves.easeInOut,
+                                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                                decoration: BoxDecoration(
+                                  color: isSelected ? AppTheme.primaryBlue : AppTheme.backgroundWhite,
+                                  borderRadius: BorderRadius.circular(25),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: isSelected 
+                                          ? AppTheme.primaryBlue.withOpacity(0.3)
+                                          : Colors.grey.withOpacity(0.1),
+                                      blurRadius: 8,
+                                      offset: Offset(0, 4),
+                                    ),
+                                  ],
+                                ),
+                                child: Text(
+                                  filter,
+                                  style: AppTheme.bodyMedium.copyWith(
+                                    color: isSelected ? AppTheme.textWhite : AppTheme.textPrimary,
+                                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                                  ),
+                                ),
                               ),
                             ),
-                          ],
-                        ),
-                      );
-                    }
-
-                    if (state is TasksLoaded) {
-                      final filteredTasks = _getFilteredTasks(state.filteredTasks);
-
-                      if (filteredTasks.isEmpty) {
-                        return Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.task_alt,
-                                size: 64,
-                                color: Colors.grey,
-                              ),
-                              SizedBox(height: 16),
-                              Text(
-                                _selectedFilter == 'All' 
-                                    ? 'No tasks yet'
-                                    : 'No $_selectedFilter tasks',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  color: Colors.grey[600],
-                                ),
-                              ),
-                              SizedBox(height: 8),
-                              Text(
-                                'Tap the + button to create your first task',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.grey[500],
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      }
-
-                      return ListView.builder(
-                        padding: EdgeInsets.all(16),
-                        itemCount: filteredTasks.length,
-                        itemBuilder: (context, index) {
-                          final task = filteredTasks[index];
-                          return _TaskCard(
-                            task: task,
-                            onTap: () => _showTaskDetails(task),
-                            onStatusTap: () => _showUpdateStatusDialog(context, task),
                           );
                         },
-                      );
-                    }
-
-                    return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.error_outline,
-                            size: 64,
-                            color: Colors.grey,
-                          ),
-                          SizedBox(height: 16),
-                          Text(
-                            'Something went wrong',
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: Colors.grey[600],
-                            ),
-                          ),
-                          SizedBox(height: 8),
-                          TextButton(
-                            onPressed: _loadData,
-                            child: Text('Try again'),
-                          ),
-                        ],
                       ),
-                    );
-                  },
-                ),
+                    ),
+                  ),
+                  
+                  // Task list
+                  Expanded(
+                    child: RefreshIndicator(
+                      onRefresh: () async {
+                        _loadData();
+                      },
+                      color: AppTheme.backgroundWhite,
+                      backgroundColor: AppTheme.primaryBlue,
+                      child: BlocBuilder<TaskBloc, TaskState>(
+                        builder: (context, state) {
+                          if (state is TaskLoading) {
+                            return Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  CircularProgressIndicator(
+                                    valueColor: AlwaysStoppedAnimation<Color>(AppTheme.primaryBlue),
+                                  ),
+                                  SizedBox(height: 16),
+                                  Text(
+                                    'Loading tasks...',
+                                    style: AppTheme.bodyMedium,
+                                  ),
+                                ],
+                              ),
+                            );
+                          }
+
+                          if (state is TasksLoaded) {
+                            final filteredTasks = _getFilteredTasks(state.filteredTasks);
+
+                            if (filteredTasks.isEmpty) {
+                              return Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.task_alt,
+                                      size: 64,
+                                      color: AppTheme.textLight,
+                                    ),
+                                    SizedBox(height: 16),
+                                    Text(
+                                      _selectedFilter == 'All' 
+                                          ? 'No tasks yet'
+                                          : 'No $_selectedFilter tasks',
+                                      style: AppTheme.headingSmall.copyWith(color: AppTheme.textSecondary),
+                                    ),
+                                    SizedBox(height: 8),
+                                    Text(
+                                      'Tap the + button to create your first task',
+                                      style: AppTheme.bodyMedium,
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }
+
+                            return ListView.builder(
+                              padding: EdgeInsets.all(20),
+                              itemCount: filteredTasks.length,
+                              itemBuilder: (context, index) {
+                                final task = filteredTasks[index];
+                                return SlideTransition(
+                                  position: _slideAnimation,
+                                  child: _TaskCard(
+                                    task: task,
+                                    onTap: () => _showTaskDetails(task),
+                                    onStatusTap: () => _showUpdateStatusDialog(context, task),
+                                  ),
+                                );
+                              },
+                            );
+                          }
+
+                          return Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.error_outline,
+                                  size: 64,
+                                  color: AppTheme.textLight,
+                                ),
+                                SizedBox(height: 16),
+                                Text(
+                                  'Something went wrong',
+                                  style: AppTheme.headingSmall.copyWith(color: AppTheme.textSecondary),
+                                ),
+                                SizedBox(height: 8),
+                                ElevatedButton(
+                                  onPressed: _loadData,
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: AppTheme.primaryBlue,
+                                    foregroundColor: AppTheme.textWhite,
+                                  ),
+                                  child: Text('Try again'),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
