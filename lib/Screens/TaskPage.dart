@@ -349,9 +349,9 @@ class _TaskPageState extends State<TaskPage> with TickerProviderStateMixin {
       case TaskStatus.completed:
         return AppTheme.completedColor;
       case TaskStatus.review:
-        return Colors.purple;
+        return AppTheme.primaryBlue;
       case TaskStatus.cancelled:
-        return Colors.red;
+        return AppTheme.urgentPriority;
     }
   }
 
@@ -554,7 +554,7 @@ class _TaskCard extends StatelessWidget {
       case TaskPriority.urgent:
         return Colors.deepPurple;
       case TaskPriority.high:
-        return Colors.red;
+        return AppTheme.urgentPriority;
       case TaskPriority.medium:
         return AppTheme.todoColor;
       case TaskPriority.low:
@@ -571,9 +571,9 @@ class _TaskCard extends StatelessWidget {
       case TaskStatus.completed:
         return AppTheme.completedColor;
       case TaskStatus.review:
-        return Colors.purple;
+        return AppTheme.primaryBlue;
       case TaskStatus.cancelled:
-        return Colors.red;
+        return AppTheme.urgentPriority;
     }
   }
 
@@ -873,7 +873,7 @@ class _TaskDetailsDialog extends StatelessWidget {
       case TaskPriority.urgent:
         return Colors.deepPurple;
       case TaskPriority.high:
-        return Colors.red;
+        return AppTheme.urgentPriority;
       case TaskPriority.medium:
         return AppTheme.todoColor;
       case TaskPriority.low:
@@ -890,9 +890,9 @@ class _TaskDetailsDialog extends StatelessWidget {
       case TaskStatus.completed:
         return AppTheme.completedColor;
       case TaskStatus.review:
-        return Colors.purple;
+        return AppTheme.primaryBlue;
       case TaskStatus.cancelled:
-        return Colors.red;
+        return AppTheme.urgentPriority;
     }
   }
 
