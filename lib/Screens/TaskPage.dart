@@ -218,8 +218,8 @@ class _TaskPageState extends State<TaskPage> with TickerProviderStateMixin {
                           );
                         }
 
-                        if (state is TaskLoaded) {
-                          final filteredTasks = _getFilteredTasks(state.tasks);
+                        if (state is TasksLoaded) {
+                          final filteredTasks = _getFilteredTasks(state.filteredTasks);
 
                           if (filteredTasks.isEmpty) {
                             return Center(
@@ -290,7 +290,7 @@ class _TaskPageState extends State<TaskPage> with TickerProviderStateMixin {
   List<Task> _getFilteredTasks(List<Task> tasks) {
     switch (_selectedFilter) {
       case 'Pending':
-        return tasks.where((task) => task.status == TaskStatus.pending).toList();
+        return tasks.where((task) => task.status == TaskStatus.todo).toList();
       case 'In Progress':
         return tasks.where((task) => task.status == TaskStatus.inProgress).toList();
       case 'Completed':
