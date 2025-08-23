@@ -22,17 +22,17 @@ class CustomDatePicker extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
           border: Border.all(
-            color: AppTheme.borderColor,
+            color: AppTheme.textLight.withOpacity(0.3),
             width: 1.5,
           ),
           borderRadius: BorderRadius.circular(12),
-          color: AppTheme.cardBackground,
+          color: AppTheme.backgroundLight,
         ),
         child: Row(
           children: [
             Icon(
               Icons.calendar_today,
-              color: AppTheme.primaryColor,
+              color: AppTheme.primaryBlue,
               size: 20,
             ),
             const SizedBox(width: 12),
@@ -85,14 +85,14 @@ class CustomDatePicker extends StatelessWidget {
           return Theme(
             data: Theme.of(context).copyWith(
               colorScheme: ColorScheme.light(
-                primary: AppTheme.primaryColor,
+                primary: AppTheme.primaryBlue,
                 onPrimary: Colors.white,
-                surface: AppTheme.cardBackground,
+                surface: AppTheme.backgroundLight,
                 onSurface: AppTheme.textPrimary,
               ),
               textButtonTheme: TextButtonThemeData(
                 style: TextButton.styleFrom(
-                  foregroundColor: AppTheme.primaryColor,
+                  foregroundColor: AppTheme.primaryBlue,
                 ),
               ),
             ),
