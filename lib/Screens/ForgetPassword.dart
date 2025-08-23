@@ -94,41 +94,7 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> with TickerProv
     return null;
   }
 
-  /// Check if email is registered in Firebase
-  Future<bool> _isEmailRegistered(String email) async {
-    try {
-      // Method 1: Check Firestore users collection
-      final userQuery = await FirebaseFirestore.instance
-          .collection('users')
-          .where('email', isEqualTo: email.trim().toLowerCase())
-          .limit(1)
-          .get();
-
-      if (userQuery.docs.isNotEmpty) {
-        print('✅ Email found in Firestore: $email');
-        return true;
-      }
-
-      // Method 2: Try Firebase Auth methods to check if user exists
-      try {
-        final signInMethods = await FirebaseAuth.instance.fetchSignInMethodsForEmail(email.trim());
-        if (signInMethods.isNotEmpty) {
-          print('✅ Email found in Firebase Auth: $email');
-          return true;
-        }
-      } catch (e) {
-        print('⚠️ Firebase Auth check failed: $e');
-      }
-
-      print('❌ Email not found: $email');
-      return false;
-    } catch (e) {
-      print('❌ Error checking email registration: $e');
-      return false;
-    }
-  }
-
-  /// Enhanced password reset with comprehensive validation and error handling
+  /// Enhanced password reset with proper Firebase Auth handling
   Future<void> _resetPassword() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -140,44 +106,130 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> with TickerProv
       final email = _emailController.text.trim().toLowerCase();
       print('🔄 Starting password reset process for: $email');
 
-      // Step 1: Check if email is registered
-      bool isRegistered = await _isEmailRegistered(email);
-      
-      if (!isRegistered) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Row(
-                children: [
-                  Icon(Icons.error_outline, color: Colors.white),
-                  SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      'No account found with this email address. Please check your email or create a new account.',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                ],
-              ),
-              backgroundColor: AppTheme.error,
-              duration: Duration(seconds: 4),
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-          );
-        }
-        return;
-      }
-
-      // Step 2: Send password reset email
+      // Send password reset email directly - Firebase Auth will handle validation
       print('📧 Sending password reset email...');
       await FirebaseAuth.instance.sendPasswordResetEmail(
         email: email,
         actionCodeSettings: ActionCodeSettings(
           url: 'https://your-app-domain.com/reset-password',
           handleCodeInApp: false,
+          androidInstallApp: false,
+          androidMinimumVersion: '1.0.0',
+        ),
+      );
+
+      print('✅ Password reset email sent successfully');
+
+      // Update UI to show success
+      setState(() {
+        _emailSent = true;
+      });
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                Icon(Icons.check_circle_outline, color: Colors.white),
+                SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'Password reset instructions have been sent to $email. Please check your inbox.',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              ],
+            ),
+            backgroundColor: AppTheme.success,
+            duration: Duration(seconds: 5),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+        );
+      }
+    } on FirebaseAuthException catch (e) {
+      print('❌ Firebase Auth Error: ${e.code} - ${e.message}');
+      
+      String errorMessage = 'An error occurred while sending reset instructions.';
+      
+      switch (e.code) {
+        case 'user-not-found':
+          errorMessage = 'No account found with this email address. Please check your email or create a new account.';
+          break;
+        case 'invalid-email':
+          errorMessage = 'Please enter a valid email address.';
+          break;
+        case 'too-many-requests':
+          errorMessage = 'Too many reset attempts. Please try again later.';
+          break;
+        case 'network-request-failed':
+          errorMessage = 'Network error. Please check your internet connection.';
+          break;
+        default:
+          errorMessage = e.message ?? 'Failed to send reset instructions.';
+      }
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                Icon(Icons.error_outline, color: Colors.white),
+                SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    errorMessage,
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              ],
+            ),
+            backgroundColor: AppTheme.error,
+            duration: Duration(seconds: 4),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      print('❌ Unexpected error: $e');
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                Icon(Icons.error_outline, color: Colors.white),
+                SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'An unexpected error occurred. Please try again.',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              ],
+            ),
+            backgroundColor: AppTheme.error,
+            duration: Duration(seconds: 4),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
         ),
       );
 
