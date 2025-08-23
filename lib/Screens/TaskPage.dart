@@ -5,6 +5,7 @@ import '../models/task.dart';
 import '../blocs/task_bloc.dart';
 import '../blocs/project_bloc.dart';
 import '../Services/firebase_service.dart';
+import '../theme/app_theme.dart';
 
 class TaskPage extends StatefulWidget {
   const TaskPage({super.key});
