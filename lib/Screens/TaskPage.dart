@@ -646,6 +646,9 @@ class _AddTaskDialogState extends State<_AddTaskDialog> {
 
       print('🔄 Creating task with date: $_selectedDate');
       print('🔄 User ID: $userId');
+      print('🔄 Title: ${_titleController.text.trim()}');
+      print('🔄 Description: ${_descriptionController.text.trim()}');
+      print('🔄 Priority: $_selectedPriority');
 
       final task = Task(
         title: _titleController.text.trim(),
@@ -665,17 +668,25 @@ class _AddTaskDialogState extends State<_AddTaskDialog> {
       final taskId = await FirebaseService.createTask(task);
       print('✅ Task created with ID: $taskId');
       
+      // Clear the form
+      _titleController.clear();
+      _descriptionController.clear();
+      _selectedPriority = TaskPriority.medium;
+      _selectedDate = DateTime.now().add(Duration(days: 1));
+      _selectedProjectId = null;
+      
       // Close dialog first
       Navigator.pop(context);
       
-      // Reload tasks using BLoC
+      // Force reload tasks using BLoC
+      print('🔄 Forcing task reload...');
       context.read<TaskBloc>().add(LoadTasks());
-      print('🔄 LoadTasks event dispatched');
       
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Task created successfully!'),
+          content: Text('Task "${ task.title}" created successfully!'),
           backgroundColor: AppTheme.completedColor,
+          duration: Duration(seconds: 3),
         ),
       );
     } catch (e) {
@@ -733,105 +744,86 @@ class _AddTaskDialogState extends State<_AddTaskDialog> {
               },
             ),
             SizedBox(height: 16),
-            // Date Picker field with better web support
-            GestureDetector(
-              onTap: () async {
-                print('🗓️ Opening date picker, current date: $_selectedDate');
-                try {
-                  final date = await showDatePicker(
-                    context: context,
-                    initialDate: _selectedDate,
-                    firstDate: DateTime.now().subtract(Duration(days: 1)),
-                    lastDate: DateTime.now().add(Duration(days: 365)),
-                    helpText: 'Select due date',
-                    cancelText: 'Cancel',
-                    confirmText: 'OK',
-                    builder: (context, child) {
-                      return Theme(
-                        data: Theme.of(context).copyWith(
-                          colorScheme: ColorScheme.light(
-                            primary: AppTheme.primaryBlue,
-                            onPrimary: Colors.white,
-                            surface: AppTheme.backgroundLight,
-                            onSurface: AppTheme.textPrimary,
-                          ),
-                          textButtonTheme: TextButtonThemeData(
-                            style: TextButton.styleFrom(
-                              foregroundColor: AppTheme.primaryBlue,
-                            ),
-                          ),
+            // Simplified Date Picker - using ElevatedButton for better web compatibility
+            Row(
+              children: [
+                Icon(
+                  Icons.calendar_today,
+                  color: AppTheme.primaryBlue,
+                  size: 20,
+                ),
+                SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Due Date',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: AppTheme.textSecondary,
+                          fontWeight: FontWeight.w500,
                         ),
-                        child: child!,
-                      );
-                    },
-                  );
-                  if (date != null) {
-                    print('📅 Date selected: $date');
-                    setState(() {
-                      _selectedDate = date;
-                    });
-                  } else {
-                    print('❌ No date selected');
-                  }
-                } catch (e) {
-                  print('❌ Error opening date picker: $e');
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Error selecting date: $e'),
-                      backgroundColor: Colors.red,
-                    ),
-                  );
-                }
-              },
-              child: Container(
-                padding: EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: AppTheme.textLight.withOpacity(0.3),
-                    width: 1.5,
-                  ),
-                  borderRadius: BorderRadius.circular(12),
-                  color: AppTheme.backgroundLight,
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.calendar_today,
-                      color: AppTheme.primaryBlue,
-                      size: 20,
-                    ),
-                    SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Due Date',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: AppTheme.textSecondary,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          SizedBox(height: 2),
-                          Text(
-                            '${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: AppTheme.textPrimary,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
                       ),
-                    ),
-                    Icon(
-                      Icons.arrow_drop_down,
-                      color: AppTheme.textSecondary,
-                    ),
-                  ],
+                      SizedBox(height: 4),
+                      ElevatedButton(
+                        onPressed: () async {
+                          print('🗓️ Date picker button pressed');
+                          try {
+                            final date = await showDatePicker(
+                              context: context,
+                              initialDate: _selectedDate,
+                              firstDate: DateTime.now(),
+                              lastDate: DateTime.now().add(Duration(days: 365)),
+                              helpText: 'Select due date',
+                              cancelText: 'Cancel',
+                              confirmText: 'Select',
+                            );
+                            if (date != null) {
+                              print('📅 Date selected: $date');
+                              setState(() {
+                                _selectedDate = date;
+                              });
+                            } else {
+                              print('❌ No date selected');
+                            }
+                          } catch (e) {
+                            print('❌ Error opening date picker: $e');
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppTheme.backgroundLight,
+                          foregroundColor: AppTheme.textPrimary,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            side: BorderSide(
+                              color: AppTheme.textLight.withOpacity(0.3),
+                            ),
+                          ),
+                          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              '${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            Icon(
+                              Icons.arrow_drop_down,
+                              color: AppTheme.textSecondary,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
+              ],
             ),
             SizedBox(height: 16),
             BlocBuilder<ProjectBloc, ProjectState>(
