@@ -668,8 +668,6 @@ class _CalendarState extends State<Calendar> with TickerProviderStateMixin {
         return Colors.green;
       case TaskPriority.urgent:
         return Colors.purple;
-      default:
-        return Colors.grey;
     }
   }
 }
