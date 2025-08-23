@@ -3,7 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../widgets/TickLogo.dart';
 import './Profile.dart';
 import './AddTaskScreen.dart';
-import './TaskManagementScreen.dart';
+import './TaskPage.dart';
+import './ProjectsPage.dart';
 import '../blocs/dashboard_bloc.dart';
 import '../blocs/project_bloc.dart';
 import '../blocs/task_bloc.dart';
@@ -1216,7 +1217,7 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const TaskManagementScreen()),
+                  MaterialPageRoute(builder: (context) => const TaskPage()),
                 );
               },
               child: Text(
@@ -1555,7 +1556,10 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                   'Create Project',
                   Icons.create_new_folder,
                   () {
-                    _showCreateProjectDialog();
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const ProjectsPage()),
+                    );
                   },
                 ),
               ),
@@ -1571,7 +1575,7 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                   () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const TaskManagementScreen()),
+                      MaterialPageRoute(builder: (context) => const TaskPage()),
                     );
                   },
                 ),
