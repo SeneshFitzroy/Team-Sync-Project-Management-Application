@@ -216,7 +216,7 @@ class _SimpleDatePickerState extends State<SimpleDatePicker> {
           child: Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: AppTheme.cardBackground,
+              color: AppTheme.backgroundLight,
               borderRadius: BorderRadius.circular(16),
             ),
             child: Column(
