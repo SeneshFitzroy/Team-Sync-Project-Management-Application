@@ -715,7 +715,7 @@ class _AddTaskDialogState extends State<_AddTaskDialog> {
               child: Container(
                 padding: EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey),
+                  border: Border.all(color: AppTheme.backgroundGray),
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: Row(
