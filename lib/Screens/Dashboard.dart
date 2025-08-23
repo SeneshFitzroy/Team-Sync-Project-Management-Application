@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import '../widgets/TickLogo.dart';
 import './Profile.dart';
-import './add_task_screen.dart';
-import './task_management_screen.dart';
+import './AddTaskScreen.dart';
+import './TaskManagementScreen.dart';
 import '../Services/task_service.dart';
 import '../Services/project_service.dart';
 import '../Services/auth_service.dart';

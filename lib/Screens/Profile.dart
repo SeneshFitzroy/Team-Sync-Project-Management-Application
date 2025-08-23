@@ -3,12 +3,12 @@ import '../theme/app_theme.dart';
 import '../Services/auth_service.dart';
 import '../models/user_model.dart';
 import '../widgets/TickLogo.dart';
-import 'EditProfile.dart';
-import 'PersonalInformation.dart';
-import 'SecuritySettings.dart';
-import 'NotificationSettings.dart';
-import 'HelpSupport.dart';
-import 'About.dart';
+import 'EditProfileScreen.dart';
+import 'PersonalInformationScreen.dart';
+import 'SecuritySettingsScreen.dart';
+import 'NotificationSettingsScreen.dart';
+import 'HelpSupportScreen.dart';
+import 'AboutScreen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class ProfileScreen extends StatefulWidget {
