@@ -6,6 +6,7 @@ import '../blocs/task_bloc.dart';
 import '../blocs/project_bloc.dart';
 import '../Services/firebase_service.dart';
 import '../theme/app_theme.dart';
+import '../widgets/custom_date_picker.dart';
 
 class TaskPage extends StatefulWidget {
   const TaskPage({super.key});
@@ -719,64 +720,17 @@ class _AddTaskDialogState extends State<_AddTaskDialog> {
               },
             ),
             SizedBox(height: 16),
-            // Date Picker with better web compatibility
-            Container(
-              decoration: BoxDecoration(
-                border: Border.all(color: AppTheme.backgroundGray),
-                borderRadius: BorderRadius.circular(8),
-                color: AppTheme.backgroundWhite,
-              ),
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(8),
-                  onTap: () async {
-                    print('🗓️ Opening date picker, current date: $_selectedDate');
-                    try {
-                      final date = await showDatePicker(
-                        context: context,
-                        initialDate: _selectedDate,
-                        firstDate: DateTime.now().subtract(Duration(days: 1)),
-                        lastDate: DateTime.now().add(Duration(days: 365)),
-                        helpText: 'Select due date',
-                        cancelText: 'Cancel',
-                        confirmText: 'OK',
-                        builder: (context, child) {
-                          return Theme(
-                            data: Theme.of(context).copyWith(
-                              colorScheme: Theme.of(context).colorScheme.copyWith(
-                                primary: AppTheme.primaryBlue,
-                                onPrimary: Colors.white,
-                                surface: Colors.white,
-                                onSurface: Colors.black87,
-                              ),
-                              dialogBackgroundColor: Colors.white,
-                            ),
-                            child: child!,
-                          );
-                        },
-                      );
-                      if (date != null) {
-                        print('📅 Date selected: $date');
-                        setState(() {
-                          _selectedDate = date;
-                        });
-                      } else {
-                        print('❌ No date selected');
-                      }
-                    } catch (e) {
-                      print('❌ Error opening date picker: $e');
-                    }
-                  },
-                  child: Padding(
-                    padding: EdgeInsets.all(16),
-                    child: Row(
-                      children: [
-                        Icon(Icons.calendar_today, color: AppTheme.primaryBlue),
-                        SizedBox(width: 12),
-                        Text(
-                          'Due: ${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}',
-                          style: TextStyle(
+            // Custom Date Picker with better web compatibility  
+            SimpleDatePicker(
+              selectedDate: _selectedDate,
+              onDateChanged: (DateTime date) {
+                print('📅 Date selected via custom picker: $date');
+                setState(() {
+                  _selectedDate = date;
+                });
+              },
+              labelText: 'Due Date',
+            ),
                             fontSize: 16,
                             fontWeight: FontWeight.w500,
                           ),
