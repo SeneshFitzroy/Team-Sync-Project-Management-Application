@@ -1,14 +1,9 @@
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 
-class TaskManagementScreen extends StatefulWidget {
-  const TaskManagementScreen({super.key});
+class NotificationSettingsScreen extends StatelessWidget {
+  const NotificationSettingsScreen({super.key});
 
-  @override
-  State<TaskManagementScreen> createState() => _TaskManagementScreenState();
-}
-
-class _TaskManagementScreenState extends State<TaskManagementScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -17,7 +12,7 @@ class _TaskManagementScreenState extends State<TaskManagementScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: const Text(
-          'All Tasks',
+          'Notification Settings',
           style: TextStyle(
             color: Colors.white,
             fontSize: 24,
@@ -42,25 +37,17 @@ class _TaskManagementScreenState extends State<TaskManagementScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
-                Icons.task_alt,
+                Icons.notifications,
                 size: 80,
                 color: Colors.white70,
               ),
               SizedBox(height: 16),
               Text(
-                'Task Management',
+                'Notification Settings',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
-                ),
-              ),
-              SizedBox(height: 8),
-              Text(
-                'View and manage all your tasks',
-                style: TextStyle(
-                  color: Colors.white70,
-                  fontSize: 16,
                 ),
               ),
             ],

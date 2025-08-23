@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 
-class TaskManagementScreen extends StatefulWidget {
-  const TaskManagementScreen({super.key});
+class EditProfileScreen extends StatefulWidget {
+  const EditProfileScreen({super.key});
 
   @override
-  State<TaskManagementScreen> createState() => _TaskManagementScreenState();
+  State<EditProfileScreen> createState() => _EditProfileScreenState();
 }
 
-class _TaskManagementScreenState extends State<TaskManagementScreen> {
+class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -17,7 +17,7 @@ class _TaskManagementScreenState extends State<TaskManagementScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: const Text(
-          'All Tasks',
+          'Edit Profile',
           style: TextStyle(
             color: Colors.white,
             fontSize: 24,
@@ -42,13 +42,13 @@ class _TaskManagementScreenState extends State<TaskManagementScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
-                Icons.task_alt,
+                Icons.edit,
                 size: 80,
                 color: Colors.white70,
               ),
               SizedBox(height: 16),
               Text(
-                'Task Management',
+                'Edit Profile',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 24,
@@ -57,7 +57,7 @@ class _TaskManagementScreenState extends State<TaskManagementScreen> {
               ),
               SizedBox(height: 8),
               Text(
-                'View and manage all your tasks',
+                'Update your profile information',
                 style: TextStyle(
                   color: Colors.white70,
                   fontSize: 16,

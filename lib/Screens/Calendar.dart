@@ -249,7 +249,6 @@ class _CalendarState extends State<Calendar> with TickerProviderStateMixin {
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         title: title,
         description: description,
-        assignedTo: [currentUser.uid],
         dueDate: DateTime(
           _selectedDate.year,
           _selectedDate.month,
@@ -259,9 +258,8 @@ class _CalendarState extends State<Calendar> with TickerProviderStateMixin {
         ),
         priority: priority,
         status: 'pending',
-        createdBy: currentUser.uid,
         createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
+        assignedTo: currentUser.uid,
       );
 
       await TaskService.createTask(task);
@@ -557,8 +555,8 @@ class _CalendarState extends State<Calendar> with TickerProviderStateMixin {
             ),
             SizedBox(height: 10),
             Expanded(
-              child: FutureBuilder<List<Task>>(
-                future: TaskService.getTasksForDate(_selectedDate),
+              child: StreamBuilder<List<Task>>(
+                stream: TaskService.getTasksForDate(_selectedDate),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return Center(child: CircularProgressIndicator());
@@ -588,9 +586,11 @@ class _CalendarState extends State<Calendar> with TickerProviderStateMixin {
                         decoration: BoxDecoration(
                           color: _getPriorityColor(task.priority).withOpacity(0.1),
                           borderRadius: BorderRadius.circular(8),
-                          border: Border.left(
-                            color: _getPriorityColor(task.priority),
-                            width: 4,
+                          border: Border(
+                            left: BorderSide(
+                              color: _getPriorityColor(task.priority),
+                              width: 4,
+                            ),
                           ),
                         ),
                         child: Row(
