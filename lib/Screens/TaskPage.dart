@@ -16,7 +16,11 @@ class TaskPage extends StatefulWidget {
 
 class _TaskPageState extends State<TaskPage> with TickerProviderStateMixin {
   late AnimationController _fadeController;
+  late AnimationController _slideController;
+  late AnimationController _particleController;
   late Animation<double> _fadeAnimation;
+  late Animation<Offset> _slideAnimation;
+  late Animation<double> _particleAnimation;
   String _selectedFilter = 'All';
   final List<String> _filterOptions = ['All', 'Todo', 'In Progress', 'Completed'];
 
