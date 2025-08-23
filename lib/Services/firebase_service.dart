@@ -147,10 +147,19 @@ class FirebaseService {
   static Future<String> createTask(Task task) async {
     try {
       print('🔄 FirebaseService: Creating task in Firestore...');
+      print('🔄 Current user: $currentUserId');
       print('🔄 Task data: ${task.toMap()}');
       
       final docRef = await _firestore.collection(tasksCollection).add(task.toMap());
       print('✅ FirebaseService: Task created with ID: ${docRef.id}');
+      
+      // Verify the task was created by fetching it back
+      final createdDoc = await docRef.get();
+      if (createdDoc.exists) {
+        print('✅ FirebaseService: Task verified in database: ${createdDoc.data()}');
+      } else {
+        print('❌ FirebaseService: Task not found after creation!');
+      }
       
       return docRef.id;
     } catch (e) {
@@ -184,18 +193,37 @@ class FirebaseService {
 
   // Get tasks for current user - includes both assigned and created tasks
   static Stream<List<Task>> getUserTasksStream() {
-    if (currentUserId == null) return Stream.value([]);
+    if (currentUserId == null) {
+      print('❌ getUserTasksStream: No current user ID');
+      return Stream.value([]);
+    }
     
+    print('📋 getUserTasksStream: Loading tasks for user: $currentUserId');
+    
+    // Use a simpler query - just get tasks assigned to the current user
     return _firestore
         .collection(tasksCollection)
-        .where(Filter.or(
-          Filter('assignedTo', isEqualTo: currentUserId),
-          Filter('createdBy', isEqualTo: currentUserId),
-        ))
+        .where('assignedTo', isEqualTo: currentUserId)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => Task.fromMap(doc.data(), doc.id))
-            .toList());
+        .map((snapshot) {
+          print('📋 Firebase snapshot received: ${snapshot.docs.length} documents');
+          final tasks = snapshot.docs
+              .map((doc) {
+                try {
+                  final task = Task.fromMap(doc.data(), doc.id);
+                  print('📋 Task loaded: ${task.title} (ID: ${doc.id})');
+                  return task;
+                } catch (e) {
+                  print('❌ Error parsing task ${doc.id}: $e');
+                  return null;
+                }
+              })
+              .where((task) => task != null)
+              .cast<Task>()
+              .toList();
+          print('📋 Total valid tasks loaded: ${tasks.length}');
+          return tasks;
+        });
   }
 
   // Get tasks created by current user
