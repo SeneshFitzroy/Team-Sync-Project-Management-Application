@@ -707,31 +707,52 @@ class _AddTaskDialogState extends State<_AddTaskDialog> {
             SizedBox(height: 16),
             InkWell(
               onTap: () async {
+                print('🗓️ Opening date picker, current date: $_selectedDate');
                 final date = await showDatePicker(
                   context: context,
                   initialDate: _selectedDate,
                   firstDate: DateTime.now(),
                   lastDate: DateTime.now().add(Duration(days: 365)),
+                  builder: (context, child) {
+                    return Theme(
+                      data: Theme.of(context).copyWith(
+                        colorScheme: Theme.of(context).colorScheme.copyWith(
+                          primary: AppTheme.primaryBlue,
+                        ),
+                      ),
+                      child: child!,
+                    );
+                  },
                 );
                 if (date != null) {
+                  print('📅 Date selected: $date');
                   setState(() {
                     _selectedDate = date;
                   });
+                } else {
+                  print('❌ No date selected');
                 }
               },
               child: Container(
                 padding: EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   border: Border.all(color: AppTheme.backgroundGray),
-                  borderRadius: BorderRadius.circular(4),
+                  borderRadius: BorderRadius.circular(8),
+                  color: AppTheme.backgroundWhite,
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.calendar_today),
+                    Icon(Icons.calendar_today, color: AppTheme.primaryBlue),
                     SizedBox(width: 12),
                     Text(
                       'Due: ${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
+                    Spacer(),
+                    Icon(Icons.arrow_drop_down, color: AppTheme.primaryBlue),
                   ],
                 ),
               ),
