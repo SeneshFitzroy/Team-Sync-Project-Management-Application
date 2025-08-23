@@ -230,6 +230,9 @@ class _TaskPageState extends State<TaskPage> with TickerProviderStateMixin {
 
                           if (state is TasksLoaded) {
                             final filteredTasks = _getFilteredTasks(state.filteredTasks);
+                            print('📋 TasksLoaded state: ${state.tasks.length} total tasks');
+                            print('🔍 Filtered tasks (${_selectedFilter}): ${filteredTasks.length}');
+                            print('📝 Task titles: ${filteredTasks.map((t) => t.title).toList()}');
 
                             if (filteredTasks.isEmpty) {
                               return Center(
@@ -632,7 +635,7 @@ class _AddTaskDialogState extends State<_AddTaskDialog> {
       final task = Task(
         title: _titleController.text.trim(),
         description: _descriptionController.text.trim(),
-        assignedTo: userId,
+        assignedTo: userId, // Assign to self so it shows up
         projectId: _selectedProjectId,
         priority: _selectedPriority,
         status: TaskStatus.todo,
@@ -647,16 +650,26 @@ class _AddTaskDialogState extends State<_AddTaskDialog> {
       final taskId = await FirebaseService.createTask(task);
       print('✅ Task created with ID: $taskId');
       
-      context.read<TaskBloc>().add(LoadTasks());
+      // Close dialog first
       Navigator.pop(context);
       
+      // Reload tasks using BLoC
+      context.read<TaskBloc>().add(LoadTasks());
+      print('🔄 LoadTasks event dispatched');
+      
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Task created successfully!')),
+        SnackBar(
+          content: Text('Task created successfully!'),
+          backgroundColor: AppTheme.completedColor,
+        ),
       );
     } catch (e) {
       print('❌ Error creating task: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error creating task: $e')),
+        SnackBar(
+          content: Text('Error creating task: $e'),
+          backgroundColor: AppTheme.urgentPriority,
+        ),
       );
     }
   }
@@ -705,55 +718,73 @@ class _AddTaskDialogState extends State<_AddTaskDialog> {
               },
             ),
             SizedBox(height: 16),
-            InkWell(
-              onTap: () async {
-                print('🗓️ Opening date picker, current date: $_selectedDate');
-                final date = await showDatePicker(
-                  context: context,
-                  initialDate: _selectedDate,
-                  firstDate: DateTime.now(),
-                  lastDate: DateTime.now().add(Duration(days: 365)),
-                  builder: (context, child) {
-                    return Theme(
-                      data: Theme.of(context).copyWith(
-                        colorScheme: Theme.of(context).colorScheme.copyWith(
-                          primary: AppTheme.primaryBlue,
-                        ),
-                      ),
-                      child: child!,
-                    );
-                  },
-                );
-                if (date != null) {
-                  print('📅 Date selected: $date');
-                  setState(() {
-                    _selectedDate = date;
-                  });
-                } else {
-                  print('❌ No date selected');
-                }
-              },
-              child: Container(
-                padding: EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  border: Border.all(color: AppTheme.backgroundGray),
+            // Date Picker with better web compatibility
+            Container(
+              decoration: BoxDecoration(
+                border: Border.all(color: AppTheme.backgroundGray),
+                borderRadius: BorderRadius.circular(8),
+                color: AppTheme.backgroundWhite,
+              ),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
                   borderRadius: BorderRadius.circular(8),
-                  color: AppTheme.backgroundWhite,
-                ),
-                child: Row(
-                  children: [
-                    Icon(Icons.calendar_today, color: AppTheme.primaryBlue),
-                    SizedBox(width: 12),
-                    Text(
-                      'Due: ${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
+                  onTap: () async {
+                    print('🗓️ Opening date picker, current date: $_selectedDate');
+                    try {
+                      final date = await showDatePicker(
+                        context: context,
+                        initialDate: _selectedDate,
+                        firstDate: DateTime.now().subtract(Duration(days: 1)),
+                        lastDate: DateTime.now().add(Duration(days: 365)),
+                        helpText: 'Select due date',
+                        cancelText: 'Cancel',
+                        confirmText: 'OK',
+                        builder: (context, child) {
+                          return Theme(
+                            data: Theme.of(context).copyWith(
+                              colorScheme: Theme.of(context).colorScheme.copyWith(
+                                primary: AppTheme.primaryBlue,
+                                onPrimary: Colors.white,
+                                surface: Colors.white,
+                                onSurface: Colors.black87,
+                              ),
+                              dialogBackgroundColor: Colors.white,
+                            ),
+                            child: child!,
+                          );
+                        },
+                      );
+                      if (date != null) {
+                        print('📅 Date selected: $date');
+                        setState(() {
+                          _selectedDate = date;
+                        });
+                      } else {
+                        print('❌ No date selected');
+                      }
+                    } catch (e) {
+                      print('❌ Error opening date picker: $e');
+                    }
+                  },
+                  child: Padding(
+                    padding: EdgeInsets.all(16),
+                    child: Row(
+                      children: [
+                        Icon(Icons.calendar_today, color: AppTheme.primaryBlue),
+                        SizedBox(width: 12),
+                        Text(
+                          'Due: ${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        Spacer(),
+                        Icon(Icons.arrow_drop_down, color: AppTheme.primaryBlue),
+                      ],
                     ),
-                    Spacer(),
-                    Icon(Icons.arrow_drop_down, color: AppTheme.primaryBlue),
-                  ],
+                  ),
                 ),
               ),
             ),
