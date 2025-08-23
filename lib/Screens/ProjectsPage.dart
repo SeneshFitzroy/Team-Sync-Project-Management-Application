@@ -180,7 +180,7 @@ class _ProjectsPageState extends State<ProjectsPage> with TickerProviderStateMix
                           );
                         }
 
-                        if (state is ProjectLoaded) {
+                        if (state is ProjectsLoaded) {
                           if (state.projects.isEmpty) {
                             return Center(
                               child: Column(
@@ -323,7 +323,7 @@ class _ProjectsPageState extends State<ProjectsPage> with TickerProviderStateMix
                   ),
                   SizedBox(width: 4),
                   Text(
-                    'Due: ${_formatDate(project.endDate)}',
+                    'Due: ${_formatDate(project.dueDate!)}',
                     style: TextStyle(
                       color: Colors.grey.shade600,
                       fontSize: 12,
