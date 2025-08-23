@@ -153,21 +153,30 @@ class MemberRequestBloc extends Bloc<MemberRequestEvent, MemberRequestState> {
     Emitter<MemberRequestState> emit,
   ) async {
     try {
-      final sentRequestsStream = FirebaseService.getSentRequestsStream();
-      
-      sentRequestsStream.listen((sentRequests) async {
-        try {
-          final sentWithDetails = await _enrichRequestsWithDetails(sentRequests);
+      await emit.forEach<List<MemberRequest>>(
+        FirebaseService.getSentRequestsStream(),
+        onData: (sentRequests) {
+          // Convert to MemberRequestWithDetails
+          final sentWithDetails = sentRequests.map((request) => 
+            MemberRequestWithDetails(
+              request: request,
+              fromUser: null,
+              toUser: null,
+              project: null,
+            )
+          ).toList();
           
-          // Keep existing pending requests if available
-          List<MemberRequestWithDetails> pendingWithDetails = [];
-          if (state is RequestsLoaded) {
-            pendingWithDetails = (state as RequestsLoaded).pendingRequests;
-          }
-
-          emit(RequestsLoaded(
-            pendingRequests: pendingWithDetails,
+          return RequestsLoaded(
+            pendingRequests: [],
             sentRequests: sentWithDetails,
+          );
+        },
+        onError: (error, stackTrace) => MemberRequestError('Failed to load sent requests: ${error.toString()}'),
+      );
+    } catch (e) {
+      emit(MemberRequestError('Failed to load sent requests: ${e.toString()}'));
+    }
+  }
           ));
         } catch (e) {
           emit(MemberRequestError('Failed to load sent requests: ${e.toString()}'));
