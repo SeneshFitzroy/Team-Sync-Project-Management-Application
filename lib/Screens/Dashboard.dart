@@ -1630,18 +1630,18 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                         itemCount: allUsers.length,
                         itemBuilder: (context, index) {
                           final user = allUsers[index];
-                          final isSelected = selectedMemberIds.contains(user.id);
+                          final isSelected = selectedMemberIds.contains(user.uid);
                           
                           return CheckboxListTile(
-                            title: Text(user.name),
+                            title: Text(user.fullName),
                             subtitle: Text(user.email),
                             value: isSelected,
                             onChanged: (bool? value) {
                               setState(() {
                                 if (value == true) {
-                                  selectedMemberIds.add(user.id!);
+                                  selectedMemberIds.add(user.uid);
                                 } else {
-                                  selectedMemberIds.remove(user.id);
+                                  selectedMemberIds.remove(user.uid);
                                 }
                               });
                             },
