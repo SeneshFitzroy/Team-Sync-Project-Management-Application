@@ -605,6 +605,13 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
           ),
           SizedBox(height: 25),
         ],
+        
+        // Create Project Button
+        SlideTransition(
+          position: _slideAnimation,
+          child: _buildCreateProjectButton(),
+        ),
+        SizedBox(height: 25),
       ],
     );
   }
