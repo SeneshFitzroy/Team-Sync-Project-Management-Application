@@ -177,15 +177,6 @@ class MemberRequestBloc extends Bloc<MemberRequestEvent, MemberRequestState> {
       emit(MemberRequestError('Failed to load sent requests: ${e.toString()}'));
     }
   }
-          ));
-        } catch (e) {
-          emit(MemberRequestError('Failed to load sent requests: ${e.toString()}'));
-        }
-      });
-    } catch (e) {
-      emit(MemberRequestError('Failed to load sent requests: ${e.toString()}'));
-    }
-  }
 
   Future<void> _onAcceptRequest(
     AcceptRequest event,
