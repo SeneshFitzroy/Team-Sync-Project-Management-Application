@@ -161,6 +161,13 @@ class FirebaseService {
     await _firestore.collection(tasksCollection).doc(task.id).update(task.toMap());
   }
 
+  static Future<void> updateTaskStatus(String taskId, TaskStatus status) async {
+    await _firestore.collection(tasksCollection).doc(taskId).update({
+      'status': status.toString().split('.').last,
+      'updatedAt': FieldValue.serverTimestamp(),
+    });
+  }
+
   static Future<void> deleteTask(String taskId) async {
     await _firestore.collection(tasksCollection).doc(taskId).delete();
   }

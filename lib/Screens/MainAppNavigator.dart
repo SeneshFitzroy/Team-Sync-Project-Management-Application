@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'Dashboard.dart';
-// import 'TaskManager.dart'; // Temporarily disabled
+import 'TaskPage.dart';
 import 'Chat.dart';
 import 'Calendar.dart';
 import '../Components/nav_bar.dart';
@@ -20,7 +20,7 @@ class _MainAppNavigatorState extends State<MainAppNavigator> {
   
   final List<Widget> _pages = [
     const Dashboard(),
-    const Dashboard(), // Temporarily using Dashboard instead of TaskManager
+    const TaskPage(),
     const Chat(),
     const Calendar(),
   ];
