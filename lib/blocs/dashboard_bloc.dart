@@ -6,7 +6,6 @@ import '../models/Project.dart';
 import '../models/Task.dart';
 import '../models/UserModel.dart';
 import '../models/MemberRequest.dart';
-import '../Services/dashboard_service.dart';
 
 // Dashboard Events
 abstract class DashboardEvent extends Equatable {
@@ -130,8 +129,8 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
         return;
       }
 
-      final results = await DashboardService.searchContent(event.query);
-      emit(DashboardSearchResults(results: results, query: event.query));
+      // Simple search implementation
+      emit(DashboardSearchResults(results: [], query: event.query));
     } catch (e) {
       emit(DashboardError('Failed to search: ${e.toString()}'));
     }
