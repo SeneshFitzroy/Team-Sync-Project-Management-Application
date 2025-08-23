@@ -55,206 +55,177 @@ class _ProjectsPageState extends State<ProjectsPage> with TickerProviderStateMix
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey.shade50,
+      appBar: AppBar(
+        title: Text(
+          'Projects',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Theme.of(context).colorScheme.onSurface,
+          ),
+        ),
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        elevation: 0,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.add),
+            onPressed: _showCreateProjectDialog,
+          ),
+        ],
+      ),
       body: FadeTransition(
         opacity: _fadeAnimation,
-        child: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Color(0xFF6366F1),
-                Color(0xFF8B5CF6),
-              ],
-            ),
-          ),
-          child: Column(
-            children: [
-              // Header Section
-              SafeArea(
-                child: Padding(
-                  padding: const EdgeInsets.all(20.0),
+        child: RefreshIndicator(
+          onRefresh: () async {
+            _loadData();
+          },
+          child: BlocBuilder<ProjectBloc, ProjectState>(
+            builder: (context, state) {
+              if (state is ProjectLoading) {
+                return Center(
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'My Projects',
-                                style: TextStyle(
-                                  fontSize: 28,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              SizedBox(height: 4),
-                              Text(
-                                'Manage your projects and collaborate',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.white.withOpacity(0.9),
-                                ),
-                              ),
-                            ],
-                          ),
-                          Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.2),
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: IconButton(
-                              icon: Icon(
-                                Icons.add,
-                                color: Colors.white,
-                                size: 28,
-                              ),
-                              onPressed: _showAddProjectDialog,
-                            ),
-                          ),
-                        ],
+                      CircularProgressIndicator(),
+                      SizedBox(height: 16),
+                      Text(
+                        'Loading projects...',
+                        style: TextStyle(
+                          color: Colors.grey[600],
+                          fontSize: 16,
+                        ),
                       ),
                     ],
                   ),
-                ),
-              ),
+                );
+              }
 
-              // Projects List Section
-              Expanded(
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(30),
-                      topRight: Radius.circular(30),
+              if (state is ProjectsLoaded) {
+                final projects = state.projects;
+
+                if (projects.isEmpty) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.folder_open,
+                          size: 64,
+                          color: Colors.grey,
+                        ),
+                        SizedBox(height: 16),
+                        Text(
+                          'No projects yet',
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                        SizedBox(height: 8),
+                        Text(
+                          'Tap the + button to create your first project',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey[500],
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: BlocBuilder<ProjectBloc, ProjectState>(
-                      builder: (context, state) {
-                        if (state is ProjectLoading) {
-                          return Center(
-                            child: CircularProgressIndicator(
-                              valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF6366F1)),
-                            ),
-                          );
-                        }
+                  );
+                }
 
-                        if (state is ProjectError) {
-                          return Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.error_outline,
-                                  size: 64,
-                                  color: Colors.red,
-                                ),
-                                SizedBox(height: 16),
-                                Text(
-                                  'Error loading projects',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.grey.shade700,
-                                  ),
-                                ),
-                                SizedBox(height: 8),
-                                Text(
-                                  state.message,
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(color: Colors.grey.shade600),
-                                ),
-                                SizedBox(height: 16),
-                                ElevatedButton(
-                                  onPressed: _loadData,
-                                  child: Text('Retry'),
-                                ),
-                              ],
-                            ),
-                          );
-                        }
+                return ListView.builder(
+                  padding: EdgeInsets.all(16),
+                  itemCount: projects.length,
+                  itemBuilder: (context, index) {
+                    final project = projects[index];
+                    return _ProjectCard(
+                      project: project,
+                      onTap: () => _showProjectDetails(project),
+                    );
+                  },
+                );
+              }
 
-                        if (state is ProjectsLoaded) {
-                          if (state.projects.isEmpty) {
-                            return Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.folder_open,
-                                    size: 64,
-                                    color: Colors.grey,
-                                  ),
-                                  SizedBox(height: 16),
-                                  Text(
-                                    'No projects yet',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.grey.shade700,
-                                    ),
-                                  ),
-                                  SizedBox(height: 8),
-                                  Text(
-                                    'Create your first project to get started',
-                                    style: TextStyle(color: Colors.grey.shade600),
-                                  ),
-                                  SizedBox(height: 16),
-                                  ElevatedButton.icon(
-                                    onPressed: _showAddProjectDialog,
-                                    icon: Icon(Icons.add),
-                                    label: Text('Create Project'),
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Color(0xFF6366F1),
-                                      foregroundColor: Colors.white,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          }
-
-                          return RefreshIndicator(
-                            onRefresh: () async => _loadData(),
-                            child: ListView.builder(
-                              itemCount: state.projects.length,
-                              itemBuilder: (context, index) {
-                                final project = state.projects[index];
-                                return _buildProjectCard(project);
-                              },
-                            ),
-                          );
-                        }
-
-                        return SizedBox.shrink();
-                      },
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.error_outline,
+                      size: 64,
+                      color: Colors.grey,
                     ),
-                  ),
+                    SizedBox(height: 16),
+                    Text(
+                      'Something went wrong',
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    TextButton(
+                      onPressed: _loadData,
+                      child: Text('Try again'),
+                    ),
+                  ],
                 ),
-              ),
-            ],
+              );
+            },
           ),
         ),
       ),
     );
   }
 
-  Widget _buildProjectCard(Project project) {
+  void _showCreateProjectDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => _CreateProjectDialog(),
+    );
+  }
+
+  void _showProjectDetails(Project project) {
+    showDialog(
+      context: context,
+      builder: (context) => _ProjectDetailsDialog(project: project),
+    );
+  }
+
+  String _formatDate(DateTime date) {
+    final now = DateTime.now();
+    final difference = date.difference(now).inDays;
+    
+    if (difference == 0) {
+      return 'Today';
+    } else if (difference == 1) {
+      return 'Tomorrow';
+    } else if (difference == -1) {
+      return 'Yesterday';
+    } else if (difference > 0) {
+      return 'In $difference days';
+    } else {
+      return '${difference.abs()} days ago';
+    }
+  }
+}
+
+class _ProjectCard extends StatelessWidget {
+  final Project project;
+  final VoidCallback onTap;
+
+  const _ProjectCard({
+    required this.project,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return Card(
-      margin: EdgeInsets.only(bottom: 16),
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+      margin: EdgeInsets.only(bottom: 12),
       child: InkWell(
-        borderRadius: BorderRadius.circular(16),
-        onTap: () => _showProjectDetails(project),
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
         child: Padding(
           padding: EdgeInsets.all(16),
           child: Column(
@@ -268,65 +239,96 @@ class _ProjectsPageState extends State<ProjectsPage> with TickerProviderStateMix
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: Colors.grey.shade800,
                       ),
                     ),
                   ),
                   Container(
                     padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: _getStatusColor(project.status).withOpacity(0.1),
+                      color: _getStatusColor(project.status).withOpacity(0.2),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
-                      project.status.toString().split('.').last.toUpperCase(),
+                      project.status.name.toUpperCase(),
                       style: TextStyle(
-                        color: _getStatusColor(project.status),
-                        fontSize: 12,
+                        fontSize: 10,
                         fontWeight: FontWeight.bold,
+                        color: _getStatusColor(project.status),
                       ),
                     ),
                   ),
                 ],
               ),
-              SizedBox(height: 8),
-              Text(
-                project.description,
-                style: TextStyle(
-                  color: Colors.grey.shade600,
-                  fontSize: 14,
+              if (project.description.isNotEmpty) ...[
+                SizedBox(height: 8),
+                Text(
+                  project.description,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey[600],
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
+              ],
               SizedBox(height: 12),
+              LinearProgressIndicator(
+                value: project.progress / 100,
+                backgroundColor: Colors.grey[300],
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  _getStatusColor(project.status),
+                ),
+              ),
+              SizedBox(height: 8),
+              Row(
+                children: [
+                  Text(
+                    '${project.progress.toInt()}% complete',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                  Spacer(),
+                  if (project.dueDate != null) ...[
+                    Icon(
+                      Icons.calendar_today,
+                      size: 14,
+                      color: Colors.grey[600],
+                    ),
+                    SizedBox(width: 4),
+                    Text(
+                      _formatDate(project.dueDate!),
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+              SizedBox(height: 8),
               Row(
                 children: [
                   Icon(
                     Icons.people,
                     size: 16,
-                    color: Colors.grey.shade600,
+                    color: Colors.grey[600],
                   ),
                   SizedBox(width: 4),
                   Text(
                     '${project.teamMembers.length} members',
                     style: TextStyle(
-                      color: Colors.grey.shade600,
                       fontSize: 12,
+                      color: Colors.grey[600],
                     ),
                   ),
                   Spacer(),
-                  Icon(
-                    Icons.schedule,
-                    size: 16,
-                    color: Colors.grey.shade600,
-                  ),
-                  SizedBox(width: 4),
                   Text(
-                    'Due: ${_formatDate(project.dueDate!)}',
+                    '${project.taskCount} tasks',
                     style: TextStyle(
-                      color: Colors.grey.shade600,
                       fontSize: 12,
+                      color: Colors.grey[600],
                     ),
                   ),
                 ],
@@ -344,44 +346,103 @@ class _ProjectsPageState extends State<ProjectsPage> with TickerProviderStateMix
         return Colors.blue;
       case ProjectStatus.active:
         return Colors.green;
-      case ProjectStatus.onHold:
+      case ProjectStatus.paused:
         return Colors.orange;
       case ProjectStatus.completed:
         return Colors.purple;
+      case ProjectStatus.cancelled:
+        return Colors.red;
     }
   }
 
   String _formatDate(DateTime date) {
-    return '${date.day}/${date.month}/${date.year}';
-  }
-
-  void _showAddProjectDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => _AddProjectDialog(),
-    );
-  }
-
-  void _showProjectDetails(Project project) {
-    showDialog(
-      context: context,
-      builder: (context) => _ProjectDetailsDialog(project: project),
-    );
+    final now = DateTime.now();
+    final difference = date.difference(now).inDays;
+    
+    if (difference == 0) {
+      return 'Today';
+    } else if (difference == 1) {
+      return 'Tomorrow';
+    } else if (difference == -1) {
+      return 'Yesterday';
+    } else if (difference > 0) {
+      return 'In $difference days';
+    } else {
+      return '${difference.abs()} days ago';
+    }
   }
 }
 
-class _AddProjectDialog extends StatefulWidget {
+class _CreateProjectDialog extends StatefulWidget {
   @override
-  _AddProjectDialogState createState() => _AddProjectDialogState();
+  State<_CreateProjectDialog> createState() => _CreateProjectDialogState();
 }
 
-class _AddProjectDialogState extends State<_AddProjectDialog> {
+class _CreateProjectDialogState extends State<_CreateProjectDialog> {
   final _nameController = TextEditingController();
   final _descriptionController = TextEditingController();
-  DateTime _startDate = DateTime.now();
-  DateTime _endDate = DateTime.now().add(Duration(days: 30));
   ProjectStatus _selectedStatus = ProjectStatus.planning;
-  bool _isLoading = false;
+  DateTime _dueDate = DateTime.now().add(Duration(days: 30));
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _descriptionController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _createProject() async {
+    if (_nameController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please enter a project name')),
+      );
+      return;
+    }
+
+    try {
+      final userId = FirebaseAuth.instance.currentUser?.uid;
+      if (userId == null) throw Exception('User not authenticated');
+
+      final project = Project(
+        name: _nameController.text.trim(),
+        description: _descriptionController.text.trim(),
+        ownerId: userId,
+        status: _selectedStatus,
+        dueDate: _dueDate,
+        teamMembers: [userId], // Add creator as first team member
+        progress: 0.0,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      );
+
+      await FirebaseService.createProject(project);
+      
+      context.read<ProjectBloc>().add(LoadProjects());
+      Navigator.pop(context);
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Project created successfully!')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error creating project: $e')),
+      );
+    }
+  }
+
+  Future<void> _selectDueDate() async {
+    final date = await showDatePicker(
+      context: context,
+      initialDate: _dueDate,
+      firstDate: DateTime.now(),
+      lastDate: DateTime.now().add(Duration(days: 365)),
+    );
+    if (date != null) {
+      setState(() {
+        _dueDate = date;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -414,10 +475,12 @@ class _AddProjectDialogState extends State<_AddProjectDialog> {
                 labelText: 'Status',
                 border: OutlineInputBorder(),
               ),
-              items: ProjectStatus.values.map((status) => DropdownMenuItem<ProjectStatus>(
-                value: status,
-                child: Text(status.toString().split('.').last.toUpperCase()),
-              )).toList(),
+              items: ProjectStatus.values.map((status) {
+                return DropdownMenuItem(
+                  value: status,
+                  child: Text(status.name.toUpperCase()),
+                );
+              }).toList(),
               onChanged: (value) {
                 setState(() {
                   _selectedStatus = value!;
@@ -425,17 +488,24 @@ class _AddProjectDialogState extends State<_AddProjectDialog> {
               },
             ),
             SizedBox(height: 16),
-            ListTile(
-              title: Text('Start Date'),
-              subtitle: Text(_formatDate(_startDate)),
-              trailing: Icon(Icons.calendar_today),
-              onTap: () => _selectStartDate(),
-            ),
-            ListTile(
-              title: Text('End Date'),
-              subtitle: Text(_formatDate(_endDate)),
-              trailing: Icon(Icons.calendar_today),
-              onTap: () => _selectEndDate(),
+            InkWell(
+              onTap: _selectDueDate,
+              child: Container(
+                padding: EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.calendar_today),
+                    SizedBox(width: 12),
+                    Text(
+                      'Due: ${_dueDate.day}/${_dueDate.month}/${_dueDate.year}',
+                    ),
+                  ],
+                ),
+              ),
             ),
           ],
         ),
@@ -446,105 +516,11 @@ class _AddProjectDialogState extends State<_AddProjectDialog> {
           child: Text('Cancel'),
         ),
         ElevatedButton(
-          onPressed: _isLoading ? null : _createProject,
-          child: _isLoading 
-            ? SizedBox(
-                width: 20,
-                height: 20,
-                child: CircularProgressIndicator(strokeWidth: 2),
-              )
-            : Text('Create'),
+          onPressed: _createProject,
+          child: Text('Create Project'),
         ),
       ],
     );
-  }
-
-  String _formatDate(DateTime date) {
-    return '${date.day}/${date.month}/${date.year}';
-  }
-
-  Future<void> _selectStartDate() async {
-    final date = await showDatePicker(
-      context: context,
-      initialDate: _startDate,
-      firstDate: DateTime.now(),
-      lastDate: DateTime.now().add(Duration(days: 365)),
-    );
-    if (date != null) {
-      setState(() {
-        _startDate = date;
-        if (_endDate.isBefore(_startDate)) {
-          _endDate = _startDate.add(Duration(days: 30));
-        }
-      });
-    }
-  }
-
-  Future<void> _selectEndDate() async {
-    final date = await showDatePicker(
-      context: context,
-      initialDate: _endDate,
-      firstDate: _startDate,
-      lastDate: DateTime.now().add(Duration(days: 365)),
-    );
-    if (date != null) {
-      setState(() {
-        _endDate = date;
-      });
-    }
-  }
-
-  Future<void> _createProject() async {
-    if (_nameController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please enter a project name')),
-      );
-      return;
-    }
-
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      final userId = FirebaseAuth.instance.currentUser?.uid;
-      if (userId == null) throw Exception('User not authenticated');
-
-      final project = Project(
-        name: _nameController.text.trim(),
-        description: _descriptionController.text.trim(),
-        ownerId: userId,
-        status: _selectedStatus,
-        dueDate: _endDate,
-        teamMembers: [userId], // Add creator as first team member
-        progress: 0.0,
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
-      );
-
-      await FirebaseService.createProject(project);
-      
-      context.read<ProjectBloc>().add(LoadProjects());
-      Navigator.pop(context);
-      
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Project created successfully!'),
-          backgroundColor: Colors.green,
-        ),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error creating project: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
-    }
   }
 }
 
@@ -562,51 +538,80 @@ class _ProjectDetailsDialog extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            if (project.description.isNotEmpty) ...[
+              Text(
+                'Description:',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 4),
+              Text(project.description),
+              SizedBox(height: 16),
+            ],
             Text(
-              'Description:',
+              'Status:',
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 4),
-            Text(project.description),
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: _getStatusColor(project.status).withOpacity(0.2),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                project.status.name.toUpperCase(),
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: _getStatusColor(project.status),
+                ),
+              ),
+            ),
             SizedBox(height: 16),
-            Row(
-              children: [
-                Text(
-                  'Status: ',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: _getStatusColor(project.status).withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text(
-                    project.status.toString().split('.').last.toUpperCase(),
-                    style: TextStyle(
-                      color: _getStatusColor(project.status),
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 8),
             Text(
-              'Team Members: ${project.teamMembers.length}',
+              'Progress:',
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 8),
+            LinearProgressIndicator(
+              value: project.progress / 100,
+              backgroundColor: Colors.grey[300],
+              valueColor: AlwaysStoppedAnimation<Color>(
+                _getStatusColor(project.status),
+              ),
+            ),
+            SizedBox(height: 4),
+            Text('${project.progress.toInt()}% complete'),
+            SizedBox(height: 16),
             Text(
-              'Created: ${project.createdAt.day}/${project.createdAt.month}/${project.createdAt.year}',
+              'Created:',
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 4),
+            Text('${project.createdAt.day}/${project.createdAt.month}/${project.createdAt.year}'),
+            if (project.dueDate != null) ...[
+              SizedBox(height: 16),
+              Text(
+                'Due Date:',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 4),
+              Text('${project.dueDate!.day}/${project.dueDate!.month}/${project.dueDate!.year}'),
+            ],
+            SizedBox(height: 16),
             Text(
-              'Due Date: ${project.dueDate != null ? "${project.dueDate!.day}/${project.dueDate!.month}/${project.dueDate!.year}" : "Not set"}',
+              'Team Members:',
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
+            SizedBox(height: 4),
+            Text('${project.teamMembers.length} members'),
+            SizedBox(height: 16),
+            Text(
+              'Tasks:',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 4),
+            Text('${project.taskCount} total, ${project.completedTaskCount} completed'),
           ],
         ),
       ),
@@ -614,13 +619,6 @@ class _ProjectDetailsDialog extends StatelessWidget {
         TextButton(
           onPressed: () => Navigator.pop(context),
           child: Text('Close'),
-        ),
-        ElevatedButton(
-          onPressed: () {
-            Navigator.pop(context);
-            _showInviteMemberDialog(context, project);
-          },
-          child: Text('Invite Members'),
         ),
       ],
     );
@@ -632,145 +630,12 @@ class _ProjectDetailsDialog extends StatelessWidget {
         return Colors.blue;
       case ProjectStatus.active:
         return Colors.green;
-      case ProjectStatus.onHold:
+      case ProjectStatus.paused:
         return Colors.orange;
       case ProjectStatus.completed:
         return Colors.purple;
-    }
-  }
-
-  void _showInviteMemberDialog(BuildContext context, Project project) {
-    showDialog(
-      context: context,
-      builder: (context) => _InviteMemberDialog(project: project),
-    );
-  }
-}
-
-class _InviteMemberDialog extends StatefulWidget {
-  final Project project;
-
-  const _InviteMemberDialog({required this.project});
-
-  @override
-  _InviteMemberDialogState createState() => _InviteMemberDialogState();
-}
-
-class _InviteMemberDialogState extends State<_InviteMemberDialog> {
-  final _searchController = TextEditingController();
-  List<UserModel> _searchResults = [];
-  bool _isLoading = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text('Invite Members'),
-      content: Container(
-        width: double.maxFinite,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: _searchController,
-              decoration: InputDecoration(
-                labelText: 'Search users by name or email',
-                border: OutlineInputBorder(),
-                suffixIcon: IconButton(
-                  icon: Icon(Icons.search),
-                  onPressed: _searchUsers,
-                ),
-              ),
-              onSubmitted: (_) => _searchUsers(),
-            ),
-            SizedBox(height: 16),
-            if (_isLoading)
-              CircularProgressIndicator()
-            else if (_searchResults.isNotEmpty)
-              Container(
-                height: 200,
-                child: ListView.builder(
-                  itemCount: _searchResults.length,
-                  itemBuilder: (context, index) {
-                    final user = _searchResults[index];
-                    final isAlreadyMember = widget.project.teamMembers.contains(user.uid);
-                    final isPendingInvitation = widget.project.pendingInvitations.contains(user.uid);
-                    
-                    return ListTile(
-                      leading: CircleAvatar(
-                        child: Text(user.displayName[0].toUpperCase()),
-                      ),
-                      title: Text(user.displayName),
-                      subtitle: Text(user.email),
-                      trailing: isAlreadyMember
-                          ? Text('Member', style: TextStyle(color: Colors.green))
-                          : isPendingInvitation
-                              ? Text('Invited', style: TextStyle(color: Colors.orange))
-                              : ElevatedButton(
-                                  onPressed: () => _inviteUser(user),
-                                  child: Text('Invite'),
-                                ),
-                    );
-                  },
-                ),
-              ),
-          ],
-        ),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: Text('Close'),
-        ),
-      ],
-    );
-  }
-
-  Future<void> _searchUsers() async {
-    if (_searchController.text.trim().isEmpty) return;
-
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      final results = await FirebaseService.searchUsers(_searchController.text.trim());
-      setState(() {
-        _searchResults = results;
-      });
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error searching users: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
-    }
-  }
-
-  Future<void> _inviteUser(UserModel user) async {
-    try {
-      await FirebaseService.inviteMemberToProject(widget.project.id!, user.uid);
-      
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Invitation sent to ${user.displayName}'),
-          backgroundColor: Colors.green,
-        ),
-      );
-      
-      // Refresh the search to update the UI
-      _searchUsers();
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error sending invitation: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      case ProjectStatus.cancelled:
+        return Colors.red;
     }
   }
 }
