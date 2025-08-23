@@ -130,14 +130,13 @@ class FirebaseService {
     await _firestore.collection(projectsCollection).doc(projectId).delete();
   }
 
-  // Get projects for current user (owned or member)
+  // Get projects for current user (owned or member) - simplified
   static Stream<List<Project>> getUserProjectsStream() {
     if (currentUserId == null) return Stream.value([]);
     
     return _firestore
         .collection(projectsCollection)
         .where('teamMembers', arrayContains: currentUserId)
-        .orderBy('createdAt', descending: true)
         .snapshots()
         .map((snapshot) => snapshot.docs
             .map((doc) => Project.fromMap(doc.data(), doc.id))
@@ -166,14 +165,13 @@ class FirebaseService {
     await _firestore.collection(tasksCollection).doc(taskId).delete();
   }
 
-  // Get tasks for current user
+  // Get tasks for current user - simplified
   static Stream<List<Task>> getUserTasksStream() {
     if (currentUserId == null) return Stream.value([]);
     
     return _firestore
         .collection(tasksCollection)
         .where('assignedTo', isEqualTo: currentUserId)
-        .orderBy('dueDate')
         .snapshots()
         .map((snapshot) => snapshot.docs
             .map((doc) => Task.fromMap(doc.data(), doc.id))

@@ -1,5 +1,13 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import '../models/Project.dart';
+import '../models/Task.dart';
+import '../models/UserModel.dart';
+import '../models/MemberRequest.dart';
+import '../Services/dashboard_service.dart';package:flutter_bloc/flutter_bloc.dart';
+import 'package:equatable/equatable.dart';
 import '../models/project.dart';
 import '../models/task.dart';
 import '../models/user_model.dart';
@@ -138,67 +146,94 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
 
   Future<void> _loadDashboardData(Emitter<DashboardState> emit) async {
     try {
-      // Load all dashboard data concurrently
-      final futures = await Future.wait([
-        DashboardService.getDashboardStats(),
-        DashboardService.getRecentActivities(),
-        DashboardService.getUpcomingDeadlines(),
-        DashboardService.getProjectProgress(),
-        DashboardService.getTeamMembers(),
-        _getRecentProjects(),
-        _getOverdueTasks(),
-        _getPendingRequests(),
-      ]);
+      final userId = FirebaseAuth.instance.currentUser?.uid;
+      if (userId == null) {
+        emit(DashboardError('User not authenticated'));
+        return;
+      }
 
-      final stats = futures[0] as Map<String, dynamic>;
-      final recentActivities = futures[1] as List<Map<String, dynamic>>;
-      final upcomingTasks = futures[2] as List<Task>;
-      final projectProgress = futures[3] as List<Map<String, dynamic>>;
-      final teamMembers = futures[4] as List<UserModel>;
-      final recentProjects = futures[5] as List<Project>;
-      final overdueTasks = futures[6] as List<Task>;
-      final pendingRequests = futures[7] as List<MemberRequest>;
+      // Load data with simple queries to avoid index requirements
+      List<Project> recentProjects = [];
+      List<Task> upcomingTasks = [];
+      List<Task> overdueTasks = [];
+      List<MemberRequest> pendingRequests = [];
+      
+      try {
+        // Get projects - simple query without ordering
+        final projectSnapshot = await FirebaseFirestore.instance
+            .collection('projects')
+            .where('teamMembers', arrayContains: userId)
+            .limit(5)
+            .get();
+        
+        recentProjects = projectSnapshot.docs
+            .map((doc) => Project.fromMap(doc.data(), doc.id))
+            .toList();
+      } catch (e) {
+        print('Error loading projects: $e');
+      }
+
+      try {
+        // Get tasks - simple query without ordering
+        final taskSnapshot = await FirebaseFirestore.instance
+            .collection('tasks')
+            .where('assignedTo', isEqualTo: userId)
+            .limit(10)
+            .get();
+        
+        final allTasks = taskSnapshot.docs
+            .map((doc) => Task.fromMap(doc.data(), doc.id))
+            .toList();
+        
+        final now = DateTime.now();
+        upcomingTasks = allTasks.where((task) => 
+          task.dueDate.isAfter(now) && task.status != TaskStatus.completed
+        ).toList();
+        
+        overdueTasks = allTasks.where((task) => 
+          task.dueDate.isBefore(now) && task.status != TaskStatus.completed
+        ).toList();
+      } catch (e) {
+        print('Error loading tasks: $e');
+      }
+
+      try {
+        // Get member requests
+        final requestSnapshot = await FirebaseFirestore.instance
+            .collection('member_requests')
+            .where('recipientId', isEqualTo: userId)
+            .where('status', isEqualTo: 'pending')
+            .limit(5)
+            .get();
+        
+        pendingRequests = requestSnapshot.docs
+            .map((doc) => MemberRequest.fromMap(doc.data(), doc.id))
+            .toList();
+      } catch (e) {
+        print('Error loading member requests: $e');
+      }
+
+      // Create simple stats
+      final stats = {
+        'totalProjects': recentProjects.length,
+        'totalTasks': upcomingTasks.length + overdueTasks.length,
+        'completedTasks': 0,
+        'overdueItems': overdueTasks.length,
+      };
 
       emit(DashboardLoaded(
         stats: stats,
         recentProjects: recentProjects,
         upcomingTasks: upcomingTasks,
         overdueTasks: overdueTasks,
-        recentActivities: recentActivities,
-        projectProgress: projectProgress,
-        teamMembers: teamMembers,
+        recentActivities: [],
+        projectProgress: [],
+        teamMembers: [],
         pendingRequests: pendingRequests,
       ));
     } catch (e) {
-      emit(DashboardError('Failed to load dashboard data: ${e.toString()}'));
+      print('Dashboard loading error: $e');
+      emit(DashboardError('Failed to load dashboard data. Please check your connection.'));
     }
-  }
-
-  Future<List<Project>> _getRecentProjects() async {
-    final userId = FirebaseService.currentUserId;
-    if (userId == null) return [];
-
-    // Get user's projects stream and take the first result
-    final projectsStream = FirebaseService.getUserProjectsStream();
-    final projects = await projectsStream.first;
-    
-    // Sort by creation date and take the 5 most recent
-    projects.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-    return projects.take(5).toList();
-  }
-
-  Future<List<Task>> _getOverdueTasks() async {
-    final userId = FirebaseService.currentUserId;
-    if (userId == null) return [];
-
-    final tasksStream = FirebaseService.getUserTasksStream();
-    final tasks = await tasksStream.first;
-    
-    return tasks.where((task) => task.isOverdue).toList();
-  }
-
-  Future<List<MemberRequest>> _getPendingRequests() async {
-    final requestsStream = FirebaseService.getPendingRequestsStream();
-    return await requestsStream.first;
   }
 }
