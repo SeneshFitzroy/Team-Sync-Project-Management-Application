@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../widgets/TickLogo.dart';
 import './Profile.dart';
-import './AddTaskScreen.dart';
 import './TaskPage.dart';
-import './ProjectsPage.dart';
 import '../blocs/dashboard_bloc.dart';
 import '../blocs/project_bloc.dart';
 import '../blocs/task_bloc.dart';
@@ -1501,131 +1499,6 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
           overflow: TextOverflow.ellipsis,
         ),
       ],
-    );
-  }
-
-  Widget _buildQuickActions() {
-    return Container(
-      padding: EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.15),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withOpacity(0.3)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(Icons.flash_on, color: Colors.white, size: 24),
-              SizedBox(width: 8),
-              Text(
-                'Quick Actions',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 16),
-          Row(
-            children: [
-              Expanded(
-                child: _buildActionButton(
-                  'Add Task',
-                  Icons.add_task,
-                  () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const AddTaskScreen()),
-                    );
-                  },
-                ),
-              ),
-              SizedBox(width: 12),
-              Expanded(
-                child: _buildActionButton(
-                  'Create Project',
-                  Icons.create_new_folder,
-                  () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const ProjectsPage()),
-                    );
-                  },
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(
-                child: _buildActionButton(
-                  'View Tasks',
-                  Icons.list_alt,
-                  () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const TaskPage()),
-                    );
-                  },
-                ),
-              ),
-              SizedBox(width: 12),
-              Expanded(
-                child: _buildActionButton(
-                  'Team Chat',
-                  Icons.chat_bubble_outline,
-                  () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Team chat feature coming soon!'),
-                        backgroundColor: AppTheme.primaryBlue,
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildActionButton(String title, IconData icon, VoidCallback onPressed) {
-    return Container(
-      height: 80,
-      child: ElevatedButton(
-        onPressed: onPressed,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.white.withOpacity(0.2),
-          foregroundColor: Colors.white,
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-            side: BorderSide(color: Colors.white.withOpacity(0.3)),
-          ),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 28),
-            SizedBox(height: 4),
-            Text(
-              title,
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      ),
     );
   }
 
