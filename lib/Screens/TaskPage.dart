@@ -428,98 +428,121 @@ class _TaskCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: EdgeInsets.only(bottom: 12),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      task.title,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
+    return Container(
+      margin: EdgeInsets.only(bottom: 16),
+      child: Material(
+        elevation: 4,
+        borderRadius: BorderRadius.circular(16),
+        shadowColor: AppTheme.primaryBlue.withOpacity(0.1),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(16),
+          child: Container(
+            padding: EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              color: AppTheme.backgroundWhite,
+              border: Border.all(
+                color: AppTheme.primaryBlue.withOpacity(0.1),
+                width: 1,
+              ),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        task.title,
+                        style: AppTheme.headingSmall.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
+                    GestureDetector(
+                      onTap: onStatusTap,
+                      child: Container(
+                        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: _getStatusColor(task.status).withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: _getStatusColor(task.status).withOpacity(0.3),
+                            width: 1,
+                          ),
+                        ),
+                        child: Text(
+                          task.status.name.toUpperCase(),
+                          style: AppTheme.bodySmall.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: _getStatusColor(task.status),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                if (task.description.isNotEmpty) ...[
+                  SizedBox(height: 12),
+                  Text(
+                    task.description,
+                    style: AppTheme.bodyMedium,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  GestureDetector(
-                    onTap: onStatusTap,
-                    child: Container(
+                ],
+                SizedBox(height: 16),
+                Row(
+                  children: [
+                    Container(
                       padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: _getStatusColor(task.status).withOpacity(0.2),
+                        color: _getPriorityColor(task.priority).withOpacity(0.1),
                         borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        task.status.name.toUpperCase(),
-                        style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
-                          color: _getStatusColor(task.status),
+                        border: Border.all(
+                          color: _getPriorityColor(task.priority).withOpacity(0.3),
+                          width: 1,
                         ),
                       ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.flag,
+                            size: 12,
+                            color: _getPriorityColor(task.priority),
+                          ),
+                          SizedBox(width: 4),
+                          Text(
+                            task.priority.name.toUpperCase(),
+                            style: AppTheme.bodySmall.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: _getPriorityColor(task.priority),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
-              ),
-              if (task.description.isNotEmpty) ...[
-                SizedBox(height: 8),
-                Text(
-                  task.description,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey[600],
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
+                    Spacer(),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.calendar_today,
+                          size: 16,
+                          color: AppTheme.textSecondary,
+                        ),
+                        SizedBox(width: 6),
+                        Text(
+                          _formatDate(task.dueDate),
+                          style: AppTheme.bodyMedium,
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ],
-              SizedBox(height: 12),
-              Row(
-                children: [
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: _getPriorityColor(task.priority).withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(
-                      task.priority.name.toUpperCase(),
-                      style: TextStyle(
-                        fontSize: 9,
-                        fontWeight: FontWeight.bold,
-                        color: _getPriorityColor(task.priority),
-                      ),
-                    ),
-                  ),
-                  Spacer(),
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.calendar_today,
-                        size: 14,
-                        color: Colors.grey[600],
-                      ),
-                      SizedBox(width: 4),
-                      Text(
-                        _formatDate(task.dueDate),
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey[600],
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ],
+            ),
           ),
         ),
       ),
