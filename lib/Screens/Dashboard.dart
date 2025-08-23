@@ -1,15 +1,287 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../widgets/TickLogo.dart';
 import './Profile.dart';
 import './AddTaskScreen.dart';
-import './TaskManagementScreen.dart';
-import '../Services/task_service.dart';
-import '../Services/project_service.dart';
-import '../Services/auth_service.dart';
+import './TaskManagementScr                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Build methods for the new Firebase-integrated dashboard
+  Widget _buildSearchBar() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.15),
+        borderRadius: BorderRadius.circular(15),
+        border: Border.all(color: Colors.white.withOpacity(0.3)),
+      ),
+      child: TextField(
+        controller: _searchController,
+        onChanged: _onSearchChanged,
+        style: TextStyle(color: Colors.white),
+        decoration: InputDecoration(
+          hintText: 'Search projects, tasks, or team members...',
+          hintStyle: TextStyle(color: Colors.white.withOpacity(0.8)),
+          prefixIcon: Icon(Icons.search, color: Colors.white.withOpacity(0.8)),
+          border: InputBorder.none,
+          contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLoadingWidget() {
+    return Center(
+      child: Container(
+        padding: EdgeInsets.all(40),
+        child: Column(
+          children: [
+            CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+            ),
+            SizedBox(height: 20),
+            Text(
+              'Loading your dashboard...',
+              style: TextStyle(
+                color: Colors.white.withOpacity(0.9),
+                fontSize: 16,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildErrorWidget(String message) {
+    return Container(
+      padding: EdgeInsets.all(20),
+      child: Column(
+        children: [
+          Icon(
+            Icons.error_outline,
+            color: Colors.white.withOpacity(0.8),
+            size: 48,
+          ),
+          SizedBox(height: 16),
+          Text(
+            'Oops! Something went wrong',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          SizedBox(height: 8),
+          Text(
+            message,
+            style: TextStyle(
+              color: Colors.white.withOpacity(0.8),
+              fontSize: 14,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: _refreshData,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.white.withOpacity(0.2),
+              foregroundColor: Colors.white,
+            ),
+            child: Text('Retry'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDashboardContent(DashboardLoaded state) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Welcome Card
+        SlideTransition(
+          position: _slideAnimation,
+          child: _buildWelcomeCard(),
+        ),
+        
+        SizedBox(height: 25),
+        
+        // Task Statistics
+        SlideTransition(
+          position: _slideAnimation,
+          child: _buildEnhancedTaskStatistics(state.stats),
+        ),
+        
+        SizedBox(height: 25),
+        
+        // Pending Requests
+        if (state.pendingRequests.isNotEmpty) ...[
+          SlideTransition(
+            position: _slideAnimation,
+            child: _buildPendingRequests(state.pendingRequests),
+          ),
+          SizedBox(height: 25),
+        ],
+        
+        // Recent Projects
+        SlideTransition(
+          position: _slideAnimation,
+          child: _buildRecentProjectsFirebase(state.recentProjects),
+        ),
+        
+        SizedBox(height: 25),
+        
+        // Upcoming Tasks
+        SlideTransition(
+          position: _slideAnimation,
+          child: _buildUpcomingTasks(state.upcomingTasks),
+        ),
+        
+        SizedBox(height: 25),
+        
+        // Project Progress
+        if (state.projectProgress.isNotEmpty) ...[
+          SlideTransition(
+            position: _slideAnimation,
+            child: _buildProjectProgress(state.projectProgress),
+          ),
+          SizedBox(height: 25),
+        ],
+        
+        // Team Members
+        if (state.teamMembers.isNotEmpty) ...[
+          SlideTransition(
+            position: _slideAnimation,
+            child: _buildTeamMembers(state.teamMembers),
+          ),
+          SizedBox(height: 25),
+        ],
+        
+        // Quick Actions
+        SlideTransition(
+          position: _slideAnimation,
+          child: _buildQuickActions(),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSearchResults(DashboardSearchResults state) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Search Results for "${state.query}"',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        SizedBox(height: 20),
+        if (state.results.isEmpty)
+          Container(
+            padding: EdgeInsets.all(40),
+            child: Column(
+              children: [
+                Icon(
+                  Icons.search_off,
+                  color: Colors.white.withOpacity(0.6),
+                  size: 48,
+                ),
+                SizedBox(height: 16),
+                Text(
+                  'No results found',
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(0.8),
+                    fontSize: 16,
+                  ),
+                ),
+              ],
+            ),
+          )
+        else
+          ...state.results.map((result) => _buildSearchResultItem(result)),
+      ],
+    );
+  }
+
+  Widget _buildSearchResultItem(Map<String, dynamic> result) {
+    return Container(
+      margin: EdgeInsets.only(bottom: 12),
+      padding: EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.15),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.white.withOpacity(0.3)),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            result['type'] == 'project' ? Icons.folder_outlined : Icons.task_outlined,
+            color: Colors.white,
+            size: 24,
+          ),
+          SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  result['title'],
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                if (result['description'].isNotEmpty)
+                  Text(
+                    result['description'],
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.8),
+                      fontSize: 14,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+              ],
+            ),
+          ),
+          Chip(
+            label: Text(
+              result['type'].toUpperCase(),
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 12,
+              ),
+            ),
+            backgroundColor: AppTheme.primaryBlue.withOpacity(0.8),
+          ),
+        ],
+      ),
+    );
+  }mport '../blocs/dashboard_bloc.dart';
+import '../blocs/project_bloc.dart';
+import '../blocs/task_bloc.dart';
+import '../blocs/member_request_bloc.dart';
 import '../models/project.dart';
+import '../models/task.dart';
 import '../models/user_model.dart';
+import '../models/member_request.dart';
 import '../theme/app_theme.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:intl/intl.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -19,13 +291,6 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
-  Map<String, int> taskStats = {
-    'total': 0,
-    'completed': 0,
-    'in_progress': 0,
-    'pending': 0,
-  };
-
   // Animation controllers
   late AnimationController _fadeController;
   late AnimationController _slideController;
@@ -37,13 +302,19 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
   late Animation<double> _particleAnimation;
 
   String userName = 'User';
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     _initializeAnimations();
-    _loadTaskStatistics();
     _loadUserInfo();
+    
+    // Load dashboard data
+    context.read<DashboardBloc>().add(LoadDashboardData());
+    context.read<ProjectBloc>().add(LoadProjects());
+    context.read<TaskBloc>().add(LoadTasks());
+    context.read<MemberRequestBloc>().add(LoadPendingRequests());
   }
 
   void _initializeAnimations() {
@@ -93,18 +364,8 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
     _fadeController.dispose();
     _slideController.dispose();
     _particleController.dispose();
+    _searchController.dispose();
     super.dispose();
-  }
-
-  Future<void> _loadTaskStatistics() async {
-    try {
-      final stats = await TaskService.getTaskStatistics();
-      setState(() {
-        taskStats = stats;
-      });
-    } catch (e) {
-      print('Error loading task statistics: $e');
-    }
   }
 
   Future<void> _loadUserInfo() async {
@@ -118,6 +379,21 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
     } catch (e) {
       print('Error loading user info: $e');
     }
+  }
+
+  void _onSearchChanged(String query) {
+    if (query.isEmpty) {
+      context.read<DashboardBloc>().add(LoadDashboardData());
+    } else {
+      context.read<DashboardBloc>().add(SearchDashboardContent(query));
+    }
+  }
+
+  void _refreshData() {
+    context.read<DashboardBloc>().add(RefreshDashboardData());
+    context.read<ProjectBloc>().add(LoadProjects());
+    context.read<TaskBloc>().add(LoadTasks());
+    context.read<MemberRequestBloc>().add(LoadPendingRequests());
   }
 
   @override
@@ -152,51 +428,51 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
             
             // Main content
             SafeArea(
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: FadeTransition(
-                    opacity: _fadeAnimation,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Header
-                        SlideTransition(
-                          position: _slideAnimation,
-                          child: _buildHeader(),
-                        ),
-                        
-                        SizedBox(height: 30),
-                        
-                        // Welcome Card
-                        SlideTransition(
-                          position: _slideAnimation,
-                          child: _buildWelcomeCard(),
-                        ),
-                        
-                        SizedBox(height: 25),
-                        
-                        // Task Statistics
-                        SlideTransition(
-                          position: _slideAnimation,
-                          child: _buildTaskStatistics(),
-                        ),
-                        
-                        SizedBox(height: 25),
-                        
-                        // Recent Projects
-                        SlideTransition(
-                          position: _slideAnimation,
-                          child: _buildRecentProjects(),
-                        ),
-                        
-                        SizedBox(height: 25),
-                        
-                        // Quick Actions
-                        SlideTransition(
-                          position: _slideAnimation,
-                          child: _buildQuickActions(),
-                        ),
+              child: RefreshIndicator(
+                onRefresh: () async => _refreshData(),
+                color: Colors.white,
+                backgroundColor: AppTheme.primaryBlue,
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: FadeTransition(
+                      opacity: _fadeAnimation,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Header
+                          SlideTransition(
+                            position: _slideAnimation,
+                            child: _buildHeader(),
+                          ),
+                          
+                          SizedBox(height: 20),
+                          
+                          // Search Bar
+                          SlideTransition(
+                            position: _slideAnimation,
+                            child: _buildSearchBar(),
+                          ),
+                          
+                          SizedBox(height: 25),
+                          
+                          // Dashboard Content
+                          BlocBuilder<DashboardBloc, DashboardState>(
+                            builder: (context, state) {
+                              if (state is DashboardLoading) {
+                                return _buildLoadingWidget();
+                              } else if (state is DashboardLoaded) {
+                                return _buildDashboardContent(state);
+                              } else if (state is DashboardSearchResults) {
+                                return _buildSearchResults(state);
+                              } else if (state is DashboardError) {
+                                return _buildErrorWidget(state.message);
+                              }
+                              return _buildLoadingWidget();
+                            },
+                          ),
+                        ],
                       ],
                     ),
                   ),
