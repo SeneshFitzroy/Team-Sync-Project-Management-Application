@@ -330,13 +330,13 @@ class _TaskPageState extends State<TaskPage> with TickerProviderStateMixin {
   Color _getPriorityColor(TaskPriority priority) {
     switch (priority) {
       case TaskPriority.urgent:
-        return Colors.deepPurple;
+        return AppTheme.urgentPriority;
       case TaskPriority.high:
-        return Colors.red;
+        return AppTheme.highPriority;
       case TaskPriority.medium:
-        return Colors.orange;
+        return AppTheme.mediumPriority;
       case TaskPriority.low:
-        return Colors.green;
+        return AppTheme.lowPriority;
     }
   }
 
