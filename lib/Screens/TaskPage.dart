@@ -331,6 +331,21 @@ class _TaskPageState extends State<TaskPage> with TickerProviderStateMixin {
     }
   }
 
+  Color _getStatusColor(TaskStatus status) {
+    switch (status) {
+      case TaskStatus.todo:
+        return AppTheme.todoColor;
+      case TaskStatus.inProgress:
+        return AppTheme.inProgressColor;
+      case TaskStatus.completed:
+        return AppTheme.completedColor;
+      case TaskStatus.review:
+        return AppTheme.primaryBlue;
+      case TaskStatus.cancelled:
+        return AppTheme.urgentPriority;
+    }
+  }
+
   void _showAddTaskDialog() {
     showDialog(
       context: context,
