@@ -145,8 +145,18 @@ class FirebaseService {
 
   // Task Management
   static Future<String> createTask(Task task) async {
-    final docRef = await _firestore.collection(tasksCollection).add(task.toMap());
-    return docRef.id;
+    try {
+      print('🔄 FirebaseService: Creating task in Firestore...');
+      print('🔄 Task data: ${task.toMap()}');
+      
+      final docRef = await _firestore.collection(tasksCollection).add(task.toMap());
+      print('✅ FirebaseService: Task created with ID: ${docRef.id}');
+      
+      return docRef.id;
+    } catch (e) {
+      print('❌ FirebaseService: Error creating task: $e');
+      rethrow;
+    }
   }
 
   static Future<Task?> getTask(String taskId) async {

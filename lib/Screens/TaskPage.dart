@@ -626,6 +626,9 @@ class _AddTaskDialogState extends State<_AddTaskDialog> {
       final userId = FirebaseAuth.instance.currentUser?.uid;
       if (userId == null) throw Exception('User not authenticated');
 
+      print('🔄 Creating task with date: $_selectedDate');
+      print('🔄 User ID: $userId');
+
       final task = Task(
         title: _titleController.text.trim(),
         description: _descriptionController.text.trim(),
@@ -639,7 +642,10 @@ class _AddTaskDialogState extends State<_AddTaskDialog> {
         createdBy: userId,
       );
 
-      await FirebaseService.createTask(task);
+      print('🔄 Task object created: ${task.toMap()}');
+      
+      final taskId = await FirebaseService.createTask(task);
+      print('✅ Task created with ID: $taskId');
       
       context.read<TaskBloc>().add(LoadTasks());
       Navigator.pop(context);
@@ -648,6 +654,7 @@ class _AddTaskDialogState extends State<_AddTaskDialog> {
         SnackBar(content: Text('Task created successfully!')),
       );
     } catch (e) {
+      print('❌ Error creating task: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error creating task: $e')),
       );
