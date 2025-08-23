@@ -179,7 +179,7 @@ class _TaskPageState extends State<TaskPage> with TickerProviderStateMixin {
                                     BoxShadow(
                                       color: isSelected 
                                           ? AppTheme.primaryBlue.withOpacity(0.3)
-                                          : Colors.grey.withOpacity(0.1),
+                                          : AppTheme.backgroundGray.withOpacity(0.3),
                                       blurRadius: 8,
                                       offset: Offset(0, 4),
                                     ),
