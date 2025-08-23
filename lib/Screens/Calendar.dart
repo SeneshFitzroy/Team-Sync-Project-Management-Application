@@ -5,6 +5,7 @@ import '../Services/task_service.dart';
 import '../Services/auth_service.dart';
 import '../models/task.dart';
 import '../theme/app_theme.dart';
+import '../widgets/TickLogo.dart';
 
 class Calendar extends StatefulWidget {
   const Calendar({super.key});
@@ -13,11 +14,77 @@ class Calendar extends StatefulWidget {
   State<Calendar> createState() => _CalendarState();
 }
 
-class _CalendarState extends State<Calendar> {
+class _CalendarState extends State<Calendar> with TickerProviderStateMixin {
   DateTime _selectedMonth = DateTime.now();
   DateTime _selectedDate = DateTime.now();
   final List<String> _weekDays = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
   String _filterPriority = 'all';
+
+  // Animation controllers
+  late AnimationController _fadeController;
+  late AnimationController _slideController;
+  late AnimationController _particleController;
+  
+  // Animations
+  late Animation<double> _fadeAnimation;
+  late Animation<Offset> _slideAnimation;
+  late Animation<double> _particleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeAnimations();
+  }
+
+  void _initializeAnimations() {
+    _fadeController = AnimationController(
+      duration: const Duration(milliseconds: 1500),
+      vsync: this,
+    );
+    
+    _slideController = AnimationController(
+      duration: const Duration(milliseconds: 1200),
+      vsync: this,
+    );
+    
+    _particleController = AnimationController(
+      duration: const Duration(seconds: 4),
+      vsync: this,
+    );
+
+    _fadeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _fadeController,
+      curve: Curves.easeInOut,
+    ));
+
+    _slideAnimation = Tween<Offset>(
+      begin: const Offset(0, 0.3),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(
+      parent: _slideController,
+      curve: Curves.easeOutBack,
+    ));
+
+    _particleAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(_particleController);
+
+    _fadeController.forward();
+    _slideController.forward();
+    _particleController.repeat();
+  }
+
+  @override
+  void dispose() {
+    _fadeController.dispose();
+    _slideController.dispose();
+    _particleController.dispose();
+    super.dispose();
+  }
 
   void _changeMonth(int offset) {
     setState(() {
@@ -35,13 +102,31 @@ class _CalendarState extends State<Calendar> {
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setDialogState) => AlertDialog(
-          title: Text(
-            'Add Task for ${DateFormat('MMM dd, yyyy').format(_selectedDate)}',
-            style: TextStyle(
-              color: Color(0xFF2D62ED),
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-            ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          title: Row(
+            children: [
+              Container(
+                padding: EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [AppTheme.primaryBlue, Color(0xFF764BA2)],
+                  ),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(Icons.event_outlined, color: Colors.white, size: 20),
+              ),
+              SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  'Add Task for ${DateFormat('MMM dd, yyyy').format(_selectedDate)}',
+                  style: TextStyle(
+                    color: AppTheme.primaryBlue,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
           ),
           content: SingleChildScrollView(
             child: Column(
@@ -52,7 +137,11 @@ class _CalendarState extends State<Calendar> {
                   decoration: InputDecoration(
                     labelText: 'Task Title',
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: AppTheme.primaryBlue, width: 2),
                     ),
                   ),
                 ),
@@ -63,7 +152,11 @@ class _CalendarState extends State<Calendar> {
                   decoration: InputDecoration(
                     labelText: 'Description',
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: AppTheme.primaryBlue, width: 2),
                     ),
                   ),
                 ),
@@ -73,14 +166,17 @@ class _CalendarState extends State<Calendar> {
                   decoration: InputDecoration(
                     labelText: 'Priority',
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: AppTheme.primaryBlue, width: 2),
                     ),
                   ),
                   items: [
                     DropdownMenuItem(value: 'low', child: Text('Low')),
                     DropdownMenuItem(value: 'medium', child: Text('Medium')),
                     DropdownMenuItem(value: 'high', child: Text('High')),
-                    DropdownMenuItem(value: 'urgent', child: Text('Urgent')),
                   ],
                   onChanged: (value) {
                     setDialogState(() {
@@ -90,7 +186,16 @@ class _CalendarState extends State<Calendar> {
                 ),
                 SizedBox(height: 16),
                 ListTile(
-                  leading: Icon(Icons.access_time, color: Color(0xFF2D62ED)),
+                  leading: Container(
+                    padding: EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [AppTheme.primaryBlue, Color(0xFF764BA2)],
+                      ),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Icon(Icons.access_time, color: Colors.white, size: 20),
+                  ),
                   title: Text('Time: ${selectedTime.format(context)}'),
                   onTap: () async {
                     final TimeOfDay? picked = await showTimePicker(
@@ -110,455 +215,421 @@ class _CalendarState extends State<Calendar> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text('Cancel'),
+              child: Text('Cancel', style: TextStyle(color: Colors.grey)),
             ),
-            ElevatedButton(
-              onPressed: () async {
-                if (titleController.text.trim().isNotEmpty) {
-                  try {
-                    final DateTime taskDateTime = DateTime(
-                      _selectedDate.year,
-                      _selectedDate.month,
-                      _selectedDate.day,
-                      selectedTime.hour,
-                      selectedTime.minute,
-                    );
-
-                    final task = Task(
-                      id: DateTime.now().millisecondsSinceEpoch.toString(),
-                      title: titleController.text.trim(),
-                      description: descriptionController.text.trim(),
-                      priority: selectedPriority,
-                      status: 'todo',
-                      dueDate: taskDateTime,
-                      createdAt: DateTime.now(),
-                      assignedTo: AuthService.currentUserId,
-                    );
-
-                    await TaskService.createTask(task);
-                    Navigator.pop(context);
-                    
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Task added for ${DateFormat('MMM dd').format(_selectedDate)}!'),
-                        backgroundColor: Color(0xFF2D62ED),
-                      ),
-                    );
-                  } catch (e) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Error adding task: $e'),
-                        backgroundColor: Colors.red,
-                      ),
-                    );
-                  }
-                }
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFF2D62ED),
+            Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [AppTheme.primaryBlue, Color(0xFF764BA2)],
+                ),
+                borderRadius: BorderRadius.circular(8),
               ),
-              child: Text('Add Task', style: TextStyle(color: Colors.white)),
+              child: TextButton(
+                onPressed: () {
+                  _addTask(titleController.text, descriptionController.text, selectedPriority, selectedTime);
+                  Navigator.pop(context);
+                },
+                child: Text('Add Task', style: TextStyle(color: Colors.white)),
+              ),
             ),
           ],
         ),
       ),
     );
+  }
+
+  Future<void> _addTask(String title, String description, String priority, TimeOfDay time) async {
+    if (title.isEmpty) return;
+
+    try {
+      final currentUser = AuthService.currentUser;
+      if (currentUser == null) return;
+
+      final task = Task(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        title: title,
+        description: description,
+        assignedTo: [currentUser.uid],
+        dueDate: DateTime(
+          _selectedDate.year,
+          _selectedDate.month,
+          _selectedDate.day,
+          time.hour,
+          time.minute,
+        ),
+        priority: priority,
+        status: 'pending',
+        createdBy: currentUser.uid,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      );
+
+      await TaskService.createTask(task);
+      setState(() {});
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Task added successfully!'),
+          backgroundColor: AppTheme.primaryBlue,
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error adding task: $e'),
+          backgroundColor: AppTheme.error,
+        ),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-              // Header with title and profile
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              AppTheme.primaryBlue,
+              Color(0xFF764BA2),
+            ],
+          ),
+        ),
+        child: Stack(
+          children: [
+            // Animated particle background
+            AnimatedBuilder(
+              animation: _particleAnimation,
+              child: Container(),
+              builder: (context, child) {
+                return CustomPaint(
+                  painter: ParticlePainter(_particleAnimation.value),
+                  size: Size.infinite,
+                );
+              },
+            ),
+            
+            // Main content
+            SafeArea(
+              child: Column(
                 children: [
-                  Text(
-                    'Calendar',
-                    style: TextStyle(
-                      color: const Color(0xFF192F5D),
-                      fontSize: 22,
-                      fontFamily: 'Poppins',
-                      fontWeight: FontWeight.w600,
+                  // Header
+                  Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: FadeTransition(
+                      opacity: _fadeAnimation,
+                      child: _buildHeader(),
                     ),
                   ),
-                  GestureDetector(
-                    onTap: () {
-                      // Navigate to Profile page when user icon is tapped
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const ProfileScreen()),
-                      );
-                    },
-                    child: CircleAvatar(
-                      radius: 20,
-                      backgroundColor: Colors.grey[200],
-                      child: Icon(Icons.person, color: Colors.grey[700]),
-                    ),
-                  ),
-                ],
-              ),
-              
-              const SizedBox(height: 24),
-              
-              // Month selector
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF8FAFC),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Column(
-                  children: [
-                    // Month and year with navigation
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          DateFormat('MMMM yyyy').format(_selectedMonth),
-                          style: TextStyle(
-                            color: const Color(0xFF192F5D),
-                            fontSize: 16,
-                            fontFamily: 'Poppins',
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        Row(
-                          children: [
-                            IconButton(
-                              icon: Icon(Icons.arrow_back_ios, size: 16),
-                              onPressed: () => _changeMonth(-1),
-                            ),
-                            IconButton(
-                              icon: Icon(Icons.arrow_forward_ios, size: 16),
-                              onPressed: () => _changeMonth(1),
+                  
+                  // Calendar content
+                  Expanded(
+                    child: SlideTransition(
+                      position: _slideAnimation,
+                      child: Container(
+                        margin: EdgeInsets.symmetric(horizontal: 20),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.95),
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 20,
+                              offset: Offset(0, 10),
                             ),
                           ],
                         ),
-                      ],
-                    ),
-                    
-                    const SizedBox(height: 16),
-                    
-                    // Week days header
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: _weekDays.map((day) => SizedBox(
-                        width: 32,
-                        child: Text(
-                          day,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: const Color(0xFF64748B),
-                            fontSize: 12,
-                            fontFamily: 'Poppins',
-                            fontWeight: FontWeight.w500,
-                          ),
+                        child: Column(
+                          children: [
+                            _buildCalendarHeader(),
+                            _buildCalendarGrid(),
+                            _buildTasksList(),
+                          ],
                         ),
-                      )).toList(),
-                    ),
-                    
-                    const SizedBox(height: 8),
-                    
-                    // Calendar grid
-                    GridView.builder(
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 7,
-                        childAspectRatio: 1,
                       ),
-                      itemCount: 35, // 5 weeks display
-                      itemBuilder: (context, index) {
-                        // Get the date for this cell
-                        final int firstDayOfMonth = DateTime(_selectedMonth.year, _selectedMonth.month, 1).weekday;
-                        final int daysInMonth = DateTime(_selectedMonth.year, _selectedMonth.month + 1, 0).day;
-                        
-                        // Calculate day number (1-31)
-                        final int day = index - firstDayOfMonth + 2;
-                        
-                        // Determine if this day is in the current month
-                        final bool isCurrentMonth = day > 0 && day <= daysInMonth;
-                        
-                        // Is today?
-                        final bool isToday = isCurrentMonth && 
-                            day == DateTime.now().day && 
-                            _selectedMonth.month == DateTime.now().month && 
-                            _selectedMonth.year == DateTime.now().year;
-                        
-                        // Is selected?
-                        final bool isSelected = isCurrentMonth && 
-                            day == _selectedDate.day && 
-                            _selectedMonth.month == _selectedDate.month && 
-                            _selectedMonth.year == _selectedDate.year;
-                        
-                        return GestureDetector(
-                          onTap: isCurrentMonth ? () {
-                            setState(() {
-                              _selectedDate = DateTime(_selectedMonth.year, _selectedMonth.month, day);
-                            });
-                          } : null,
-                          child: Container(
-                            margin: EdgeInsets.all(4),
-                            decoration: BoxDecoration(
-                              color: isSelected ? Color(0xFF2D62ED) : 
-                                     isToday ? Color(0xFFEFF6FF) : Colors.transparent,
-                              borderRadius: BorderRadius.circular(8),
-                              border: isToday && !isSelected
-                                  ? Border.all(color: Color(0xFF3B82F6)) 
-                                  : null,
-                            ),
-                            child: Center(
-                              child: isCurrentMonth 
-                                  ? Text(
-                                      day.toString(),
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: isSelected || isToday ? FontWeight.bold : FontWeight.normal,
-                                        color: isSelected ? Colors.white :
-                                               isToday ? Color(0xFF3B82F6) : Color(0xFF1E293B),
-                                      ),
-                                    )
-                                  : Text(''),
-                            ),
-                          ),
-                        );
-                      },
                     ),
+                  ),
+                  
+                  SizedBox(height: 20),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _showAddTaskDialog,
+        backgroundColor: AppTheme.primaryBlue,
+        child: Icon(Icons.add, color: Colors.white),
+      ),
+    );
+  }
+
+  Widget _buildHeader() {
+    return Row(
+      children: [
+        TickLogo(size: 35),
+        SizedBox(width: 12),
+        Text(
+          'Calendar',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 28,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 0.8,
+          ),
+        ),
+        Spacer(),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.2),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: IconButton(
+            icon: Icon(Icons.person_outline, color: Colors.white),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const ProfileScreen()),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCalendarHeader() {
+    return Container(
+      padding: EdgeInsets.all(20),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          IconButton(
+            onPressed: () => _changeMonth(-1),
+            icon: Icon(Icons.chevron_left, color: AppTheme.primaryBlue),
+          ),
+          Text(
+            DateFormat('MMMM yyyy').format(_selectedMonth),
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: AppTheme.primaryBlue,
+            ),
+          ),
+          IconButton(
+            onPressed: () => _changeMonth(1),
+            icon: Icon(Icons.chevron_right, color: AppTheme.primaryBlue),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCalendarGrid() {
+    return Expanded(
+      flex: 2,
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 20),
+        child: Column(
+          children: [
+            // Week days header
+            Row(
+              children: _weekDays.map((day) => Expanded(
+                child: Center(
+                  child: Text(
+                    day,
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      color: Colors.grey.shade600,
+                    ),
+                  ),
+                ),
+              )).toList(),
+            ),
+            SizedBox(height: 10),
+            // Calendar days
+            Expanded(
+              child: _buildDaysGrid(),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDaysGrid() {
+    final firstDayOfMonth = DateTime(_selectedMonth.year, _selectedMonth.month, 1);
+    final lastDayOfMonth = DateTime(_selectedMonth.year, _selectedMonth.month + 1, 0);
+    final firstWeekday = firstDayOfMonth.weekday;
+    final daysInMonth = lastDayOfMonth.day;
+
+    return GridView.builder(
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 7,
+        childAspectRatio: 1,
+      ),
+      itemCount: 42,
+      itemBuilder: (context, index) {
+        final dayNumber = index - firstWeekday + 2;
+        
+        if (dayNumber < 1 || dayNumber > daysInMonth) {
+          return Container();
+        }
+
+        final date = DateTime(_selectedMonth.year, _selectedMonth.month, dayNumber);
+        final isSelected = _selectedDate.day == dayNumber && 
+                          _selectedDate.month == _selectedMonth.month && 
+                          _selectedDate.year == _selectedMonth.year;
+        final isToday = DateTime.now().day == dayNumber && 
+                       DateTime.now().month == _selectedMonth.month && 
+                       DateTime.now().year == _selectedMonth.year;
+
+        return GestureDetector(
+          onTap: () {
+            setState(() {
+              _selectedDate = date;
+            });
+          },
+          child: Container(
+            margin: EdgeInsets.all(2),
+            decoration: BoxDecoration(
+              gradient: isSelected ? LinearGradient(
+                colors: [AppTheme.primaryBlue, Color(0xFF764BA2)],
+              ) : null,
+              color: isToday && !isSelected ? AppTheme.primaryBlue.withOpacity(0.1) : null,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Center(
+              child: Text(
+                '$dayNumber',
+                style: TextStyle(
+                  color: isSelected ? Colors.white : 
+                         isToday ? AppTheme.primaryBlue : Colors.black,
+                  fontWeight: isSelected || isToday ? FontWeight.bold : FontWeight.normal,
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildTasksList() {
+    return Expanded(
+      flex: 1,
+      child: Container(
+        padding: EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Text(
+                  'Tasks for ${DateFormat('MMM dd').format(_selectedDate)}',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: AppTheme.primaryBlue,
+                  ),
+                ),
+                Spacer(),
+                DropdownButton<String>(
+                  value: _filterPriority,
+                  onChanged: (value) {
+                    setState(() {
+                      _filterPriority = value!;
+                    });
+                  },
+                  items: [
+                    DropdownMenuItem(value: 'all', child: Text('All')),
+                    DropdownMenuItem(value: 'high', child: Text('High')),
+                    DropdownMenuItem(value: 'medium', child: Text('Medium')),
+                    DropdownMenuItem(value: 'low', child: Text('Low')),
                   ],
                 ),
-              ),
-              
-              const SizedBox(height: 20),
-              
-              // Add Task for Selected Date Button
-              Container(
-                width: double.infinity,
-                margin: const EdgeInsets.symmetric(horizontal: 4),
-                child: ElevatedButton.icon(
-                  onPressed: () => _showAddTaskDialog(),
-                  icon: Icon(Icons.add_task, color: Colors.white),
-                  label: Text(
-                    'Add Task for ${DateFormat('MMM dd').format(_selectedDate)}',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFF2D62ED),
-                    padding: EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                ),
-              ),
-              
-              const SizedBox(height: 24),
-              
-              // Upcoming Tasks section with filter
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Upcoming Tasks',
-                    style: TextStyle(
-                      color: const Color(0xFF192F5D),
-                      fontSize: 16,
-                      fontFamily: 'Poppins',
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  DropdownButton<String>(
-                    value: _filterPriority,
-                    items: const [
-                      DropdownMenuItem(value: 'all', child: Text('All')),
-                      DropdownMenuItem(value: 'urgent', child: Text('Urgent')),
-                      DropdownMenuItem(value: 'pending', child: Text('Pending')),
-                      DropdownMenuItem(value: 'in-progress', child: Text('In Progress')),
-                    ],
-                    onChanged: (value) {
-                      setState(() {
-                        _filterPriority = value!;
-                      });
-                    },
-                  ),
-                ],
-              ),
-              
-              const SizedBox(height: 12),
-              
-              // Task items from Firebase
-              StreamBuilder<List<Task>>(
-                stream: TaskService.getTasksForDate(_selectedDate),
+              ],
+            ),
+            SizedBox(height: 10),
+            Expanded(
+              child: FutureBuilder<List<Task>>(
+                future: TaskService.getTasksForDate(_selectedDate),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
+                    return Center(child: CircularProgressIndicator());
                   }
                   
-                  if (snapshot.hasError) {
+                  if (!snapshot.hasData || snapshot.data!.isEmpty) {
                     return Center(
                       child: Text(
-                        'Error loading tasks',
-                        style: TextStyle(
-                          color: Colors.red,
-                          fontFamily: 'Poppins',
-                        ),
+                        'No tasks for this day',
+                        style: TextStyle(color: Colors.grey.shade600),
                       ),
                     );
                   }
-                  
-                  List<Task> tasks = snapshot.data ?? [];
-                  
-                  // Filter by priority if needed
-                  if (_filterPriority != 'all') {
-                    tasks = tasks.where((task) => task.priority == _filterPriority).toList();
-                  }
-                  
-                  if (tasks.isEmpty) {
-                    return Container(
-                      padding: const EdgeInsets.all(32),
-                      child: Column(
-                        children: [
-                          Icon(Icons.task_alt, color: Colors.grey[400], size: 48),
-                          const SizedBox(height: 12),
-                          Text(
-                            'No tasks for this date',
-                            style: TextStyle(
-                              color: Colors.grey[600],
-                              fontFamily: 'Poppins',
-                              fontWeight: FontWeight.w500,
-                            ),
+
+                  final tasks = snapshot.data!.where((task) {
+                    if (_filterPriority == 'all') return true;
+                    return task.priority == _filterPriority;
+                  }).toList();
+
+                  return ListView.builder(
+                    itemCount: tasks.length,
+                    itemBuilder: (context, index) {
+                      final task = tasks[index];
+                      return Container(
+                        margin: EdgeInsets.only(bottom: 8),
+                        padding: EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: _getPriorityColor(task.priority).withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.left(
+                            color: _getPriorityColor(task.priority),
+                            width: 4,
                           ),
-                        ],
-                      ),
-                    );
-                  }
-                  
-                  return Column(
-                    children: tasks.map((task) {
-                      Color priorityColor;
-                      switch (task.priority.toLowerCase()) {
-                        case 'urgent':
-                          priorityColor = const Color(0xFFFF1212);
-                          break;
-                        case 'high':
-                          priorityColor = const Color(0xFFF59E0B);
-                          break;
-                        case 'medium':
-                          priorityColor = const Color(0xFF4318D1);
-                          break;
-                        default:
-                          priorityColor = const Color(0xFF4CAF50);
-                      }
-                      
-                      return _buildTaskCard(
-                        task.title,
-                        DateFormat('HH:mm').format(task.dueDate),
-                        DateFormat('yyyy-MM-dd').format(task.dueDate),
-                        task.priority,
-                        priorityColor,
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    task.title,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                  if (task.description.isNotEmpty)
+                                    Text(
+                                      task.description,
+                                      style: TextStyle(
+                                        color: Colors.grey.shade600,
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ),
+                            Text(
+                              DateFormat('HH:mm').format(task.dueDate),
+                              style: TextStyle(
+                                color: _getPriorityColor(task.priority),
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
                       );
-                    }).toList(),
+                    },
                   );
                 },
-              ),
-            ],
-          ), // Close Column
-        ), // Close Padding
-      ), // Close SingleChildScrollView
-    ), // Close SafeArea
-  ); // Close Scaffold
-}
-
-  Widget _buildTaskCard(String title, String time, String date, String priority, Color indicatorColor) {
-    return Card(
-      margin: EdgeInsets.only(bottom: 12),
-      elevation: 0,
-      color: const Color(0xFFF8FAFC),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Row(
-          children: [
-            // Task indicator
-            Container(
-              width: 8,
-              height: 40,
-              decoration: BoxDecoration(
-                color: indicatorColor,
-                borderRadius: BorderRadius.circular(4),
-              ),
-            ),
-            const SizedBox(width: 12),
-            
-            // Task details
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: TextStyle(
-                      color: const Color(0xFF1E293B),
-                      fontSize: 14,
-                      fontFamily: 'Poppins',
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      Icon(Icons.access_time, size: 12, color: Color(0xFF64748B)),
-                      SizedBox(width: 4),
-                      Text(
-                        time,
-                        style: TextStyle(
-                          color: const Color(0xFF64748B),
-                          fontSize: 12,
-                        ),
-                      ),
-                      SizedBox(width: 16),
-                      Icon(Icons.calendar_today, size: 12, color: Color(0xFF64748B)),
-                      SizedBox(width: 4),
-                      Text(
-                        date,
-                        style: TextStyle(
-                          color: const Color(0xFF64748B),
-                          fontSize: 12,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            
-            // Priority badge
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.grey.shade200),
-              ),
-              child: Text(
-                priority,
-                style: TextStyle(
-                  color: const Color(0xFF64748B),
-                  fontSize: 12,
-                ),
               ),
             ),
           ],
@@ -566,4 +637,40 @@ class _CalendarState extends State<Calendar> {
       ),
     );
   }
+
+  Color _getPriorityColor(String priority) {
+    switch (priority) {
+      case 'high':
+        return Colors.red;
+      case 'medium':
+        return Colors.orange;
+      case 'low':
+        return Colors.green;
+      default:
+        return Colors.grey;
+    }
+  }
+}
+
+// Particle painter for background animation
+class ParticlePainter extends CustomPainter {
+  final double animationValue;
+
+  ParticlePainter(this.animationValue);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.white.withOpacity(0.08)
+      ..strokeWidth = 2.0;
+
+    for (int i = 0; i < 40; i++) {
+      final x = (i * 47.0 + animationValue * 60) % size.width;
+      final y = (i * 53.0 + animationValue * 40) % size.height;
+      canvas.drawCircle(Offset(x, y), 1.5, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }
