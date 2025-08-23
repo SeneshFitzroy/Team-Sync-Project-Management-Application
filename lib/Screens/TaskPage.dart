@@ -689,46 +689,8 @@ class _AddTaskDialogState extends State<_AddTaskDialog> {
               },
             ),
             SizedBox(height: 16),
-            // Date Picker field
-            TextFormField(
-              readOnly: true,
-              decoration: InputDecoration(
-                labelText: 'Due Date',
-                prefixIcon: Icon(
-                  Icons.calendar_today,
-                  color: AppTheme.primaryBlue,
-                ),
-                suffixIcon: Icon(
-                  Icons.arrow_drop_down,
-                  color: AppTheme.textSecondary,
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(
-                    color: AppTheme.textLight.withOpacity(0.3),
-                    width: 1.5,
-                  ),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(
-                    color: AppTheme.textLight.withOpacity(0.3),
-                    width: 1.5,
-                  ),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(
-                    color: AppTheme.primaryBlue,
-                    width: 2,
-                  ),
-                ),
-                filled: true,
-                fillColor: AppTheme.backgroundLight,
-              ),
-              controller: TextEditingController(
-                text: '${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}',
-              ),
+            // Date Picker field with better web support
+            GestureDetector(
               onTap: () async {
                 print('🗓️ Opening date picker, current date: $_selectedDate');
                 try {
@@ -777,6 +739,55 @@ class _AddTaskDialogState extends State<_AddTaskDialog> {
                   );
                 }
               },
+              child: Container(
+                padding: EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: AppTheme.textLight.withOpacity(0.3),
+                    width: 1.5,
+                  ),
+                  borderRadius: BorderRadius.circular(12),
+                  color: AppTheme.backgroundLight,
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.calendar_today,
+                      color: AppTheme.primaryBlue,
+                      size: 20,
+                    ),
+                    SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Due Date',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: AppTheme.textSecondary,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          SizedBox(height: 2),
+                          Text(
+                            '${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: AppTheme.textPrimary,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Icon(
+                      Icons.arrow_drop_down,
+                      color: AppTheme.textSecondary,
+                    ),
+                  ],
+                ),
+              ),
             ),
             SizedBox(height: 16),
             BlocBuilder<ProjectBloc, ProjectState>(
