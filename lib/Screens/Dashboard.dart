@@ -12,6 +12,7 @@ import '../models/task.dart';
 import '../models/user_model.dart';
 import '../models/member_request.dart';
 import '../theme/app_theme.dart';
+import '../services/firebase_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 
@@ -1566,50 +1567,123 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
   void _showCreateProjectDialog() {
     final nameController = TextEditingController();
     final descriptionController = TextEditingController();
+    List<UserModel> allUsers = [];
+    List<String> selectedMemberIds = [];
     
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Create New Project'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: nameController,
-              decoration: InputDecoration(
-                labelText: 'Project Name',
-                border: OutlineInputBorder(),
-              ),
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          title: Text('Create New Project'),
+          content: Container(
+            width: double.maxFinite,
+            constraints: BoxConstraints(maxHeight: 500),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                TextField(
+                  controller: nameController,
+                  decoration: InputDecoration(
+                    labelText: 'Project Name',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                SizedBox(height: 16),
+                TextField(
+                  controller: descriptionController,
+                  decoration: InputDecoration(
+                    labelText: 'Description',
+                    border: OutlineInputBorder(),
+                  ),
+                  maxLines: 3,
+                ),
+                SizedBox(height: 16),
+                Text(
+                  'Team Members',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(height: 8),
+                FutureBuilder<List<UserModel>>(
+                  future: FirebaseService.getAllUsers(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(child: CircularProgressIndicator());
+                    }
+                    
+                    if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return Text('No users found');
+                    }
+                    
+                    allUsers = snapshot.data!;
+                    
+                    return Container(
+                      height: 200,
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey[300]!),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: ListView.builder(
+                        itemCount: allUsers.length,
+                        itemBuilder: (context, index) {
+                          final user = allUsers[index];
+                          final isSelected = selectedMemberIds.contains(user.id);
+                          
+                          return CheckboxListTile(
+                            title: Text(user.name),
+                            subtitle: Text(user.email),
+                            value: isSelected,
+                            onChanged: (bool? value) {
+                              setState(() {
+                                if (value == true) {
+                                  selectedMemberIds.add(user.id!);
+                                } else {
+                                  selectedMemberIds.remove(user.id);
+                                }
+                              });
+                            },
+                          );
+                        },
+                      ),
+                    );
+                  },
+                ),
+              ],
             ),
-            SizedBox(height: 16),
-            TextField(
-              controller: descriptionController,
-              decoration: InputDecoration(
-                labelText: 'Description',
-                border: OutlineInputBorder(),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                if (nameController.text.isNotEmpty) {
+                  // Add current user as a team member automatically
+                  final currentUserId = FirebaseAuth.instance.currentUser?.uid;
+                  if (currentUserId != null && !selectedMemberIds.contains(currentUserId)) {
+                    selectedMemberIds.add(currentUserId);
+                  }
+                  
+                  context.read<ProjectBloc>().add(CreateProject(
+                    name: nameController.text,
+                    description: descriptionController.text,
+                    teamMembers: selectedMemberIds,
+                  ));
+                  Navigator.pop(context);
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppTheme.primaryBlue,
+                foregroundColor: Colors.white,
               ),
-              maxLines: 3,
+              child: Text('Create'),
             ),
           ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              if (nameController.text.isNotEmpty) {
-                context.read<ProjectBloc>().add(CreateProject(
-                  name: nameController.text,
-                  description: descriptionController.text,
-                ));
-                Navigator.pop(context);
-              }
-            },
-            child: Text('Create'),
-          ),
-        ],
       ),
     );
   }
