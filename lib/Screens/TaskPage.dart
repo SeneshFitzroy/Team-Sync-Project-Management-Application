@@ -74,6 +74,7 @@ class _TaskPageState extends State<TaskPage> with TickerProviderStateMixin {
   }
 
   void _loadData() {
+    print('🔄 Loading tasks and projects...');
     context.read<TaskBloc>().add(LoadTasks());
     context.read<ProjectBloc>().add(LoadProjects());
   }
