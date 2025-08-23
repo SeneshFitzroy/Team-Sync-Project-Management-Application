@@ -33,7 +33,17 @@ class _TaskPageState extends State<TaskPage> with TickerProviderStateMixin {
 
   void _setupAnimations() {
     _fadeController = AnimationController(
-      duration: const Duration(milliseconds: 600),
+      duration: const Duration(milliseconds: 1500),
+      vsync: this,
+    );
+    
+    _slideController = AnimationController(
+      duration: const Duration(milliseconds: 1200),
+      vsync: this,
+    );
+    
+    _particleController = AnimationController(
+      duration: const Duration(seconds: 4),
       vsync: this,
     );
 
@@ -42,10 +52,25 @@ class _TaskPageState extends State<TaskPage> with TickerProviderStateMixin {
       end: 1.0,
     ).animate(CurvedAnimation(
       parent: _fadeController,
-      curve: Curves.easeIn,
+      curve: Curves.easeInOut,
     ));
 
+    _slideAnimation = Tween<Offset>(
+      begin: const Offset(0, 0.3),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(
+      parent: _slideController,
+      curve: Curves.easeOutBack,
+    ));
+
+    _particleAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(_particleController);
+
     _fadeController.forward();
+    _slideController.forward();
+    _particleController.repeat();
   }
 
   void _loadData() {
