@@ -22,13 +22,13 @@ class AboutScreen extends StatelessWidget {
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
               AppTheme.primaryBlue,
-              const Color(0xFF764BA2),
+              Color(0xFF764BA2),
             ],
           ),
         ),

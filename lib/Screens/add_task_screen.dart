@@ -64,7 +64,7 @@ class _add_task_screenScreenState extends State<add_task_screenScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text(
               'Task created successfully!',
               style: TextStyle(fontFamily: 'Poppins'),
@@ -80,7 +80,7 @@ class _add_task_screenScreenState extends State<add_task_screenScreen> {
           SnackBar(
             content: Text(
               'Error creating task: $e',
-              style: TextStyle(fontFamily: 'Poppins'),
+              style: const TextStyle(fontFamily: 'Poppins'),
             ),
             backgroundColor: Colors.red,
           ),
@@ -100,7 +100,7 @@ class _add_task_screenScreenState extends State<add_task_screenScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Create New Task',
           style: TextStyle(
             fontFamily: 'Poppins',
@@ -121,13 +121,13 @@ class _add_task_screenScreenState extends State<add_task_screenScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Task Title
-                Text(
+                const Text(
                   'Task Title',
                   style: TextStyle(
                     fontFamily: 'Poppins',
                     fontWeight: FontWeight.w600,
                     fontSize: 16,
-                    color: const Color(0xFF192F5D),
+                    color: Color(0xFF192F5D),
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -135,7 +135,7 @@ class _add_task_screenScreenState extends State<add_task_screenScreen> {
                   controller: _titleController,
                   decoration: InputDecoration(
                     hintText: 'Enter task title',
-                    hintStyle: TextStyle(fontFamily: 'Poppins'),
+                    hintStyle: const TextStyle(fontFamily: 'Poppins'),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -144,7 +144,7 @@ class _add_task_screenScreenState extends State<add_task_screenScreen> {
                       borderSide: const BorderSide(color: Color(0xFF2D62ED)),
                     ),
                   ),
-                  style: TextStyle(fontFamily: 'Poppins'),
+                  style: const TextStyle(fontFamily: 'Poppins'),
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
                       return 'Please enter a task title';
@@ -156,13 +156,13 @@ class _add_task_screenScreenState extends State<add_task_screenScreen> {
                 const SizedBox(height: 20),
                 
                 // Task Description
-                Text(
+                const Text(
                   'Description',
                   style: TextStyle(
                     fontFamily: 'Poppins',
                     fontWeight: FontWeight.w600,
                     fontSize: 16,
-                    color: const Color(0xFF192F5D),
+                    color: Color(0xFF192F5D),
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -171,7 +171,7 @@ class _add_task_screenScreenState extends State<add_task_screenScreen> {
                   maxLines: 4,
                   decoration: InputDecoration(
                     hintText: 'Enter task description',
-                    hintStyle: TextStyle(fontFamily: 'Poppins'),
+                    hintStyle: const TextStyle(fontFamily: 'Poppins'),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -180,7 +180,7 @@ class _add_task_screenScreenState extends State<add_task_screenScreen> {
                       borderSide: const BorderSide(color: Color(0xFF2D62ED)),
                     ),
                   ),
-                  style: TextStyle(fontFamily: 'Poppins'),
+                  style: const TextStyle(fontFamily: 'Poppins'),
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
                       return 'Please enter a task description';
@@ -192,13 +192,13 @@ class _add_task_screenScreenState extends State<add_task_screenScreen> {
                 const SizedBox(height: 20),
                 
                 // Priority Selection
-                Text(
+                const Text(
                   'Priority',
                   style: TextStyle(
                     fontFamily: 'Poppins',
                     fontWeight: FontWeight.w600,
                     fontSize: 16,
-                    color: const Color(0xFF192F5D),
+                    color: Color(0xFF192F5D),
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -213,16 +213,16 @@ class _add_task_screenScreenState extends State<add_task_screenScreen> {
                       borderSide: const BorderSide(color: Color(0xFF2D62ED)),
                     ),
                   ),
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontFamily: 'Poppins',
-                    color: const Color(0xFF192F5D),
+                    color: Color(0xFF192F5D),
                   ),
                   items: _priorities.map((priority) {
                     return DropdownMenuItem(
                       value: priority,
                       child: Text(
                         priority.toUpperCase(),
-                        style: TextStyle(fontFamily: 'Poppins'),
+                        style: const TextStyle(fontFamily: 'Poppins'),
                       ),
                     );
                   }).toList(),
@@ -236,13 +236,13 @@ class _add_task_screenScreenState extends State<add_task_screenScreen> {
                 const SizedBox(height: 20),
                 
                 // Status Selection
-                Text(
+                const Text(
                   'Status',
                   style: TextStyle(
                     fontFamily: 'Poppins',
                     fontWeight: FontWeight.w600,
                     fontSize: 16,
-                    color: const Color(0xFF192F5D),
+                    color: Color(0xFF192F5D),
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -257,16 +257,16 @@ class _add_task_screenScreenState extends State<add_task_screenScreen> {
                       borderSide: const BorderSide(color: Color(0xFF2D62ED)),
                     ),
                   ),
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontFamily: 'Poppins',
-                    color: const Color(0xFF192F5D),
+                    color: Color(0xFF192F5D),
                   ),
                   items: _statuses.map((status) {
                     return DropdownMenuItem(
                       value: status,
                       child: Text(
                         status.replaceAll('_', ' ').toUpperCase(),
-                        style: TextStyle(fontFamily: 'Poppins'),
+                        style: const TextStyle(fontFamily: 'Poppins'),
                       ),
                     );
                   }).toList(),
@@ -280,13 +280,13 @@ class _add_task_screenScreenState extends State<add_task_screenScreen> {
                 const SizedBox(height: 20),
                 
                 // Due Date Selection
-                Text(
+                const Text(
                   'Due Date',
                   style: TextStyle(
                     fontFamily: 'Poppins',
                     fontWeight: FontWeight.w600,
                     fontSize: 16,
-                    color: const Color(0xFF192F5D),
+                    color: Color(0xFF192F5D),
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -303,9 +303,9 @@ class _add_task_screenScreenState extends State<add_task_screenScreen> {
                       children: [
                         Text(
                           '${_selectedDueDate.day}/${_selectedDueDate.month}/${_selectedDueDate.year}',
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontFamily: 'Poppins',
-                            color: const Color(0xFF192F5D),
+                            color: Color(0xFF192F5D),
                           ),
                         ),
                         const Icon(Icons.calendar_today, color: Color(0xFF2D62ED)),
@@ -331,7 +331,7 @@ class _add_task_screenScreenState extends State<add_task_screenScreen> {
                     ),
                     child: _isLoading
                         ? const CircularProgressIndicator(color: Colors.white)
-                        : Text(
+                        : const Text(
                             'Create Task',
                             style: TextStyle(
                               fontFamily: 'Poppins',

@@ -1,7 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import '../models/task.dart';
-import '../models/user_model.dart';
 import '../Services/firebase_service.dart';
 
 // Task Events

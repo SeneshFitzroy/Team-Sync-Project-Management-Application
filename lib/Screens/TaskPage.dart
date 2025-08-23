@@ -731,18 +731,6 @@ class _AddTaskDialogState extends State<_AddTaskDialog> {
               },
               labelText: 'Due Date',
             ),
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        Spacer(),
-                        Icon(Icons.arrow_drop_down, color: AppTheme.primaryBlue),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
             SizedBox(height: 16),
             BlocBuilder<ProjectBloc, ProjectState>(
               builder: (context, state) {

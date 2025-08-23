@@ -40,13 +40,13 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
               AppTheme.primaryBlue,
-              const Color(0xFF764BA2),
+              Color(0xFF764BA2),
             ],
           ),
         ),
@@ -75,7 +75,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                           style: const TextStyle(color: Colors.white),
                           decoration: InputDecoration(
                             labelText: 'Task Title',
-                            labelStyle: TextStyle(color: Colors.white70),
+                            labelStyle: const TextStyle(color: Colors.white70),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(15),
                               borderSide: BorderSide(
@@ -110,7 +110,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                           maxLines: 3,
                           decoration: InputDecoration(
                             labelText: 'Description',
-                            labelStyle: TextStyle(color: Colors.white70),
+                            labelStyle: const TextStyle(color: Colors.white70),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(15),
                               borderSide: BorderSide(
@@ -151,7 +151,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
+                              const Text(
                                 'Priority',
                                 style: TextStyle(
                                   color: Colors.white70,
@@ -193,7 +193,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
+                              const Text(
                                 'Due Date',
                                 style: TextStyle(
                                   color: Colors.white70,
@@ -264,7 +264,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            colorScheme: ColorScheme.dark(
+            colorScheme: const ColorScheme.dark(
               primary: AppTheme.primaryBlue,
               surface: AppTheme.primaryBlue,
             ),

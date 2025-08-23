@@ -106,20 +106,20 @@ class _CalendarState extends State<Calendar> with TickerProviderStateMixin {
           title: Row(
             children: [
               Container(
-                padding: EdgeInsets.all(8),
+                padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
+                  gradient: const LinearGradient(
                     colors: [AppTheme.primaryBlue, Color(0xFF764BA2)],
                   ),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: Icon(Icons.event_outlined, color: Colors.white, size: 20),
+                child: const Icon(Icons.event_outlined, color: Colors.white, size: 20),
               ),
-              SizedBox(width: 12),
+              const SizedBox(width: 12),
               Expanded(
                 child: Text(
                   'Add Task for ${DateFormat('MMM dd, yyyy').format(_selectedDate)}',
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: AppTheme.primaryBlue,
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
@@ -141,11 +141,11 @@ class _CalendarState extends State<Calendar> with TickerProviderStateMixin {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: AppTheme.primaryBlue, width: 2),
+                      borderSide: const BorderSide(color: AppTheme.primaryBlue, width: 2),
                     ),
                   ),
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 TextField(
                   controller: descriptionController,
                   maxLines: 3,
@@ -156,11 +156,11 @@ class _CalendarState extends State<Calendar> with TickerProviderStateMixin {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: AppTheme.primaryBlue, width: 2),
+                      borderSide: const BorderSide(color: AppTheme.primaryBlue, width: 2),
                     ),
                   ),
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 DropdownButtonFormField<String>(
                   value: selectedPriority,
                   decoration: InputDecoration(
@@ -170,10 +170,10 @@ class _CalendarState extends State<Calendar> with TickerProviderStateMixin {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: AppTheme.primaryBlue, width: 2),
+                      borderSide: const BorderSide(color: AppTheme.primaryBlue, width: 2),
                     ),
                   ),
-                  items: [
+                  items: const [
                     DropdownMenuItem(value: 'low', child: Text('Low')),
                     DropdownMenuItem(value: 'medium', child: Text('Medium')),
                     DropdownMenuItem(value: 'high', child: Text('High')),
@@ -184,17 +184,17 @@ class _CalendarState extends State<Calendar> with TickerProviderStateMixin {
                     });
                   },
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 ListTile(
                   leading: Container(
-                    padding: EdgeInsets.all(8),
+                    padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(
+                      gradient: const LinearGradient(
                         colors: [AppTheme.primaryBlue, Color(0xFF764BA2)],
                       ),
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: Icon(Icons.access_time, color: Colors.white, size: 20),
+                    child: const Icon(Icons.access_time, color: Colors.white, size: 20),
                   ),
                   title: Text('Time: ${selectedTime.format(context)}'),
                   onTap: () async {
@@ -215,11 +215,11 @@ class _CalendarState extends State<Calendar> with TickerProviderStateMixin {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text('Cancel', style: TextStyle(color: Colors.grey)),
+              child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
             ),
             Container(
               decoration: BoxDecoration(
-                gradient: LinearGradient(
+                gradient: const LinearGradient(
                   colors: [AppTheme.primaryBlue, Color(0xFF764BA2)],
                 ),
                 borderRadius: BorderRadius.circular(8),
@@ -229,7 +229,7 @@ class _CalendarState extends State<Calendar> with TickerProviderStateMixin {
                   _addTask(titleController.text, descriptionController.text, selectedPriority, selectedTime);
                   Navigator.pop(context);
                 },
-                child: Text('Add Task', style: TextStyle(color: Colors.white)),
+                child: const Text('Add Task', style: TextStyle(color: Colors.white)),
               ),
             ),
           ],
@@ -286,7 +286,7 @@ class _CalendarState extends State<Calendar> with TickerProviderStateMixin {
       setState(() {});
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text('Task added successfully!'),
           backgroundColor: AppTheme.primaryBlue,
         ),
@@ -307,7 +307,7 @@ class _CalendarState extends State<Calendar> with TickerProviderStateMixin {
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
@@ -349,7 +349,7 @@ class _CalendarState extends State<Calendar> with TickerProviderStateMixin {
                     child: SlideTransition(
                       position: _slideAnimation,
                       child: Container(
-                        margin: EdgeInsets.symmetric(horizontal: 20),
+                        margin: const EdgeInsets.symmetric(horizontal: 20),
                         decoration: BoxDecoration(
                           color: Colors.white.withOpacity(0.95),
                           borderRadius: BorderRadius.circular(20),
@@ -357,7 +357,7 @@ class _CalendarState extends State<Calendar> with TickerProviderStateMixin {
                             BoxShadow(
                               color: Colors.black.withOpacity(0.1),
                               blurRadius: 20,
-                              offset: Offset(0, 10),
+                              offset: const Offset(0, 10),
                             ),
                           ],
                         ),
@@ -372,7 +372,7 @@ class _CalendarState extends State<Calendar> with TickerProviderStateMixin {
                     ),
                   ),
                   
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                 ],
               ),
             ),
@@ -382,7 +382,7 @@ class _CalendarState extends State<Calendar> with TickerProviderStateMixin {
       floatingActionButton: FloatingActionButton(
         onPressed: _showAddTaskDialog,
         backgroundColor: AppTheme.primaryBlue,
-        child: Icon(Icons.add, color: Colors.white),
+        child: const Icon(Icons.add, color: Colors.white),
       ),
     );
   }
@@ -390,9 +390,9 @@ class _CalendarState extends State<Calendar> with TickerProviderStateMixin {
   Widget _buildHeader() {
     return Row(
       children: [
-        TickLogo(size: 35),
-        SizedBox(width: 12),
-        Text(
+        const TickLogo(size: 35),
+        const SizedBox(width: 12),
+        const Text(
           'Calendar',
           style: TextStyle(
             color: Colors.white,
@@ -401,14 +401,14 @@ class _CalendarState extends State<Calendar> with TickerProviderStateMixin {
             letterSpacing: 0.8,
           ),
         ),
-        Spacer(),
+        const Spacer(),
         Container(
           decoration: BoxDecoration(
             color: Colors.white.withOpacity(0.2),
             borderRadius: BorderRadius.circular(12),
           ),
           child: IconButton(
-            icon: Icon(Icons.person_outline, color: Colors.white),
+            icon: const Icon(Icons.person_outline, color: Colors.white),
             onPressed: () {
               Navigator.push(
                 context,
@@ -423,17 +423,17 @@ class _CalendarState extends State<Calendar> with TickerProviderStateMixin {
 
   Widget _buildCalendarHeader() {
     return Container(
-      padding: EdgeInsets.all(20),
+      padding: const EdgeInsets.all(20),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           IconButton(
             onPressed: () => _changeMonth(-1),
-            icon: Icon(Icons.chevron_left, color: AppTheme.primaryBlue),
+            icon: const Icon(Icons.chevron_left, color: AppTheme.primaryBlue),
           ),
           Text(
             DateFormat('MMMM yyyy').format(_selectedMonth),
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
               color: AppTheme.primaryBlue,
@@ -441,7 +441,7 @@ class _CalendarState extends State<Calendar> with TickerProviderStateMixin {
           ),
           IconButton(
             onPressed: () => _changeMonth(1),
-            icon: Icon(Icons.chevron_right, color: AppTheme.primaryBlue),
+            icon: const Icon(Icons.chevron_right, color: AppTheme.primaryBlue),
           ),
         ],
       ),
@@ -452,7 +452,7 @@ class _CalendarState extends State<Calendar> with TickerProviderStateMixin {
     return Expanded(
       flex: 2,
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 20),
+        padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
           children: [
             // Week days header
@@ -469,7 +469,7 @@ class _CalendarState extends State<Calendar> with TickerProviderStateMixin {
                 ),
               )).toList(),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             // Calendar days
             Expanded(
               child: _buildDaysGrid(),
@@ -487,7 +487,7 @@ class _CalendarState extends State<Calendar> with TickerProviderStateMixin {
     final daysInMonth = lastDayOfMonth.day;
 
     return GridView.builder(
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 7,
         childAspectRatio: 1,
       ),
@@ -514,9 +514,9 @@ class _CalendarState extends State<Calendar> with TickerProviderStateMixin {
             });
           },
           child: Container(
-            margin: EdgeInsets.all(2),
+            margin: const EdgeInsets.all(2),
             decoration: BoxDecoration(
-              gradient: isSelected ? LinearGradient(
+              gradient: isSelected ? const LinearGradient(
                 colors: [AppTheme.primaryBlue, Color(0xFF764BA2)],
               ) : null,
               color: isToday && !isSelected ? AppTheme.primaryBlue.withOpacity(0.1) : null,
@@ -542,7 +542,7 @@ class _CalendarState extends State<Calendar> with TickerProviderStateMixin {
     return Expanded(
       flex: 1,
       child: Container(
-        padding: EdgeInsets.all(20),
+        padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -550,13 +550,13 @@ class _CalendarState extends State<Calendar> with TickerProviderStateMixin {
               children: [
                 Text(
                   'Tasks for ${DateFormat('MMM dd').format(_selectedDate)}',
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                     color: AppTheme.primaryBlue,
                   ),
                 ),
-                Spacer(),
+                const Spacer(),
                 DropdownButton<String>(
                   value: _filterPriority,
                   onChanged: (value) {
@@ -564,7 +564,7 @@ class _CalendarState extends State<Calendar> with TickerProviderStateMixin {
                       _filterPriority = value!;
                     });
                   },
-                  items: [
+                  items: const [
                     DropdownMenuItem(value: 'all', child: Text('All')),
                     DropdownMenuItem(value: 'high', child: Text('High')),
                     DropdownMenuItem(value: 'medium', child: Text('Medium')),
@@ -573,13 +573,13 @@ class _CalendarState extends State<Calendar> with TickerProviderStateMixin {
                 ),
               ],
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Expanded(
               child: StreamBuilder<List<Task>>(
                 stream: TaskService.getTasksForDate(_selectedDate),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(child: CircularProgressIndicator());
+                    return const Center(child: CircularProgressIndicator());
                   }
                   
                   if (!snapshot.hasData || snapshot.data!.isEmpty) {
@@ -601,8 +601,8 @@ class _CalendarState extends State<Calendar> with TickerProviderStateMixin {
                     itemBuilder: (context, index) {
                       final task = tasks[index];
                       return Container(
-                        margin: EdgeInsets.only(bottom: 8),
-                        padding: EdgeInsets.all(12),
+                        margin: const EdgeInsets.only(bottom: 8),
+                        padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
                           color: _getPriorityColor(task.priority).withOpacity(0.1),
                           borderRadius: BorderRadius.circular(8),
@@ -621,7 +621,7 @@ class _CalendarState extends State<Calendar> with TickerProviderStateMixin {
                                 children: [
                                   Text(
                                     task.title,
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       fontWeight: FontWeight.w600,
                                       fontSize: 14,
                                     ),

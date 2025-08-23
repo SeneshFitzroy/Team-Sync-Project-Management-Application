@@ -130,7 +130,7 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
       }
 
       // Simple search implementation
-      emit(DashboardSearchResults(results: [], query: event.query));
+      emit(DashboardSearchResults(results: const [], query: event.query));
     } catch (e) {
       emit(DashboardError('Failed to search: ${e.toString()}'));
     }
@@ -140,7 +140,7 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
     try {
       final userId = FirebaseAuth.instance.currentUser?.uid;
       if (userId == null) {
-        emit(DashboardError('User not authenticated'));
+        emit(const DashboardError('User not authenticated'));
         return;
       }
 
@@ -218,14 +218,14 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
         recentProjects: recentProjects,
         upcomingTasks: upcomingTasks,
         overdueTasks: overdueTasks,
-        recentActivities: [],
-        projectProgress: [],
-        teamMembers: [],
+        recentActivities: const [],
+        projectProgress: const [],
+        teamMembers: const [],
         pendingRequests: pendingRequests,
       ));
     } catch (e) {
       print('Dashboard loading error: $e');
-      emit(DashboardError('Failed to load dashboard data. Please check your connection.'));
+      emit(const DashboardError('Failed to load dashboard data. Please check your connection.'));
     }
   }
 }
