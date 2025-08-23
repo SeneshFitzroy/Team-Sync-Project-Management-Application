@@ -168,7 +168,7 @@ class _SimpleDatePickerState extends State<SimpleDatePicker> {
         labelText: widget.labelText,
         prefixIcon: Icon(
           Icons.calendar_today,
-          color: AppTheme.primaryColor,
+          color: AppTheme.primaryBlue,
         ),
         suffixIcon: Icon(
           Icons.arrow_drop_down,
@@ -177,14 +177,14 @@ class _SimpleDatePickerState extends State<SimpleDatePicker> {
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(
-            color: AppTheme.borderColor,
+            color: AppTheme.textLight.withOpacity(0.3),
             width: 1.5,
           ),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(
-            color: AppTheme.borderColor,
+            color: AppTheme.textLight.withOpacity(0.3),
             width: 1.5,
           ),
         ),
