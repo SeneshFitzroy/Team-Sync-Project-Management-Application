@@ -927,8 +927,8 @@ class ParticlePainter extends CustomPainter {
       ..style = PaintingStyle.fill;  
   
     for (int i = 0; i < 50; i++) {  
-      final x = (i * 50 + animationValue * 100) %% size.width;  
-      final y = (i * 30 + animationValue * 50) %% size.height;  
+      final x = (i * 50 + animationValue * 100) % size.width;  
+      final y = (i * 30 + animationValue * 50) % size.height;  
       canvas.drawCircle(Offset(x, y), 2, paint);  
     }  
   }  
