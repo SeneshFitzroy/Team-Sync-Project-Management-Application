@@ -214,9 +214,8 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
       final tasksStream = FirebaseService.getUserTasksStream();
       final createdTasksStream = FirebaseService.getCreatedTasksStream();
 
-      await emit.forEach<List<Task>>(
-        tasksStream,
-        onData: (assignedTasks) async {
+      tasksStream.listen((assignedTasks) async {
+        try {
           final createdTasks = await createdTasksStream.first;
           
           // Combine assigned and created tasks, removing duplicates
@@ -231,10 +230,11 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
           _allTasks = allTasksSet.values.toList();
           _allTasks.sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
-          return _buildTasksLoadedState();
-        },
-        onError: (error, stackTrace) => TaskError('Failed to load tasks: ${error.toString()}'),
-      );
+          emit(_buildTasksLoadedState());
+        } catch (e) {
+          emit(TaskError('Failed to load tasks: ${e.toString()}'));
+        }
+      });
     } catch (e) {
       emit(TaskError('Failed to load tasks: ${e.toString()}'));
     }
