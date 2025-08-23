@@ -217,30 +217,11 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
         return;
       }
 
-      // Create a combined stream that includes both assigned and created tasks
-      final combinedStream = FirebaseService.getUserTasksStream().asyncMap((assignedTasks) async {
-        try {
-          final createdTasks = await FirebaseService.getCreatedTasksStream().first;
-          
-          // Combine assigned and created tasks, removing duplicates
-          final allTasksSet = <String, Task>{};
-          for (var task in assignedTasks) {
-            if (task.id != null) allTasksSet[task.id!] = task;
-          }
-          for (var task in createdTasks) {
-            if (task.id != null) allTasksSet[task.id!] = task;
-          }
-          
-          return allTasksSet.values.toList();
-        } catch (e) {
-          return assignedTasks; // Fallback to just assigned tasks
-        }
-      });
-
+      // Use just the assigned tasks stream to avoid the async complexity
       await emit.forEach<List<Task>>(
-        combinedStream,
-        onData: (allTasks) {
-          _allTasks = allTasks;
+        FirebaseService.getUserTasksStream(),
+        onData: (tasks) {
+          _allTasks = tasks;
           _allTasks.sort((a, b) => b.createdAt.compareTo(a.createdAt));
           return _buildTasksLoadedState();
         },

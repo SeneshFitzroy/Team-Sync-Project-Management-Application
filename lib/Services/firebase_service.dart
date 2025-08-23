@@ -172,13 +172,16 @@ class FirebaseService {
     await _firestore.collection(tasksCollection).doc(taskId).delete();
   }
 
-  // Get tasks for current user - simplified
+  // Get tasks for current user - includes both assigned and created tasks
   static Stream<List<Task>> getUserTasksStream() {
     if (currentUserId == null) return Stream.value([]);
     
     return _firestore
         .collection(tasksCollection)
-        .where('assignedTo', isEqualTo: currentUserId)
+        .where(Filter.or(
+          Filter('assignedTo', isEqualTo: currentUserId),
+          Filter('createdBy', isEqualTo: currentUserId),
+        ))
         .snapshots()
         .map((snapshot) => snapshot.docs
             .map((doc) => Task.fromMap(doc.data(), doc.id))
