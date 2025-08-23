@@ -515,10 +515,9 @@ class _AddProjectDialogState extends State<_AddProjectDialog> {
         description: _descriptionController.text.trim(),
         ownerId: userId,
         status: _selectedStatus,
-        startDate: _startDate,
-        endDate: _endDate,
+        dueDate: _endDate,
         teamMembers: [userId], // Add creator as first team member
-        pendingInvitations: [],
+        progress: 0.0,
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
       );
