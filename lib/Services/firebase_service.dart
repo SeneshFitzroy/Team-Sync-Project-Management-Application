@@ -137,6 +137,7 @@ class FirebaseService {
     return _firestore
         .collection(projectsCollection)
         .where('teamMembers', arrayContains: currentUserId)
+        .orderBy('createdAt', descending: true)
         .snapshots()
         .map((snapshot) => snapshot.docs
             .map((doc) => Project.fromMap(doc.data(), doc.id))
@@ -172,6 +173,7 @@ class FirebaseService {
     return _firestore
         .collection(tasksCollection)
         .where('assignedTo', isEqualTo: currentUserId)
+        .orderBy('dueDate')
         .snapshots()
         .map((snapshot) => snapshot.docs
             .map((doc) => Task.fromMap(doc.data(), doc.id))
