@@ -81,6 +81,8 @@ class _TaskPageState extends State<TaskPage> with TickerProviderStateMixin {
   @override
   void dispose() {
     _fadeController.dispose();
+    _slideController.dispose();
+    _particleController.dispose();
     super.dispose();
   }
 
