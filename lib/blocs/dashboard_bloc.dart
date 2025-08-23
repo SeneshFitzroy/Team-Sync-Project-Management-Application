@@ -2,10 +2,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../models/Project.dart';
-import '../models/Task.dart';
-import '../models/UserModel.dart';
-import '../models/MemberRequest.dart';
+import '../models/project.dart';
+import '../models/task.dart';
+import '../models/user_model.dart';
+import '../models/member_request.dart';
 
 // Dashboard Events
 abstract class DashboardEvent extends Equatable {
