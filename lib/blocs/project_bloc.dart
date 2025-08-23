@@ -19,16 +19,18 @@ class CreateProject extends ProjectEvent {
   final String description;
   final DateTime? dueDate;
   final String? color;
+  final List<String>? teamMembers;
 
   const CreateProject({
     required this.name,
     required this.description,
     this.dueDate,
     this.color,
+    this.teamMembers,
   });
 
   @override
-  List<Object?> get props => [name, description, dueDate, color];
+  List<Object?> get props => [name, description, dueDate, color, teamMembers];
 }
 
 class UpdateProject extends ProjectEvent {
@@ -182,7 +184,7 @@ class ProjectBloc extends Bloc<ProjectEvent, ProjectState> {
         name: event.name,
         description: event.description,
         ownerId: userId,
-        teamMembers: [userId], // Add creator as first member
+        teamMembers: event.teamMembers ?? [userId], // Use provided members or just creator
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
         dueDate: event.dueDate,
