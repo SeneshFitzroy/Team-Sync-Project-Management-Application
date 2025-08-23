@@ -136,9 +136,15 @@ class MemberRequestBloc extends Bloc<MemberRequestEvent, MemberRequestState> {
             )
           ).toList();
           
+          // Preserve existing sent requests if available
+          final currentState = state;
+          final sentRequests = currentState is RequestsLoaded 
+              ? currentState.sentRequests 
+              : <MemberRequestWithDetails>[];
+          
           return RequestsLoaded(
             pendingRequests: pendingWithDetails,
-            sentRequests: [],
+            sentRequests: sentRequests,
           );
         },
         onError: (error, stackTrace) => MemberRequestError('Failed to load requests: ${error.toString()}'),
@@ -166,8 +172,14 @@ class MemberRequestBloc extends Bloc<MemberRequestEvent, MemberRequestState> {
             )
           ).toList();
           
+          // Preserve existing pending requests if available
+          final currentState = state;
+          final pendingRequests = currentState is RequestsLoaded 
+              ? currentState.pendingRequests 
+              : <MemberRequestWithDetails>[];
+          
           return RequestsLoaded(
-            pendingRequests: [],
+            pendingRequests: pendingRequests,
             sentRequests: sentWithDetails,
           );
         },
@@ -219,39 +231,5 @@ class MemberRequestBloc extends Bloc<MemberRequestEvent, MemberRequestState> {
     } catch (e) {
       emit(MemberRequestError('Failed to send invitation: ${e.toString()}'));
     }
-  }
-
-  Future<List<MemberRequestWithDetails>> _enrichRequestsWithDetails(
-    List<MemberRequest> requests,
-  ) async {
-    final enrichedRequests = <MemberRequestWithDetails>[];
-
-    for (var request in requests) {
-      UserModel? fromUser;
-      UserModel? toUser;
-      Project? project;
-
-      try {
-        // Get user details
-        fromUser = await FirebaseService.getUser(request.fromUserId);
-        toUser = await FirebaseService.getUser(request.toUserId);
-
-        // Get project details if it's a project invite
-        if (request.projectId != null) {
-          project = await FirebaseService.getProject(request.projectId!);
-        }
-      } catch (e) {
-        // Continue with null values if we can't fetch details
-      }
-
-      enrichedRequests.add(MemberRequestWithDetails(
-        request: request,
-        fromUser: fromUser,
-        toUser: toUser,
-        project: project,
-      ));
-    }
-
-    return enrichedRequests;
   }
 }
