@@ -368,7 +368,11 @@ class _TaskPageState extends State<TaskPage> with TickerProviderStateMixin {
         
         if (state is TasksLoaded) {
           final userId = FirebaseAuth.instance.currentUser?.uid;
-          final myTasks = state.tasks.where((task) => task.assignedTo == userId).toList();
+          // Filter to show only personal tasks (no projectId) assigned to current user
+          final myTasks = state.tasks.where((task) => 
+            (task.projectId == null || task.projectId!.isEmpty) &&
+            task.assignedTo == userId
+          ).toList();
           final filteredTasks = _filterTasks(myTasks);
           
           if (filteredTasks.isEmpty) {
