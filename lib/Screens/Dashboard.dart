@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:async';
+import 'dart:math';
 import '../widgets/TickLogo.dart';
 import './Profile.dart';
 import './TaskPage.dart';
@@ -16,6 +17,7 @@ import '../theme/app_theme.dart';
 import '../services/firebase_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fl_chart/fl_chart.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -1165,245 +1167,104 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
   void _showProjectDetails(Project project) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Row(
-          children: [
-            Icon(Icons.folder, color: AppTheme.primaryBlue),
-            SizedBox(width: 8),
-            Expanded(
-              child: Text(
-                project.name,
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: AppTheme.primaryBlue,
-                ),
-              ),
-            ),
-          ],
-        ),
-        content: Container(
-          width: double.maxFinite,
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: Container(
+          width: MediaQuery.of(context).size.width * 0.95,
+          height: MediaQuery.of(context).size.height * 0.85,
           child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Description Section
-              _buildDetailSection('Description:', 
-                project.description.isEmpty ? 'No description provided' : project.description),
-              
-              SizedBox(height: 16),
-              
-              // Progress Chart Section
-              Text('Project Progress:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-              SizedBox(height: 12),
-              FutureBuilder<Map<String, int>>(
-                future: _getProjectProgress(project.id ?? ''),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Container(
-                      height: 200,
-                      child: Center(child: CircularProgressIndicator()),
-                    );
-                  }
-                  
-                  if (!snapshot.hasData) {
-                    return Container(
-                      height: 150,
-                      child: Center(child: Text('No progress data available')),
-                    );
-                  }
-                  
-                  final progressData = snapshot.data!;
-                  final total = progressData['total'] ?? 0;
-                  final completed = progressData['completed'] ?? 0;
-                  final inProgress = progressData['inProgress'] ?? 0;
-                  final todo = progressData['todo'] ?? 0;
-                  
-                  if (total == 0) {
-                    return Container(
-                      height: 150,
-                      padding: EdgeInsets.all(16),
+              // Header
+              Container(
+                padding: EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [AppTheme.primaryBlue, AppTheme.primaryBlue.withOpacity(0.8)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(16),
+                    topRight: Radius.circular(16),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Colors.grey[100],
-                        borderRadius: BorderRadius.circular(8),
+                        color: Colors.white.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.assignment, size: 48, color: Colors.grey[400]),
-                            SizedBox(height: 8),
-                            Text(
-                              'No tasks yet',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.grey[600],
-                              ),
+                      child: Icon(Icons.analytics, color: Colors.white, size: 24),
+                    ),
+                    SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            project.name,
+                            style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
                             ),
-                            Text(
-                              'Create tasks to track progress',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey[500],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  }
-                  
-                  return Container(
-                    height: 250,
-                    child: Column(
-                      children: [
-                        // Progress Statistics
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            _buildProgressStat('Completed', completed, Colors.green),
-                            _buildProgressStat('In Progress', inProgress, Colors.orange),
-                            _buildProgressStat('To Do', todo, Colors.blue),
-                          ],
-                        ),
-                        SizedBox(height: 16),
-                        // Progress Bar
-                        Container(
-                          width: double.infinity,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Overall Progress: ${((completed / total) * 100).toStringAsFixed(1)}%',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 14,
-                                ),
-                              ),
-                              SizedBox(height: 8),
-                              LinearProgressIndicator(
-                                value: completed / total,
-                                backgroundColor: Colors.grey[300],
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                  completed / total >= 0.8 ? Colors.green :
-                                  completed / total >= 0.5 ? Colors.orange : Colors.blue,
-                                ),
-                                minHeight: 8,
-                              ),
-                            ],
                           ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              ),
-              
-              SizedBox(height: 16),
-              
-              // Status Section
-              Text('Status:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-              SizedBox(height: 8),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: _getStatusColor(project.status),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  _getStatusText(project.status),
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                  ),
-                ),
-              ),
-              
-              SizedBox(height: 16),
-              
-              // Team Members Section
-              Text('Team Members:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-              SizedBox(height: 8),
-              Container(
-                padding: EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.grey[100],
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Row(
-                  children: [
-                    Icon(Icons.people, color: AppTheme.primaryBlue),
-                    SizedBox(width: 8),
-                    Text(
-                      '${project.teamMembers.length} members',
-                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-                    ),
-                  ],
-                ),
-              ),
-              
-              if (project.dueDate != null) ...[
-                SizedBox(height: 16),
-                
-                // Due Date Section
-                Text('Due Date:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                SizedBox(height: 8),
-                Container(
-                  padding: EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.grey[100],
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(Icons.calendar_today, color: AppTheme.primaryBlue),
-                      SizedBox(width: 8),
-                      Text(
-                        '${project.dueDate!.day}/${project.dueDate!.month}/${project.dueDate!.year}',
-                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                          Text(
+                            'Project Analytics Dashboard',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.white.withOpacity(0.9),
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                ),
-              ],
-              
-              SizedBox(height: 16),
-              
-              // Created Date Section
-              Text('Created:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-              SizedBox(height: 8),
-              Container(
-                padding: EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.grey[100],
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Row(
-                  children: [
-                    Icon(Icons.access_time, color: AppTheme.primaryBlue),
-                    SizedBox(width: 8),
-                    Text(
-                      '${project.createdAt.day}/${project.createdAt.month}/${project.createdAt.year}',
-                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                    ),
+                    IconButton(
+                      onPressed: () => Navigator.pop(context),
+                      icon: Icon(Icons.close, color: Colors.white),
                     ),
                   ],
+                ),
+              ),
+              
+              // Content
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: EdgeInsets.all(20),
+                  child: FutureBuilder<Map<String, dynamic>>(
+                    future: _getProjectAnalytics(project.id ?? ''),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Container(
+                          height: 400,
+                          child: Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                CircularProgressIndicator(color: AppTheme.primaryBlue),
+                                SizedBox(height: 16),
+                                Text('Loading analytics...'),
+                              ],
+                            ),
+                          ),
+                        );
+                      }
+                      
+                      if (!snapshot.hasData) {
+                        return _buildEmptyAnalytics();
+                      }
+                      
+                      final analytics = snapshot.data!;
+                      return _buildAnalyticsContent(project, analytics);
+                    },
+                  ),
                 ),
               ),
             ],
           ),
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            style: TextButton.styleFrom(
-              foregroundColor: AppTheme.primaryBlue,
-            ),
-            child: Text('Close'),
-          ),
-        ],
       ),
     );
   }
@@ -2332,51 +2193,195 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
     ));
   }
 
-  Future<Map<String, int>> _getProjectProgress(String projectId) async {
+  Future<Map<String, dynamic>> _getProjectAnalytics(String projectId) async {
     try {
-      final tasks = await FirebaseFirestore.instance
+      // Get tasks data
+      final tasksSnapshot = await FirebaseFirestore.instance
           .collection('tasks')
           .where('projectId', isEqualTo: projectId)
           .get();
       
-      int total = tasks.docs.length;
-      int completed = 0;
-      int inProgress = 0;
-      int todo = 0;
+      // Get team members data
+      final projectSnapshot = await FirebaseFirestore.instance
+          .collection('projects')
+          .doc(projectId)
+          .get();
       
-      for (var doc in tasks.docs) {
-        final status = doc.data()['status'] ?? 'todo';
-        switch (status.toLowerCase()) {
-          case 'completed':
-          case 'done':
-            completed++;
-            break;
-          case 'in_progress':
-          case 'in progress':
-          case 'active':
-            inProgress++;
-            break;
-          default:
-            todo++;
-            break;
+      final projectData = projectSnapshot.data();
+      final teamMemberIds = List<String>.from(projectData?['teamMembers'] ?? []);
+      
+      // Get team member details
+      List<Map<String, dynamic>> teamMembers = [];
+      for (String memberId in teamMemberIds) {
+        final userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(memberId)
+            .get();
+        if (userDoc.exists) {
+          teamMembers.add({
+            'id': memberId,
+            'name': userDoc.data()?['fullName'] ?? 'Unknown',
+            'email': userDoc.data()?['email'] ?? '',
+          });
         }
       }
       
+      // Process task data
+      Map<String, int> taskStatus = {'todo': 0, 'inProgress': 0, 'completed': 0};
+      Map<String, int> memberTasks = {};
+      Map<String, List<DateTime>> taskTimeline = {};
+      List<Map<String, dynamic>> recentActivity = [];
+      
+      for (var doc in tasksSnapshot.docs) {
+        final taskData = doc.data();
+        final status = taskData['status']?.toString().toLowerCase() ?? 'todo';
+        final assignedTo = taskData['assignedTo']?.toString() ?? '';
+        final createdAt = (taskData['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now();
+        
+        // Count task statuses
+        if (status.contains('completed') || status.contains('done')) {
+          taskStatus['completed'] = (taskStatus['completed'] ?? 0) + 1;
+        } else if (status.contains('progress') || status.contains('active')) {
+          taskStatus['inProgress'] = (taskStatus['inProgress'] ?? 0) + 1;
+        } else {
+          taskStatus['todo'] = (taskStatus['todo'] ?? 0) + 1;
+        }
+        
+        // Count tasks per member
+        if (assignedTo.isNotEmpty) {
+          memberTasks[assignedTo] = (memberTasks[assignedTo] ?? 0) + 1;
+        }
+        
+        // Timeline data
+        final dateKey = '${createdAt.day}/${createdAt.month}';
+        if (!taskTimeline.containsKey(dateKey)) {
+          taskTimeline[dateKey] = [];
+        }
+        taskTimeline[dateKey]!.add(createdAt);
+        
+        // Recent activity
+        recentActivity.add({
+          'title': taskData['title'] ?? 'Untitled Task',
+          'status': status,
+          'date': createdAt,
+          'assignedTo': assignedTo,
+        });
+      }
+      
+      // Sort recent activity
+      recentActivity.sort((a, b) => (b['date'] as DateTime).compareTo(a['date'] as DateTime));
+      
       return {
-        'total': total,
-        'completed': completed,
-        'inProgress': inProgress,
-        'todo': todo,
+        'taskStatus': taskStatus,
+        'memberTasks': memberTasks,
+        'teamMembers': teamMembers,
+        'taskTimeline': taskTimeline,
+        'recentActivity': recentActivity.take(5).toList(),
+        'totalTasks': tasksSnapshot.docs.length,
+        'projectData': projectData,
       };
     } catch (e) {
-      print('Error getting project progress: $e');
-      return {
-        'total': 0,
-        'completed': 0,
-        'inProgress': 0,
-        'todo': 0,
-      };
+      print('Error getting project analytics: $e');
+      return {};
     }
+  }
+
+  Widget _buildEmptyAnalytics() {
+    return Container(
+      padding: EdgeInsets.all(40),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            padding: EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: Colors.grey[100],
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Icon(
+              Icons.bar_chart,
+              size: 64,
+              color: Colors.grey[400],
+            ),
+          ),
+          SizedBox(height: 24),
+          Text(
+            'No Analytics Available',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.grey[600],
+            ),
+          ),
+          SizedBox(height: 8),
+          Text(
+            'Create tasks and assign team members to see project analytics',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.grey[500],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAnalyticsContent(Project project, Map<String, dynamic> analytics) {
+    final taskStatus = analytics['taskStatus'] as Map<String, int>;
+    final memberTasks = analytics['memberTasks'] as Map<String, int>;
+    final teamMembers = analytics['teamMembers'] as List<Map<String, dynamic>>;
+    final recentActivity = analytics['recentActivity'] as List<Map<String, dynamic>>;
+    final totalTasks = analytics['totalTasks'] as int;
+    
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Project Overview Cards
+        _buildOverviewCards(project, analytics),
+        
+        SizedBox(height: 24),
+        
+        // Charts Section
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Task Distribution Pie Chart
+            Expanded(
+              flex: 1,
+              child: _buildTaskDistributionChart(taskStatus, totalTasks),
+            ),
+            SizedBox(width: 16),
+            // Team Performance Bar Chart
+            Expanded(
+              flex: 1,
+              child: _buildTeamPerformanceChart(memberTasks, teamMembers),
+            ),
+          ],
+        ),
+        
+        SizedBox(height: 24),
+        
+        // Progress Timeline
+        _buildProgressTimeline(analytics['taskTimeline'] as Map<String, List<DateTime>>),
+        
+        SizedBox(height: 24),
+        
+        // Recent Activity & Team Members
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: _buildRecentActivity(recentActivity),
+            ),
+            SizedBox(width: 16),
+            Expanded(
+              child: _buildTeamMembersSection(teamMembers),
+            ),
+          ],
+        ),
+      ],
+    );
   }
 
   Widget _buildProgressStat(String label, int value, Color color) {
