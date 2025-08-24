@@ -2992,7 +2992,6 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
       ],
     );
   }
-}
 
 // Particle Painter for background animation
 class ParticlePainter extends CustomPainter {
