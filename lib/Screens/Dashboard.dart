@@ -2842,7 +2842,11 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                       width: 8,
                       height: 8,
                       decoration: BoxDecoration(
-                        color: _getStatusColorFromString(status),
+                        color: status.toString().toLowerCase().contains('completed') 
+                            ? Colors.green 
+                            : status.toString().toLowerCase().contains('progress') 
+                            ? Colors.orange 
+                            : Colors.blue,
                         borderRadius: BorderRadius.circular(4),
                       ),
                     ),
