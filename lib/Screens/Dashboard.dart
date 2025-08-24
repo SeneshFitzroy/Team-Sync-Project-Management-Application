@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../widgets/TickLogo.dart';
 import './Profile.dart';
 import './TaskPage.dart';
+import './ProjectsPage.dart';
 import '../blocs/dashboard_bloc.dart';
 import '../blocs/project_bloc.dart';
 import '../blocs/task_bloc.dart';
