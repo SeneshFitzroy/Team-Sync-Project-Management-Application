@@ -2074,110 +2074,133 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                                   selectedDueDate = null;
                                 });
                               },
-                          )
-                        : null,
-                    onTap: () async {
-                      final DateTime? picked = await showDatePicker(
-                        context: context,
-                        initialDate: DateTime.now(),
-                        firstDate: DateTime.now(),
-                        lastDate: DateTime.now().add(Duration(days: 365)),
-                      );
-                      if (picked != null) {
-                        setState(() {
-                          selectedDueDate = picked;
-                        });
-                      }
-                    },
+                            )
+                          : null,
+                      onTap: () async {
+                        final DateTime? picked = await showDatePicker(
+                          context: context,
+                          initialDate: selectedDueDate ?? DateTime.now().add(Duration(days: 30)),
+                          firstDate: DateTime.now(),
+                          lastDate: DateTime.now().add(Duration(days: 365)),
+                        );
+                        if (picked != null) {
+                          setState(() {
+                            selectedDueDate = picked;
+                          });
+                        }
+                      },
+                    ),
                   ),
-                ),
-                SizedBox(height: 16),
-                Text(
-                  'Team Members',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
+                  SizedBox(height: 16),
+                  
+                  // Team Members Section
+                  Text(
+                    'Team Members',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-                SizedBox(height: 8),
-                FutureBuilder<List<UserModel>>(
-                  future: FirebaseService.getAllUsers(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(child: CircularProgressIndicator());
-                    }
-                    
-                    if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return Text('No users found');
-                    }
-                    
-                    allUsers = snapshot.data!;
-                    
-                    return Container(
-                      height: 200,
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey[300]!),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: ListView.builder(
-                        itemCount: allUsers.length,
-                        itemBuilder: (context, index) {
-                          final user = allUsers[index];
-                          final isSelected = selectedMemberIds.contains(user.uid);
-                          
-                          return CheckboxListTile(
-                            title: Text(user.fullName),
-                            subtitle: Text(user.email),
-                            value: isSelected,
-                            onChanged: (bool? value) {
-                              setState(() {
-                                if (value == true) {
-                                  selectedMemberIds.add(user.uid);
-                                } else {
-                                  selectedMemberIds.remove(user.uid);
-                                }
-                              });
-                            },
-                          );
-                        },
-                      ),
-                    );
-                  },
-                ),
-              ],
+                  SizedBox(height: 8),
+                  Container(
+                    height: 150,
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey[300]!),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: FutureBuilder<List<UserModel>>(
+                      future: FirebaseService.getAllUsers(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return Center(child: CircularProgressIndicator());
+                        }
+                        
+                        if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                          return Center(child: Text('No users found'));
+                        }
+                        
+                        allUsers = snapshot.data!;
+                        
+                        return ListView.builder(
+                          itemCount: allUsers.length,
+                          itemBuilder: (context, index) {
+                            final user = allUsers[index];
+                            final isSelected = selectedMemberIds.contains(user.uid);
+                            
+                            return CheckboxListTile(
+                              title: Text(user.fullName),
+                              subtitle: Text(user.email),
+                              value: isSelected,
+                              onChanged: (bool? value) {
+                                setState(() {
+                                  if (value == true) {
+                                    selectedMemberIds.add(user.uid);
+                                  } else {
+                                    selectedMemberIds.remove(user.uid);
+                                  }
+                                });
+                              },
+                            );
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.grey[600],
+              ),
               child: Text('Cancel'),
             ),
             ElevatedButton(
               onPressed: () {
-                if (nameController.text.isNotEmpty) {
+                if (nameController.text.isNotEmpty && descriptionController.text.isNotEmpty) {
                   // Add current user as a team member automatically
                   final currentUserId = FirebaseAuth.instance.currentUser?.uid;
                   if (currentUserId != null && !selectedMemberIds.contains(currentUserId)) {
                     selectedMemberIds.add(currentUserId);
                   }
                   
-                  context.read<ProjectBloc>().add(CreateProject(
+                  // Create project with enhanced data
+                  _createEnhancedProject(
                     name: nameController.text,
                     description: descriptionController.text,
+                    client: clientController.text,
+                    budget: budgetController.text,
+                    priority: selectedPriority,
+                    status: selectedStatus,
+                    startDate: selectedStartDate,
                     dueDate: selectedDueDate,
                     teamMembers: selectedMemberIds,
-                  ));
+                  );
+                  
                   Navigator.pop(context);
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Please fill in the required fields'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
                 }
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppTheme.primaryBlue,
                 foregroundColor: Colors.white,
               ),
-              child: Text('Create'),
+              child: Text('Create Project'),
             ),
           ],
         ),
+      ),
+    );
+  }
       ),
     );
   }
