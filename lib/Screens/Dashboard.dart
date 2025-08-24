@@ -238,17 +238,55 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
         ),
         Row(
           children: [
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: IconButton(
-                icon: Icon(Icons.notifications_outlined, color: Colors.white),
-                onPressed: () {
-                  _showNotifications();
-                },
-              ),
+            BlocBuilder<MemberRequestBloc, MemberRequestState>(
+              builder: (context, state) {
+                int notificationCount = 0;
+                if (state is RequestsLoaded) {
+                  notificationCount = state.pendingRequests.length;
+                }
+                
+                return Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Stack(
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.notifications_outlined, color: Colors.white),
+                        onPressed: () {
+                          _showNotifications();
+                        },
+                      ),
+                      if (notificationCount > 0)
+                        Positioned(
+                          right: 8,
+                          top: 8,
+                          child: Container(
+                            padding: EdgeInsets.all(2),
+                            decoration: BoxDecoration(
+                              color: Colors.red,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            constraints: BoxConstraints(
+                              minWidth: 16,
+                              minHeight: 16,
+                            ),
+                            child: Text(
+                              '$notificationCount',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                );
+              },
             ),
             SizedBox(width: 8),
             GestureDetector(
