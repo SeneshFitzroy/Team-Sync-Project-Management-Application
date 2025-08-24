@@ -1306,6 +1306,20 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
     }
   }
 
+  Color _getStatusColorFromString(dynamic status) {
+    if (status == null) return Colors.grey;
+    
+    final statusStr = status.toString().toLowerCase();
+    if (statusStr.contains('completed') || statusStr.contains('done')) {
+      return Colors.green;
+    } else if (statusStr.contains('progress') || statusStr.contains('active')) {
+      return Colors.orange;
+    } else if (statusStr.contains('planning')) {
+      return Colors.blue;
+    }
+    return Colors.grey;
+  }
+
   String _getStatusText(ProjectStatus status) {
     switch (status) {
       case ProjectStatus.planning:
@@ -2384,41 +2398,611 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildProgressStat(String label, int value, Color color) {
-    return Column(
+  Widget _buildOverviewCards(Project project, Map<String, dynamic> analytics) {
+    final totalTasks = analytics['totalTasks'] as int;
+    final taskStatus = analytics['taskStatus'] as Map<String, int>;
+    final completed = taskStatus['completed'] ?? 0;
+    final teamMembers = analytics['teamMembers'] as List<Map<String, dynamic>>;
+    
+    final completionRate = totalTasks > 0 ? (completed / totalTasks * 100) : 0.0;
+    
+    return Row(
       children: [
-        Container(
-          width: 50,
-          height: 50,
-          decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(25),
-            border: Border.all(color: color, width: 2),
-          ),
-          child: Center(
-            child: Text(
-              value.toString(),
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: color,
-              ),
-            ),
+        Expanded(
+          child: _buildOverviewCard(
+            'Total Tasks',
+            totalTasks.toString(),
+            Icons.assignment,
+            Colors.blue,
           ),
         ),
-        SizedBox(height: 8),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w500,
-            color: Colors.grey[600],
+        SizedBox(width: 12),
+        Expanded(
+          child: _buildOverviewCard(
+            'Completion',
+            '${completionRate.toStringAsFixed(1)}%',
+            Icons.check_circle,
+            Colors.green,
           ),
-          textAlign: TextAlign.center,
+        ),
+        SizedBox(width: 12),
+        Expanded(
+          child: _buildOverviewCard(
+            'Team Size',
+            teamMembers.length.toString(),
+            Icons.people,
+            Colors.orange,
+          ),
         ),
       ],
     );
   }
+
+  Widget _buildOverviewCard(String title, String value, IconData icon, Color color) {
+    return Container(
+      padding: EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: color.withOpacity(0.3)),
+      ),
+      child: Column(
+        children: [
+          Icon(icon, color: color, size: 24),
+          SizedBox(height: 8),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: color,
+            ),
+          ),
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 12,
+              color: Colors.grey[600],
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTaskDistributionChart(Map<String, int> taskStatus, int totalTasks) {
+    if (totalTasks == 0) {
+      return Container(
+        height: 250,
+        padding: EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.grey[50],
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.grey[200]!),
+        ),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.pie_chart, size: 48, color: Colors.grey[400]),
+              SizedBox(height: 8),
+              Text('No tasks to display', style: TextStyle(color: Colors.grey[600])),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return Container(
+      height: 250,
+      padding: EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey[200]!),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            blurRadius: 8,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Text(
+            'Task Distribution',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Colors.grey[800],
+            ),
+          ),
+          SizedBox(height: 16),
+          Expanded(
+            child: PieChart(
+              PieChartData(
+                sections: [
+                  PieChartSectionData(
+                    value: (taskStatus['completed'] ?? 0).toDouble(),
+                    color: Colors.green,
+                    title: '${taskStatus['completed'] ?? 0}',
+                    titleStyle: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                    radius: 50,
+                  ),
+                  PieChartSectionData(
+                    value: (taskStatus['inProgress'] ?? 0).toDouble(),
+                    color: Colors.orange,
+                    title: '${taskStatus['inProgress'] ?? 0}',
+                    titleStyle: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                    radius: 50,
+                  ),
+                  PieChartSectionData(
+                    value: (taskStatus['todo'] ?? 0).toDouble(),
+                    color: Colors.blue,
+                    title: '${taskStatus['todo'] ?? 0}',
+                    titleStyle: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                    radius: 50,
+                  ),
+                ],
+                centerSpaceRadius: 30,
+                sectionsSpace: 2,
+              ),
+            ),
+          ),
+          SizedBox(height: 8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              _buildLegendItem('Completed', Colors.green),
+              _buildLegendItem('In Progress', Colors.orange),
+              _buildLegendItem('To Do', Colors.blue),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTeamPerformanceChart(Map<String, int> memberTasks, List<Map<String, dynamic>> teamMembers) {
+    if (memberTasks.isEmpty) {
+      return Container(
+        height: 250,
+        padding: EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.grey[50],
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.grey[200]!),
+        ),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.bar_chart, size: 48, color: Colors.grey[400]),
+              SizedBox(height: 8),
+              Text('No task assignments', style: TextStyle(color: Colors.grey[600])),
+            ],
+          ),
+        ),
+      );
+    }
+
+    final maxTasks = memberTasks.values.isNotEmpty ? memberTasks.values.reduce(max) : 1;
+    
+    return Container(
+      height: 250,
+      padding: EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey[200]!),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            blurRadius: 8,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Text(
+            'Team Performance',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Colors.grey[800],
+            ),
+          ),
+          SizedBox(height: 16),
+          Expanded(
+            child: BarChart(
+              BarChartData(
+                alignment: BarChartAlignment.spaceAround,
+                maxY: maxTasks.toDouble() + 1,
+                barTouchData: BarTouchData(enabled: true),
+                titlesData: FlTitlesData(
+                  show: true,
+                  bottomTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      getTitlesWidget: (value, meta) {
+                        final memberIndex = value.toInt();
+                        if (memberIndex >= 0 && memberIndex < teamMembers.length) {
+                          final name = teamMembers[memberIndex]['name'] as String;
+                          return Text(
+                            name.length > 8 ? '${name.substring(0, 8)}...' : name,
+                            style: TextStyle(fontSize: 10),
+                          );
+                        }
+                        return Text('');
+                      },
+                    ),
+                  ),
+                  leftTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      getTitlesWidget: (value, meta) {
+                        return Text(value.toInt().toString(), style: TextStyle(fontSize: 10));
+                      },
+                    ),
+                  ),
+                  topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                ),
+                borderData: FlBorderData(show: false),
+                barGroups: teamMembers.asMap().entries.map((entry) {
+                  final index = entry.key;
+                  final member = entry.value;
+                  final memberId = member['id'] as String;
+                  final taskCount = memberTasks[memberId] ?? 0;
+                  
+                  return BarChartGroupData(
+                    x: index,
+                    barRods: [
+                      BarChartRodData(
+                        toY: taskCount.toDouble(),
+                        color: AppTheme.primaryBlue,
+                        width: 16,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ],
+                  );
+                }).toList(),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProgressTimeline(Map<String, List<DateTime>> taskTimeline) {
+    if (taskTimeline.isEmpty) {
+      return Container(
+        height: 200,
+        padding: EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.grey[50],
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.grey[200]!),
+        ),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.timeline, size: 48, color: Colors.grey[400]),
+              SizedBox(height: 8),
+              Text('No timeline data', style: TextStyle(color: Colors.grey[600])),
+            ],
+          ),
+        ),
+      );
+    }
+
+    final sortedDates = taskTimeline.keys.toList()..sort();
+    
+    return Container(
+      height: 200,
+      padding: EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey[200]!),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            blurRadius: 8,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Text(
+            'Task Creation Timeline',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Colors.grey[800],
+            ),
+          ),
+          SizedBox(height: 16),
+          Expanded(
+            child: LineChart(
+              LineChartData(
+                gridData: FlGridData(show: true, drawVerticalLine: false),
+                titlesData: FlTitlesData(
+                  bottomTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      getTitlesWidget: (value, meta) {
+                        final index = value.toInt();
+                        if (index >= 0 && index < sortedDates.length) {
+                          return Text(sortedDates[index], style: TextStyle(fontSize: 10));
+                        }
+                        return Text('');
+                      },
+                    ),
+                  ),
+                  leftTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      getTitlesWidget: (value, meta) {
+                        return Text(value.toInt().toString(), style: TextStyle(fontSize: 10));
+                      },
+                    ),
+                  ),
+                  topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                ),
+                borderData: FlBorderData(show: false),
+                lineBarsData: [
+                  LineChartBarData(
+                    spots: sortedDates.asMap().entries.map((entry) {
+                      return FlSpot(entry.key.toDouble(), taskTimeline[entry.value]!.length.toDouble());
+                    }).toList(),
+                    isCurved: true,
+                    color: AppTheme.primaryBlue,
+                    barWidth: 3,
+                    dotData: FlDotData(show: true),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRecentActivity(List<Map<String, dynamic>> recentActivity) {
+    return Container(
+      padding: EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey[200]!),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            blurRadius: 8,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Recent Activity',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Colors.grey[800],
+            ),
+          ),
+          SizedBox(height: 16),
+          if (recentActivity.isEmpty)
+            Container(
+              height: 100,
+              child: Center(
+                child: Text('No recent activity', style: TextStyle(color: Colors.grey[600])),
+              ),
+            )
+          else
+            ...recentActivity.map((activity) {
+              final status = activity['status'] as String;
+              final date = activity['date'] as DateTime;
+              final title = activity['title'] as String;
+              
+              return Container(
+                margin: EdgeInsets.only(bottom: 12),
+                padding: EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.grey[50],
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 8,
+                      height: 8,
+                      decoration: BoxDecoration(
+                        color: _getStatusColorFromString(status),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
+                    SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            title,
+                            style: TextStyle(
+                              fontWeight: FontWeight.w500,
+                              fontSize: 14,
+                            ),
+                          ),
+                          Text(
+                            '${date.day}/${date.month}/${date.year}',
+                            style: TextStyle(
+                              color: Colors.grey[600],
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }).toList(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTeamMembersSection(List<Map<String, dynamic>> teamMembers) {
+    return Container(
+      padding: EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey[200]!),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            blurRadius: 8,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Team Members',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Colors.grey[800],
+            ),
+          ),
+          SizedBox(height: 16),
+          if (teamMembers.isEmpty)
+            Container(
+              height: 100,
+              child: Center(
+                child: Text('No team members', style: TextStyle(color: Colors.grey[600])),
+              ),
+            )
+          else
+            ...teamMembers.map((member) {
+              final name = member['name'] as String;
+              final email = member['email'] as String;
+              
+              return Container(
+                margin: EdgeInsets.only(bottom: 12),
+                padding: EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.grey[50],
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  children: [
+                    CircleAvatar(
+                      radius: 20,
+                      backgroundColor: AppTheme.primaryBlue,
+                      child: Text(
+                        name.isNotEmpty ? name[0].toUpperCase() : 'U',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            name,
+                            style: TextStyle(
+                              fontWeight: FontWeight.w500,
+                              fontSize: 14,
+                            ),
+                          ),
+                          if (email.isNotEmpty)
+                            Text(
+                              email,
+                              style: TextStyle(
+                                color: Colors.grey[600],
+                                fontSize: 12,
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }).toList(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLegendItem(String label, Color color) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 12,
+          height: 12,
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(2),
+          ),
+        ),
+        SizedBox(width: 4),
+        Text(
+          label,
+          style: TextStyle(fontSize: 10, color: Colors.grey[600]),
+        ),
+      ],
+    );
+  }
+
+  Color _getStatusColorFromString(dynamic status) {
+    if (status == null) return Colors.grey;
+    
+    final statusStr = status.toString().toLowerCase();
+    if (statusStr.contains('completed') || statusStr.contains('done')) {
+      return Colors.green;
+    } else if (statusStr.contains('progress') || statusStr.contains('active')) {
+      return Colors.orange;
+    } else if (statusStr.contains('planning')) {
+      return Colors.blue;
+    }
+    return Colors.grey;
+  }
+}
 
 // Particle Painter for background animation
 class ParticlePainter extends CustomPainter {
