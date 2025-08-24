@@ -15,6 +15,7 @@ import '../models/user_model.dart';
 import '../theme/app_theme.dart';
 import '../services/firebase_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -1193,6 +1194,115 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
               
               SizedBox(height: 16),
               
+              // Progress Chart Section
+              Text('Project Progress:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              SizedBox(height: 12),
+              FutureBuilder<Map<String, int>>(
+                future: _getProjectProgress(project.id ?? ''),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Container(
+                      height: 200,
+                      child: Center(child: CircularProgressIndicator()),
+                    );
+                  }
+                  
+                  if (!snapshot.hasData) {
+                    return Container(
+                      height: 150,
+                      child: Center(child: Text('No progress data available')),
+                    );
+                  }
+                  
+                  final progressData = snapshot.data!;
+                  final total = progressData['total'] ?? 0;
+                  final completed = progressData['completed'] ?? 0;
+                  final inProgress = progressData['inProgress'] ?? 0;
+                  final todo = progressData['todo'] ?? 0;
+                  
+                  if (total == 0) {
+                    return Container(
+                      height: 150,
+                      padding: EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[100],
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.assignment, size: 48, color: Colors.grey[400]),
+                            SizedBox(height: 8),
+                            Text(
+                              'No tasks yet',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                            Text(
+                              'Create tasks to track progress',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.grey[500],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  }
+                  
+                  return Container(
+                    height: 250,
+                    child: Column(
+                      children: [
+                        // Progress Statistics
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            _buildProgressStat('Completed', completed, Colors.green),
+                            _buildProgressStat('In Progress', inProgress, Colors.orange),
+                            _buildProgressStat('To Do', todo, Colors.blue),
+                          ],
+                        ),
+                        SizedBox(height: 16),
+                        // Progress Bar
+                        Container(
+                          width: double.infinity,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Overall Progress: ${((completed / total) * 100).toStringAsFixed(1)}%',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              SizedBox(height: 8),
+                              LinearProgressIndicator(
+                                value: completed / total,
+                                backgroundColor: Colors.grey[300],
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  completed / total >= 0.8 ? Colors.green :
+                                  completed / total >= 0.5 ? Colors.orange : Colors.blue,
+                                ),
+                                minHeight: 8,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+              
+              SizedBox(height: 16),
+              
               // Status Section
               Text('Status:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
               SizedBox(height: 8),
@@ -1896,7 +2006,6 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
     final descriptionController = TextEditingController();
     final budgetController = TextEditingController();
     final clientController = TextEditingController();
-    final priorityController = TextEditingController();
     DateTime? selectedDueDate;
     DateTime? selectedStartDate;
     String selectedPriority = 'Medium';
@@ -2178,6 +2287,7 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                     startDate: selectedStartDate,
                     dueDate: selectedDueDate,
                     teamMembers: selectedMemberIds,
+                    context: context,
                   );
                   
                   Navigator.pop(context);
@@ -2201,7 +2311,107 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
       ),
     );
   }
-      ),
+
+  void _createEnhancedProject({
+    required String name,
+    required String description,
+    String? client,
+    String? budget,
+    String? priority,
+    String? status,
+    DateTime? startDate,
+    DateTime? dueDate,
+    required List<String> teamMembers,
+    required BuildContext context,
+  }) {
+    context.read<ProjectBloc>().add(CreateProject(
+      name: name,
+      description: description,
+      dueDate: dueDate,
+      teamMembers: teamMembers,
+    ));
+  }
+
+  Future<Map<String, int>> _getProjectProgress(String projectId) async {
+    try {
+      final tasks = await FirebaseFirestore.instance
+          .collection('tasks')
+          .where('projectId', isEqualTo: projectId)
+          .get();
+      
+      int total = tasks.docs.length;
+      int completed = 0;
+      int inProgress = 0;
+      int todo = 0;
+      
+      for (var doc in tasks.docs) {
+        final status = doc.data()['status'] ?? 'todo';
+        switch (status.toLowerCase()) {
+          case 'completed':
+          case 'done':
+            completed++;
+            break;
+          case 'in_progress':
+          case 'in progress':
+          case 'active':
+            inProgress++;
+            break;
+          default:
+            todo++;
+            break;
+        }
+      }
+      
+      return {
+        'total': total,
+        'completed': completed,
+        'inProgress': inProgress,
+        'todo': todo,
+      };
+    } catch (e) {
+      print('Error getting project progress: $e');
+      return {
+        'total': 0,
+        'completed': 0,
+        'inProgress': 0,
+        'todo': 0,
+      };
+    }
+  }
+
+  Widget _buildProgressStat(String label, int value, Color color) {
+    return Column(
+      children: [
+        Container(
+          width: 50,
+          height: 50,
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(25),
+            border: Border.all(color: color, width: 2),
+          ),
+          child: Center(
+            child: Text(
+              value.toString(),
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: color,
+              ),
+            ),
+          ),
+        ),
+        SizedBox(height: 8),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+            color: Colors.grey[600],
+          ),
+          textAlign: TextAlign.center,
+        ),
+      ],
     );
   }
 
