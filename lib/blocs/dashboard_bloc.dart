@@ -243,6 +243,12 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
           ? ((completedTasks / allTasks.length) * 100).round() 
           : 0;
       
+      // Calculate unique team members across all projects
+      Set<String> uniqueTeamMembers = {};
+      for (var project in allProjects) {
+        uniqueTeamMembers.addAll(project.teamMembers);
+      }
+      
       final stats = {
         'totalProjects': allProjects.length,
         'activeProjects': activeProjects,
@@ -252,6 +258,7 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
         'overdueTasks': overdueTasks.length,
         'overdueItems': overdueTasks.length,
         'completionRate': completionRate,
+        'totalTeamMembers': uniqueTeamMembers.length,
       };
 
       emit(DashboardLoaded(

@@ -819,7 +819,7 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
           Row(
             children: [
               Expanded(child: _buildStatCard(
-                'Total Projects', 
+                'Projects', 
                 stats['totalProjects'] ?? 0, 
                 Icons.folder_outlined, 
                 [Color(0xFF6C5CE7), Color(0xFFA29BFE)],
@@ -827,51 +827,23 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
               )),
               SizedBox(width: 12),
               Expanded(child: _buildStatCard(
-                'Active Projects', 
-                stats['activeProjects'] ?? 0, 
-                Icons.play_circle_outline, 
-                [Color(0xFF00B894), Color(0xFF55EFC4)],
-                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const ProjectsPage())),
-              )),
-            ],
-          ),
-          SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(child: _buildStatCard(
-                'Total Tasks', 
+                'Tasks', 
                 stats['totalTasks'] ?? 0, 
                 Icons.assignment_outlined, 
                 [Color(0xFFE17055), Color(0xFFFAB1A0)],
                 onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const TaskPage())),
               )),
-              SizedBox(width: 12),
-              Expanded(child: _buildStatCard(
-                'Completed', 
-                stats['completedTasks'] ?? 0, 
-                Icons.check_circle_outline, 
-                [Color(0xFFE84393), Color(0xFFFD79A8)],
-                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const TaskPage())),
-              )),
             ],
           ),
-          SizedBox(height: 12),
+          SizedBox(width: 12),
           Row(
             children: [
               Expanded(child: _buildStatCard(
-                'Due Today', 
-                stats['tasksDueToday'] ?? 0, 
-                Icons.today_outlined, 
-                [Color(0xFFFFB142), Color(0xFFFFCA28)],
-                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const TaskPage())),
-              )),
-              SizedBox(width: 12),
-              Expanded(child: _buildStatCard(
-                'Overdue', 
-                stats['overdueTasks'] ?? 0, 
-                Icons.warning_outlined, 
-                [Color(0xFFFF6B6B), Color(0xFFFF8E8E)],
-                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const TaskPage())),
+                'Team Members', 
+                stats['totalTeamMembers'] ?? 0, 
+                Icons.people_outline, 
+                [Color(0xFF00B894), Color(0xFF55EFC4)],
+                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const ProjectsPage())),
               )),
             ],
           ),
