@@ -2988,20 +2988,6 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
       ],
     );
   }
-
-  Color _getStatusColorFromString(dynamic status) {
-    if (status == null) return Colors.grey;
-    
-    final statusStr = status.toString().toLowerCase();
-    if (statusStr.contains('completed') || statusStr.contains('done')) {
-      return Colors.green;
-    } else if (statusStr.contains('progress') || statusStr.contains('active')) {
-      return Colors.orange;
-    } else if (statusStr.contains('planning')) {
-      return Colors.blue;
-    }
-    return Colors.grey;
-  }
 }
 
 // Particle Painter for background animation
