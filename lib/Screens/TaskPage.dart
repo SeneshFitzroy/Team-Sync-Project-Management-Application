@@ -1094,18 +1094,23 @@ class _TaskPageState extends State<TaskPage> with TickerProviderStateMixin {
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
+        title: const Text(
           'Tasks',
-          style: AppTheme.headingMedium.copyWith(color: AppTheme.textWhite),
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+          ),
         ),
         backgroundColor: AppTheme.primaryBlue,
         elevation: 0,
         actions: [
           Container(
-            margin: EdgeInsets.only(right: 16),
+            margin: const EdgeInsets.only(right: 16),
             child: ElevatedButton.icon(
               onPressed: _showAddTaskDialog,
-              icon: Icon(Icons.add, size: 16),
-              label: Text('Add Task'),
+              icon: const Icon(Icons.add, size: 16),
+              label: const Text('Add Task'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppTheme.backgroundWhite,
                 foregroundColor: AppTheme.primaryBlue,
