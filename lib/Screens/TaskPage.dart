@@ -1335,3 +1335,683 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
     );
   }
 }
+
+class EditTaskDialog extends StatefulWidget {
+  final Task task;
+  
+  const EditTaskDialog({
+    super.key,
+    required this.task,
+  });
+
+  @override
+  State<EditTaskDialog> createState() => _EditTaskDialogState();
+}
+
+class _EditTaskDialogState extends State<EditTaskDialog> {
+  final _formKey = GlobalKey<FormState>();
+  late TextEditingController _titleController;
+  late TextEditingController _descriptionController;
+  
+  late TaskPriority _selectedPriority;
+  late TaskStatus _selectedStatus;
+  late DateTime _selectedDueDate;
+  String? _selectedProjectId;
+  String? _selectedProjectName;
+  List<Project> _availableProjects = [];
+  bool _isLoading = false;
+  bool _isLoadingProjects = true;
+
+  @override
+  void initState() {
+    super.initState();
+    
+    // Initialize controllers with current task data
+    _titleController = TextEditingController(text: widget.task.title);
+    _descriptionController = TextEditingController(text: widget.task.description);
+    
+    // Initialize form fields with current task data
+    _selectedPriority = widget.task.priority;
+    _selectedStatus = widget.task.status;
+    _selectedDueDate = widget.task.dueDate;
+    _selectedProjectId = widget.task.projectId;
+    
+    _loadProjects();
+  }
+
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _descriptionController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _loadProjects() async {
+    try {
+      // Listen to projects stream and get first snapshot
+      ProjectService.getAllProjects().take(1).listen((projects) async {
+        if (mounted) {
+          setState(() {
+            _availableProjects = projects.where((p) => 
+              p.status == ProjectStatus.active || p.status == ProjectStatus.planning
+            ).toList();
+            _isLoadingProjects = false;
+          });
+          
+          // Find the project name if task has a project
+          if (widget.task.projectId != null) {
+            final project = projects.firstWhere(
+              (p) => p.id == widget.task.projectId,
+              orElse: () => Project(
+                name: 'Unknown Project',
+                description: '',
+                progress: 0,
+                createdAt: DateTime.now(),
+                updatedAt: DateTime.now(),
+                teamMembers: [],
+              ),
+            );
+            setState(() {
+              _selectedProjectName = project.name;
+            });
+          }
+        }
+      });
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoadingProjects = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _selectDueDate() async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDueDate,
+      firstDate: DateTime.now().subtract(const Duration(days: 365)),
+      lastDate: DateTime.now().add(const Duration(days: 365)),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: Theme.of(context).colorScheme.copyWith(
+              primary: Colors.blue,
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+    if (picked != null && picked != _selectedDueDate) {
+      setState(() {
+        _selectedDueDate = picked;
+      });
+    }
+  }
+
+  Future<void> _updateTask() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser == null) {
+        throw Exception('User not authenticated');
+      }
+
+      final updatedTask = widget.task.copyWith(
+        title: _titleController.text.trim(),
+        description: _descriptionController.text.trim(),
+        priority: _selectedPriority,
+        status: _selectedStatus,
+        dueDate: _selectedDueDate,
+        updatedAt: DateTime.now(),
+        projectId: _selectedProjectId, // Can be null for personal tasks
+        completedAt: _selectedStatus == TaskStatus.completed 
+          ? DateTime.now() 
+          : null,
+      );
+
+      await TaskService.updateTask(widget.task.id!, updatedTask);
+
+      if (mounted) {
+        // Show success message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              _selectedProjectId != null 
+                ? 'Project task updated successfully!'
+                : 'Personal task updated successfully!',
+            ),
+            backgroundColor: Colors.green,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+        
+        Navigator.pop(context, true); // Return true to indicate success
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error updating task: ${e.toString()}'),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 4),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _deleteTask() async {
+    // Show confirmation dialog
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Task'),
+        content: const Text('Are you sure you want to delete this task? This action cannot be undone.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      setState(() {
+        _isLoading = true;
+      });
+
+      try {
+        await TaskService.deleteTask(widget.task.id!);
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Task deleted successfully!'),
+              backgroundColor: Colors.green,
+              duration: Duration(seconds: 3),
+            ),
+          );
+          
+          Navigator.pop(context, true); // Return true to indicate success
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error deleting task: ${e.toString()}'),
+              backgroundColor: Colors.red,
+              duration: const Duration(seconds: 4),
+            ),
+          );
+        }
+      } finally {
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+        }
+      }
+    }
+  }
+
+  String _getPriorityText(TaskPriority priority) {
+    switch (priority) {
+      case TaskPriority.low:
+        return 'Low';
+      case TaskPriority.medium:
+        return 'Medium';
+      case TaskPriority.high:
+        return 'High';
+      case TaskPriority.urgent:
+        return 'Urgent';
+    }
+  }
+
+  Color _getPriorityColor(TaskPriority priority) {
+    switch (priority) {
+      case TaskPriority.low:
+        return Colors.green;
+      case TaskPriority.medium:
+        return Colors.orange;
+      case TaskPriority.high:
+        return Colors.red;
+      case TaskPriority.urgent:
+        return Colors.purple;
+    }
+  }
+
+  String _getStatusText(TaskStatus status) {
+    switch (status) {
+      case TaskStatus.todo:
+        return 'To Do';
+      case TaskStatus.inProgress:
+        return 'In Progress';
+      case TaskStatus.review:
+        return 'Review';
+      case TaskStatus.completed:
+        return 'Completed';
+      case TaskStatus.cancelled:
+        return 'Cancelled';
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      insetPadding: const EdgeInsets.all(16),
+      child: Container(
+        width: double.infinity,
+        constraints: const BoxConstraints(maxWidth: 500, maxHeight: 700),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Header
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: const BoxDecoration(
+                color: Colors.orange,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.edit, color: Colors.white, size: 24),
+                  const SizedBox(width: 12),
+                  const Expanded(
+                    child: Text(
+                      'Edit Task',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    icon: const Icon(Icons.close, color: Colors.white),
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                  ),
+                ],
+              ),
+            ),
+            
+            // Form Content
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(20),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Task Title
+                      TextFormField(
+                        controller: _titleController,
+                        decoration: const InputDecoration(
+                          labelText: 'Task Title *',
+                          hintText: 'Enter task title',
+                          prefixIcon: Icon(Icons.title),
+                          border: OutlineInputBorder(),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return 'Task title is required';
+                          }
+                          if (value.trim().length < 3) {
+                            return 'Title must be at least 3 characters';
+                          }
+                          return null;
+                        },
+                        maxLength: 100,
+                      ),
+                      
+                      const SizedBox(height: 16),
+                      
+                      // Task Description
+                      TextFormField(
+                        controller: _descriptionController,
+                        decoration: const InputDecoration(
+                          labelText: 'Description',
+                          hintText: 'Enter task description',
+                          prefixIcon: Icon(Icons.description),
+                          border: OutlineInputBorder(),
+                        ),
+                        maxLines: 3,
+                        maxLength: 500,
+                        validator: (value) {
+                          if (value != null && value.trim().isNotEmpty && value.trim().length < 10) {
+                            return 'Description should be at least 10 characters if provided';
+                          }
+                          return null;
+                        },
+                      ),
+                      
+                      const SizedBox(height: 16),
+                      
+                      // Project Assignment (Show current assignment, allow change)
+                      const Text(
+                        'Project Assignment',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey.shade300),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Column(
+                          children: [
+                            RadioListTile<String?>(
+                              title: const Text('Personal Task'),
+                              subtitle: const Text('Task will appear in "My Tasks"'),
+                              value: null,
+                              groupValue: _selectedProjectId,
+                              onChanged: (value) {
+                                setState(() {
+                                  _selectedProjectId = null;
+                                  _selectedProjectName = null;
+                                });
+                              },
+                            ),
+                            if (!_isLoadingProjects && _availableProjects.isNotEmpty)
+                              RadioListTile<String?>(
+                                title: const Text('Project Task'),
+                                subtitle: Text(
+                                  _selectedProjectName ?? 'Select a project'
+                                ),
+                                value: 'project',
+                                groupValue: _selectedProjectId == null ? null : 'project',
+                                onChanged: (value) {
+                                  if (_availableProjects.isNotEmpty) {
+                                    _showProjectSelectionDialog();
+                                  }
+                                },
+                              ),
+                            if (_isLoadingProjects)
+                              const Padding(
+                                padding: EdgeInsets.all(16),
+                                child: Row(
+                                  children: [
+                                    SizedBox(
+                                      width: 16,
+                                      height: 16,
+                                      child: CircularProgressIndicator(strokeWidth: 2),
+                                    ),
+                                    SizedBox(width: 12),
+                                    Text('Loading projects...'),
+                                  ],
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                      
+                      const SizedBox(height: 16),
+                      
+                      // Priority Selection
+                      const Text(
+                        'Priority',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey.shade300),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: DropdownButtonFormField<TaskPriority>(
+                          value: _selectedPriority,
+                          decoration: const InputDecoration(
+                            prefixIcon: Icon(Icons.flag),
+                            border: InputBorder.none,
+                            contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          ),
+                          items: TaskPriority.values.map((priority) {
+                            return DropdownMenuItem(
+                              value: priority,
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: 12,
+                                    height: 12,
+                                    decoration: BoxDecoration(
+                                      color: _getPriorityColor(priority),
+                                      borderRadius: BorderRadius.circular(6),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Text(_getPriorityText(priority)),
+                                ],
+                              ),
+                            );
+                          }).toList(),
+                          onChanged: (value) {
+                            if (value != null) {
+                              setState(() {
+                                _selectedPriority = value;
+                              });
+                            }
+                          },
+                        ),
+                      ),
+                      
+                      const SizedBox(height: 16),
+                      
+                      // Status Selection
+                      const Text(
+                        'Status',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey.shade300),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: DropdownButtonFormField<TaskStatus>(
+                          value: _selectedStatus,
+                          decoration: const InputDecoration(
+                            prefixIcon: Icon(Icons.hourglass_empty),
+                            border: InputBorder.none,
+                            contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          ),
+                          items: TaskStatus.values.map((status) {
+                            return DropdownMenuItem(
+                              value: status,
+                              child: Text(_getStatusText(status)),
+                            );
+                          }).toList(),
+                          onChanged: (value) {
+                            if (value != null) {
+                              setState(() {
+                                _selectedStatus = value;
+                              });
+                            }
+                          },
+                        ),
+                      ),
+                      
+                      const SizedBox(height: 16),
+                      
+                      // Due Date Selection
+                      const Text(
+                        'Due Date',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      InkWell(
+                        onTap: _selectDueDate,
+                        child: Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey.shade300),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.calendar_today, color: Colors.grey),
+                              const SizedBox(width: 12),
+                              Text(
+                                DateFormat('MMM dd, yyyy').format(_selectedDueDate),
+                                style: const TextStyle(fontSize: 16),
+                              ),
+                              const Spacer(),
+                              const Icon(Icons.arrow_drop_down, color: Colors.grey),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            
+            // Action Buttons
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade50,
+                borderRadius: const BorderRadius.vertical(bottom: Radius.circular(12)),
+              ),
+              child: Row(
+                children: [
+                  // Delete Button
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: _isLoading ? null : _deleteTask,
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: Colors.red,
+                        side: const BorderSide(color: Colors.red),
+                      ),
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.delete, size: 18),
+                          SizedBox(width: 8),
+                          Text('Delete'),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  // Cancel Button
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: _isLoading ? null : () => Navigator.pop(context),
+                      child: const Text('Cancel'),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  // Update Button
+                  Expanded(
+                    flex: 2,
+                    child: ElevatedButton(
+                      onPressed: _isLoading ? null : _updateTask,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.orange,
+                        foregroundColor: Colors.white,
+                      ),
+                      child: _isLoading
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                            ),
+                          )
+                        : const Text('Update Task'),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showProjectSelectionDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Select Project'),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: ListView.builder(
+            shrinkWrap: true,
+            itemCount: _availableProjects.length,
+            itemBuilder: (context, index) {
+              final project = _availableProjects[index];
+              return ListTile(
+                leading: CircleAvatar(
+                  backgroundColor: project.color != null 
+                    ? Color(int.parse(project.color!))
+                    : Colors.blue,
+                  child: Text(
+                    project.name.substring(0, 1).toUpperCase(),
+                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
+                ),
+                title: Text(project.name),
+                subtitle: Text(
+                  '${project.taskCount} tasks • ${(project.progress * 100).toInt()}% complete',
+                ),
+                onTap: () {
+                  setState(() {
+                    _selectedProjectId = project.id;
+                    _selectedProjectName = project.name;
+                  });
+                  Navigator.pop(context);
+                },
+              );
+            },
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+        ],
+      ),
+    );
+  }
+}
