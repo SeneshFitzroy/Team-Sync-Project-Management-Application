@@ -574,10 +574,10 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
           SizedBox(height: 25),
         ],
         
-        // Recent Projects
+        // Projects
         SlideTransition(
           position: _slideAnimation,
-          child: _buildRecentProjectsFirebase(state.recentProjects),
+          child: _buildProjectsSection(state.recentProjects),
         ),
         
         SizedBox(height: 25),
