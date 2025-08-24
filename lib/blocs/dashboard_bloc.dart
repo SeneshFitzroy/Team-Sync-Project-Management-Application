@@ -132,8 +132,71 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
         return;
       }
 
-      // Simple search implementation
-      emit(DashboardSearchResults(results: const [], query: event.query));
+      final userId = FirebaseAuth.instance.currentUser?.uid;
+      if (userId == null) {
+        emit(const DashboardError('User not authenticated'));
+        return;
+      }
+
+              // Load all data for searching
+        List<Project> allProjects = [];
+        List<Task> allTasks = [];
+        List<Map<String, dynamic>> searchResults = [];
+
+        try {
+          // Search projects
+          final projectSnapshot = await FirebaseFirestore.instance
+              .collection('projects')
+              .where('teamMembers', arrayContains: userId)
+              .get();
+          
+          allProjects = projectSnapshot.docs
+              .map((doc) => Project.fromMap(doc.data(), doc.id))
+              .toList();
+
+          // Search tasks
+          final taskSnapshot = await FirebaseFirestore.instance
+              .collection('tasks')
+              .where('assignedTo', isEqualTo: userId)
+              .get();
+          
+          allTasks = taskSnapshot.docs
+              .map((doc) => Task.fromMap(doc.data(), doc.id))
+              .toList();
+
+          final query = event.query.toLowerCase();
+          
+          // Search in projects
+          for (var project in allProjects) {
+            if (project.name.toLowerCase().contains(query) ||
+                project.description.toLowerCase().contains(query)) {
+              searchResults.add({
+                'type': 'project',
+                'title': project.name,
+                'subtitle': project.description,
+                'data': project,
+              });
+            }
+          }
+
+          // Search in tasks
+          for (var task in allTasks) {
+            if (task.title.toLowerCase().contains(query) ||
+                task.description.toLowerCase().contains(query)) {
+              searchResults.add({
+                'type': 'task',
+                'title': task.title,
+                'subtitle': task.description,
+                'data': task,
+              });
+            }
+          }
+
+          emit(DashboardSearchResults(results: searchResults, query: event.query));
+        } catch (e) {
+          print('Search error: $e');
+          emit(DashboardSearchResults(results: [], query: event.query));
+        }
     } catch (e) {
       emit(DashboardError('Failed to search: ${e.toString()}'));
     }
