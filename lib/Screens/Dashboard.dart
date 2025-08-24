@@ -276,6 +276,9 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
   }
 
   void _showNotifications() {
+    // Load pending requests first
+    context.read<MemberRequestBloc>().add(LoadPendingRequests());
+    
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
