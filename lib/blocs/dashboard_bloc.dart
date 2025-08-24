@@ -150,9 +150,11 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
       // Load data with simple queries to avoid index requirements
       List<Project> recentProjects = [];
       List<Project> projectsDueToday = [];
+      List<Project> allProjects = [];
       List<Task> upcomingTasks = [];
       List<Task> overdueTasks = [];
       List<Task> tasksDueToday = [];
+      List<Task> allTasks = [];
       List<MemberRequest> pendingRequests = [];
       
       try {
@@ -163,7 +165,7 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
             .limit(5)
             .get();
         
-        final allProjects = projectSnapshot.docs
+        allProjects = projectSnapshot.docs
             .map((doc) => Project.fromMap(doc.data(), doc.id))
             .toList();
         
@@ -194,7 +196,7 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
             .limit(10)
             .get();
         
-        final allTasks = taskSnapshot.docs
+        allTasks = taskSnapshot.docs
             .map((doc) => Task.fromMap(doc.data(), doc.id))
             .toList();
         
@@ -234,14 +236,22 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
         print('Error loading member requests: $e');
       }
 
-      // Create simple stats
+      // Create comprehensive stats
+      final completedTasks = allTasks.where((task) => task.status == TaskStatus.completed).length;
+      final activeProjects = allProjects.where((project) => project.status == ProjectStatus.active).length;
+      final completionRate = allTasks.isNotEmpty 
+          ? ((completedTasks / allTasks.length) * 100).round() 
+          : 0;
+      
       final stats = {
-        'totalProjects': recentProjects.length,
-        'totalTasks': upcomingTasks.length + overdueTasks.length + tasksDueToday.length,
-        'completedTasks': 0,
+        'totalProjects': allProjects.length,
+        'activeProjects': activeProjects,
+        'totalTasks': allTasks.length,
+        'completedTasks': completedTasks,
         'tasksDueToday': tasksDueToday.length,
         'overdueTasks': overdueTasks.length,
         'overdueItems': overdueTasks.length,
+        'completionRate': completionRate,
       };
 
       emit(DashboardLoaded(

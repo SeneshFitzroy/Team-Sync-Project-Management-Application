@@ -460,18 +460,18 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
   Widget _buildSearchBar() {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.15),
+        color: Colors.white.withOpacity(0.25),
         borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: Colors.white.withOpacity(0.3)),
+        border: Border.all(color: Colors.white.withOpacity(0.5)),
       ),
       child: TextField(
         controller: _searchController,
         onChanged: _onSearchChanged,
-        style: TextStyle(color: Colors.white),
+        style: TextStyle(color: Colors.white, fontSize: 16),
         decoration: InputDecoration(
           hintText: 'Search projects, tasks, or team members...',
-          hintStyle: TextStyle(color: Colors.white.withOpacity(0.8)),
-          prefixIcon: Icon(Icons.search, color: Colors.white.withOpacity(0.8)),
+          hintStyle: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 16),
+          prefixIcon: Icon(Icons.search, color: Colors.white, size: 24),
           border: InputBorder.none,
           contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
         ),
@@ -821,33 +821,125 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
           SizedBox(height: 20),
           Row(
             children: [
-              Expanded(child: _buildStatCard('Total Projects', stats['totalProjects'] ?? 0, Icons.folder_outlined, [Color(0xFF6C5CE7), Color(0xFFA29BFE)])),
+              Expanded(child: _buildStatCard(
+                'Total Projects', 
+                stats['totalProjects'] ?? 0, 
+                Icons.folder_outlined, 
+                [Color(0xFF6C5CE7), Color(0xFFA29BFE)],
+                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const ProjectsPage())),
+              )),
               SizedBox(width: 12),
-              Expanded(child: _buildStatCard('Active Projects', stats['activeProjects'] ?? 0, Icons.play_circle_outline, [Color(0xFF00B894), Color(0xFF55EFC4)])),
+              Expanded(child: _buildStatCard(
+                'Active Projects', 
+                stats['activeProjects'] ?? 0, 
+                Icons.play_circle_outline, 
+                [Color(0xFF00B894), Color(0xFF55EFC4)],
+                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const ProjectsPage())),
+              )),
             ],
           ),
           SizedBox(height: 12),
           Row(
             children: [
-              Expanded(child: _buildStatCard('Total Tasks', stats['totalTasks'] ?? 0, Icons.assignment_outlined, [Color(0xFFE17055), Color(0xFFFAB1A0)])),
+              Expanded(child: _buildStatCard(
+                'Total Tasks', 
+                stats['totalTasks'] ?? 0, 
+                Icons.assignment_outlined, 
+                [Color(0xFFE17055), Color(0xFFFAB1A0)],
+                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const TaskPage())),
+              )),
               SizedBox(width: 12),
-              Expanded(child: _buildStatCard('Completed', stats['completedTasks'] ?? 0, Icons.check_circle_outline, [Color(0xFFE84393), Color(0xFFFD79A8)])),
+              Expanded(child: _buildStatCard(
+                'Completed', 
+                stats['completedTasks'] ?? 0, 
+                Icons.check_circle_outline, 
+                [Color(0xFFE84393), Color(0xFFFD79A8)],
+                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const TaskPage())),
+              )),
             ],
           ),
           SizedBox(height: 12),
           Row(
             children: [
-              Expanded(child: _buildStatCard('Due Today', stats['tasksDueToday'] ?? 0, Icons.today_outlined, [Color(0xFFFFB142), Color(0xFFFFCA28)])),
+              Expanded(child: _buildStatCard(
+                'Due Today', 
+                stats['tasksDueToday'] ?? 0, 
+                Icons.today_outlined, 
+                [Color(0xFFFFB142), Color(0xFFFFCA28)],
+                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const TaskPage())),
+              )),
               SizedBox(width: 12),
-              Expanded(child: _buildStatCard('Overdue', stats['overdueTasks'] ?? 0, Icons.warning_outlined, [Color(0xFFFF6B6B), Color(0xFFFF8E8E)])),
+              Expanded(child: _buildStatCard(
+                'Overdue', 
+                stats['overdueTasks'] ?? 0, 
+                Icons.warning_outlined, 
+                [Color(0xFFFF6B6B), Color(0xFFFF8E8E)],
+                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const TaskPage())),
+              )),
             ],
           ),
-          if (stats['totalTasks'] > 0) ...[
+          // Completion Rate Progress Bar
+          if ((stats['totalTasks'] ?? 0) > 0) ...[
             SizedBox(height: 16),
             Container(
               padding: EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: Colors.white.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(15),
+                border: Border.all(color: Colors.white.withOpacity(0.3)),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Completion Rate',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      Text(
+                        '${stats['completionRate'] ?? 0}%',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 12),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: LinearProgressIndicator(
+                      value: (stats['completionRate'] ?? 0) / 100,
+                      backgroundColor: Colors.white.withOpacity(0.3),
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        (stats['completionRate'] ?? 0) >= 75 
+                            ? Colors.green 
+                            : (stats['completionRate'] ?? 0) >= 50 
+                                ? Colors.orange 
+                                : Colors.red,
+                      ),
+                      minHeight: 8,
+                    ),
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    '${stats['completedTasks'] ?? 0} of ${stats['totalTasks'] ?? 0} tasks completed',
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.8),
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
@@ -871,42 +963,53 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildStatCard(String title, int value, IconData icon, List<Color> gradientColors) {
-    return Container(
-      padding: EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(colors: gradientColors),
-        borderRadius: BorderRadius.circular(15),
-        boxShadow: [
-          BoxShadow(
-            color: gradientColors[0].withOpacity(0.3),
-            blurRadius: 8,
-            offset: Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Icon(icon, color: Colors.white, size: 28),
-          SizedBox(height: 8),
-          Text(
-            value.toString(),
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
+  Widget _buildStatCard(String title, int value, IconData icon, List<Color> gradientColors, {VoidCallback? onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(colors: gradientColors),
+          borderRadius: BorderRadius.circular(15),
+          boxShadow: [
+            BoxShadow(
+              color: gradientColors[0].withOpacity(0.3),
+              blurRadius: 8,
+              offset: Offset(0, 4),
             ),
-          ),
-          Text(
-            title,
-            style: TextStyle(
-              color: Colors.white.withOpacity(0.9),
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
+          ],
+        ),
+        child: Column(
+          children: [
+            Icon(icon, color: Colors.white, size: 28),
+            SizedBox(height: 8),
+            Text(
+              value.toString(),
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-            textAlign: TextAlign.center,
-          ),
-        ],
+            Text(
+              title,
+              style: TextStyle(
+                color: Colors.white.withOpacity(0.9),
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            if (onTap != null) ...[
+              SizedBox(height: 4),
+              Icon(
+                Icons.touch_app,
+                color: Colors.white.withOpacity(0.7),
+                size: 16,
+              ),
+            ],
+          ],
+        ),
       ),
     );
   }
