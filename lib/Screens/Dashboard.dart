@@ -726,16 +726,16 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  result['title'],
+                  result['title'] ?? '',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                if (result['description'].isNotEmpty)
+                if ((result['subtitle'] ?? '').isNotEmpty)
                   Text(
-                    result['description'],
+                    result['subtitle'] ?? '',
                     style: TextStyle(
                       color: Colors.white.withOpacity(0.8),
                       fontSize: 14,
@@ -1171,64 +1171,158 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(project.name),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
+        title: Row(
           children: [
-            Text('Description:', style: TextStyle(fontWeight: FontWeight.bold)),
-            SizedBox(height: 4),
-            Text(project.description.isEmpty ? 'No description' : project.description),
-            SizedBox(height: 16),
-            Text('Status:', style: TextStyle(fontWeight: FontWeight.bold)),
-            SizedBox(height: 4),
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                color: _getStatusColor(project.status).withOpacity(0.2),
-                borderRadius: BorderRadius.circular(8),
-              ),
+            Icon(Icons.folder, color: AppTheme.primaryBlue),
+            SizedBox(width: 8),
+            Expanded(
               child: Text(
-                _getStatusText(project.status),
+                project.name,
                 style: TextStyle(
-                  color: _getStatusColor(project.status),
+                  fontSize: 20,
                   fontWeight: FontWeight.bold,
+                  color: AppTheme.primaryBlue,
                 ),
               ),
             ),
-            SizedBox(height: 16),
-            Text('Team Members:', style: TextStyle(fontWeight: FontWeight.bold)),
-            SizedBox(height: 4),
-            Text('${project.teamMembers.length} members'),
-            if (project.dueDate != null) ...[
-              SizedBox(height: 16),
-              Text('Due Date:', style: TextStyle(fontWeight: FontWeight.bold)),
-              SizedBox(height: 4),
-              Text('${project.dueDate!.day}/${project.dueDate!.month}/${project.dueDate!.year}'),
-            ],
           ],
+        ),
+        content: Container(
+          width: double.maxFinite,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Description Section
+              _buildDetailSection('Description:', 
+                project.description.isEmpty ? 'No description provided' : project.description),
+              
+              SizedBox(height: 16),
+              
+              // Status Section
+              Text('Status:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              SizedBox(height: 8),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: _getStatusColor(project.status),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  _getStatusText(project.status),
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
+                ),
+              ),
+              
+              SizedBox(height: 16),
+              
+              // Team Members Section
+              Text('Team Members:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              SizedBox(height: 8),
+              Container(
+                padding: EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.grey[100],
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.people, color: AppTheme.primaryBlue),
+                    SizedBox(width: 8),
+                    Text(
+                      '${project.teamMembers.length} members',
+                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                    ),
+                  ],
+                ),
+              ),
+              
+              if (project.dueDate != null) ...[
+                SizedBox(height: 16),
+                
+                // Due Date Section
+                Text('Due Date:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                SizedBox(height: 8),
+                Container(
+                  padding: EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[100],
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.calendar_today, color: AppTheme.primaryBlue),
+                      SizedBox(width: 8),
+                      Text(
+                        '${project.dueDate!.day}/${project.dueDate!.month}/${project.dueDate!.year}',
+                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+              
+              SizedBox(height: 16),
+              
+              // Created Date Section
+              Text('Created:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              SizedBox(height: 8),
+              Container(
+                padding: EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.grey[100],
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.access_time, color: AppTheme.primaryBlue),
+                    SizedBox(width: 8),
+                    Text(
+                      '${project.createdAt.day}/${project.createdAt.month}/${project.createdAt.year}',
+                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('Close'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              Navigator.push(
-                context, 
-                MaterialPageRoute(builder: (context) => const ProjectsPage())
-              );
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppTheme.primaryBlue,
-              foregroundColor: Colors.white,
+            style: TextButton.styleFrom(
+              foregroundColor: AppTheme.primaryBlue,
             ),
-            child: Text('View Project'),
+            child: Text('Close'),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildDetailSection(String label, String content) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+        SizedBox(height: 8),
+        Container(
+          width: double.infinity,
+          padding: EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: Colors.grey[100],
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Text(
+            content,
+            style: TextStyle(fontSize: 14, height: 1.4),
+          ),
+        ),
+      ],
     );
   }
 
