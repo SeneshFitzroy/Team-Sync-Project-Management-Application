@@ -324,45 +324,6 @@ class _TaskPageState extends State<TaskPage> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildFilterChips() {
-    const filters = ['All', 'Todo', 'In Progress', 'Completed', 'Review'];
-    
-    return Container(
-      height: 50,
-      margin: const EdgeInsets.symmetric(horizontal: 20),
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: filters.length,
-        itemBuilder: (context, index) {
-          final filter = filters[index];
-          final isSelected = _selectedFilter == filter;
-          
-          return Container(
-            margin: const EdgeInsets.only(right: 12),
-            child: FilterChip(
-              label: Text(filter),
-              selected: isSelected,
-              onSelected: (selected) {
-                setState(() {
-                  _selectedFilter = filter;
-                });
-              },
-              backgroundColor: Colors.grey[200],
-              selectedColor: AppTheme.primaryBlue.withOpacity(0.2),
-              labelStyle: TextStyle(
-                color: isSelected ? AppTheme.primaryBlue : Colors.grey[700],
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-              ),
-              side: BorderSide(
-                color: isSelected ? AppTheme.primaryBlue : Colors.transparent,
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
-
   Widget _buildProjectTasks() {
     return BlocBuilder<TaskBloc, TaskState>(
       builder: (context, state) {
@@ -438,29 +399,6 @@ class _TaskPageState extends State<TaskPage> with TickerProviderStateMixin {
         return task.title.toLowerCase().contains(query) ||
                task.description.toLowerCase().contains(query);
       }).toList();
-    }
-    
-    // Filter by status
-    if (_selectedFilter != 'All') {
-      TaskStatus? statusFilter;
-      switch (_selectedFilter) {
-        case 'Todo':
-          statusFilter = TaskStatus.todo;
-          break;
-        case 'In Progress':
-          statusFilter = TaskStatus.inProgress;
-          break;
-        case 'Completed':
-          statusFilter = TaskStatus.completed;
-          break;
-        case 'Review':
-          statusFilter = TaskStatus.review;
-          break;
-      }
-      
-      if (statusFilter != null) {
-        filtered = filtered.where((task) => task.status == statusFilter).toList();
-      }
     }
     
     return filtered;
