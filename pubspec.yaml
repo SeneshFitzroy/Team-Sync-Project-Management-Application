@@ -20,6 +20,7 @@ dependencies:
   url_launcher: ^6.2.1
   flutter_bloc: ^8.1.6
   equatable: ^2.0.5
+  fl_chart: ^0.66.0
 
 dev_dependencies:
   flutter_test:
