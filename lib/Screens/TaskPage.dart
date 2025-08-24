@@ -1084,7 +1084,7 @@ class _TaskPageState extends State<TaskPage> with TickerProviderStateMixin {
         ? TaskStatus.todo 
         : TaskStatus.completed;
     
-    context.read<TaskBloc>().add(UpdateTaskEvent(
+    context.read<TaskBloc>().add(UpdateTask(
       task.copyWith(status: newStatus),
     ));
   }
