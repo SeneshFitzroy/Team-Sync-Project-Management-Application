@@ -24,7 +24,6 @@ class _TaskPageState extends State<TaskPage> with TickerProviderStateMixin {
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
   final TextEditingController _searchController = TextEditingController();
-  String _selectedFilter = 'All';
 
   @override
   void initState() {
@@ -115,9 +114,6 @@ class _TaskPageState extends State<TaskPage> with TickerProviderStateMixin {
               
               // Tab Bar for Project Tasks / My Tasks
               _buildTabBar(),
-              
-              // Filter Chips
-              _buildFilterChips(),
               
               // Tasks Content
               Expanded(
