@@ -802,6 +802,8 @@ class _TaskPageState extends State<TaskPage> with TickerProviderStateMixin {
         return 'Completed';
       case TaskStatus.overdue:
         return 'Overdue';
+      case TaskStatus.review:
+        return 'Review';
     }
   }
 
@@ -1112,13 +1114,13 @@ class _TaskPageState extends State<TaskPage> with TickerProviderStateMixin {
               icon: const Icon(Icons.add, size: 16),
               label: const Text('Add Task'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppTheme.backgroundWhite,
+                backgroundColor: Colors.white,
                 foregroundColor: AppTheme.primaryBlue,
                 elevation: 0,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
                 ),
-                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               ),
             ),
           ),
