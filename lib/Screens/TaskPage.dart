@@ -1137,22 +1137,7 @@ class _TaskPageState extends State<TaskPage> with TickerProviderStateMixin {
             ],
           ),
         ),
-        child: Stack(
-          children: [
-            // Animated particle background
-            AnimatedBuilder(
-              animation: _particleAnimation,
-              child: Container(),
-              builder: (context, child) {
-                return CustomPaint(
-                  painter: ParticlePainter(_particleAnimation.value),
-                  size: Size.infinite,
-                );
-              },
-            ),
-            
-            // Main content
-            FadeTransition(
+        child: FadeTransition(
               opacity: _fadeAnimation,
               child: Column(
                 children: [
