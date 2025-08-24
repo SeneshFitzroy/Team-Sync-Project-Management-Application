@@ -2987,7 +2987,7 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
         SizedBox(width: 4),
         Text(
           label,
-          style: TextStyle(fontSize: 10, color: Colors.grey[600]),
+          style: const TextStyle(fontSize: 10, color: Colors.grey),
         ),
       ],
     );
