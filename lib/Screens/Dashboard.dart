@@ -1894,7 +1894,13 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
   void _showCreateProjectDialog(BuildContext context) {
     final nameController = TextEditingController();
     final descriptionController = TextEditingController();
+    final budgetController = TextEditingController();
+    final clientController = TextEditingController();
+    final priorityController = TextEditingController();
     DateTime? selectedDueDate;
+    DateTime? selectedStartDate;
+    String selectedPriority = 'Medium';
+    String selectedStatus = 'Planning';
     List<UserModel> allUsers = [];
     List<String> selectedMemberIds = [];
     
@@ -1902,52 +1908,172 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setState) => AlertDialog(
-          title: Text('Create New Project'),
+          title: Row(
+            children: [
+              Icon(Icons.add_box, color: AppTheme.primaryBlue),
+              SizedBox(width: 8),
+              Text('Create New Project'),
+            ],
+          ),
           content: Container(
             width: double.maxFinite,
-            constraints: BoxConstraints(maxHeight: 600),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                TextField(
-                  controller: nameController,
-                  decoration: InputDecoration(
-                    labelText: 'Project Name',
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                SizedBox(height: 16),
-                TextField(
-                  controller: descriptionController,
-                  decoration: InputDecoration(
-                    labelText: 'Description',
-                    border: OutlineInputBorder(),
-                  ),
-                  maxLines: 3,
-                ),
-                SizedBox(height: 16),
-                // Due Date Field
-                Container(
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey[400]!),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: ListTile(
-                    leading: Icon(Icons.calendar_today),
-                    title: Text(
-                      selectedDueDate == null
-                          ? 'Select Due Date (Optional)'
-                          : 'Due: ${selectedDueDate!.day}/${selectedDueDate!.month}/${selectedDueDate!.year}',
+            constraints: BoxConstraints(maxHeight: 700),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Project Name
+                  TextField(
+                    controller: nameController,
+                    decoration: InputDecoration(
+                      labelText: 'Project Name *',
+                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.folder),
                     ),
-                    trailing: selectedDueDate != null
-                        ? IconButton(
-                            icon: Icon(Icons.clear),
-                            onPressed: () {
-                              setState(() {
-                                selectedDueDate = null;
-                              });
-                            },
+                  ),
+                  SizedBox(height: 16),
+                  
+                  // Description
+                  TextField(
+                    controller: descriptionController,
+                    decoration: InputDecoration(
+                      labelText: 'Project Description *',
+                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.description),
+                    ),
+                    maxLines: 3,
+                  ),
+                  SizedBox(height: 16),
+                  
+                  // Client/Organization
+                  TextField(
+                    controller: clientController,
+                    decoration: InputDecoration(
+                      labelText: 'Client/Organization',
+                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.business),
+                    ),
+                  ),
+                  SizedBox(height: 16),
+                  
+                  // Budget
+                  TextField(
+                    controller: budgetController,
+                    decoration: InputDecoration(
+                      labelText: 'Budget (Optional)',
+                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.attach_money),
+                    ),
+                    keyboardType: TextInputType.number,
+                  ),
+                  SizedBox(height: 16),
+                  
+                  // Priority Dropdown
+                  DropdownButtonFormField<String>(
+                    value: selectedPriority,
+                    decoration: InputDecoration(
+                      labelText: 'Priority',
+                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.priority_high),
+                    ),
+                    items: ['Low', 'Medium', 'High', 'Critical'].map((priority) {
+                      return DropdownMenuItem(
+                        value: priority,
+                        child: Text(priority),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        selectedPriority = value!;
+                      });
+                    },
+                  ),
+                  SizedBox(height: 16),
+                  
+                  // Status Dropdown
+                  DropdownButtonFormField<String>(
+                    value: selectedStatus,
+                    decoration: InputDecoration(
+                      labelText: 'Initial Status',
+                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.flag),
+                    ),
+                    items: ['Planning', 'Active', 'On Hold'].map((status) {
+                      return DropdownMenuItem(
+                        value: status,
+                        child: Text(status),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        selectedStatus = value!;
+                      });
+                    },
+                  ),
+                  SizedBox(height: 16),
+                  
+                  // Start Date
+                  Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey[400]!),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: ListTile(
+                      leading: Icon(Icons.play_arrow),
+                      title: Text(
+                        selectedStartDate == null
+                            ? 'Select Start Date'
+                            : 'Start: ${selectedStartDate!.day}/${selectedStartDate!.month}/${selectedStartDate!.year}',
+                      ),
+                      trailing: selectedStartDate != null
+                          ? IconButton(
+                              icon: Icon(Icons.clear),
+                              onPressed: () {
+                                setState(() {
+                                  selectedStartDate = null;
+                                });
+                              },
+                            )
+                          : null,
+                      onTap: () async {
+                        final date = await showDatePicker(
+                          context: context,
+                          initialDate: selectedStartDate ?? DateTime.now(),
+                          firstDate: DateTime.now(),
+                          lastDate: DateTime.now().add(Duration(days: 365 * 2)),
+                        );
+                        if (date != null) {
+                          setState(() {
+                            selectedStartDate = date;
+                          });
+                        }
+                      },
+                    ),
+                  ),
+                  SizedBox(height: 16),
+                  
+                  // Due Date
+                  Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey[400]!),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: ListTile(
+                      leading: Icon(Icons.calendar_today),
+                      title: Text(
+                        selectedDueDate == null
+                            ? 'Select Due Date'
+                            : 'Due: ${selectedDueDate!.day}/${selectedDueDate!.month}/${selectedDueDate!.year}',
+                      ),
+                      trailing: selectedDueDate != null
+                          ? IconButton(
+                              icon: Icon(Icons.clear),
+                              onPressed: () {
+                                setState(() {
+                                  selectedDueDate = null;
+                                });
+                              },
                           )
                         : null,
                     onTap: () async {
