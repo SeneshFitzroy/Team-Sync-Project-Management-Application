@@ -1060,7 +1060,7 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildRecentProjectsFirebase(List<Project> projects) {
+  Widget _buildProjectsSection(List<Project> projects) {
     return Container(
       padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -1076,11 +1076,26 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
               Icon(Icons.folder_outlined, color: Colors.white, size: 24),
               SizedBox(width: 8),
               Text(
-                'Recent Projects',
+                'Projects',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
+                ),
+              ),
+              Spacer(),
+              GestureDetector(
+                onTap: () => Navigator.push(
+                  context, 
+                  MaterialPageRoute(builder: (context) => const ProjectsPage())
+                ),
+                child: Text(
+                  'View All',
+                  style: TextStyle(
+                    color: AppTheme.primaryBlue,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
             ],
@@ -1098,6 +1113,111 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                   ),
                   SizedBox(height: 12),
                   Text(
+                    'No projects found',
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.8),
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
+              ),
+            )
+          else
+            ...projects.take(3).map((project) => GestureDetector(
+              onTap: () => _showProjectDetails(project),
+              child: Container(
+                margin: EdgeInsets.only(bottom: 12),
+                padding: EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.white.withOpacity(0.2)),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 8,
+                      height: 8,
+                      decoration: BoxDecoration(
+                        color: _getStatusColor(project.status),
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                    SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            project.name,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          if (project.description.isNotEmpty) ...[
+                            SizedBox(height: 4),
+                            Text(
+                              project.description,
+                              style: TextStyle(
+                                color: Colors.white.withOpacity(0.8),
+                                fontSize: 14,
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                          SizedBox(height: 8),
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.group,
+                                color: Colors.white.withOpacity(0.7),
+                                size: 16,
+                              ),
+                              SizedBox(width: 4),
+                              Text(
+                                '${project.teamMembers.length} members',
+                                style: TextStyle(
+                                  color: Colors.white.withOpacity(0.7),
+                                  fontSize: 12,
+                                ),
+                              ),
+                              Spacer(),
+                              Container(
+                                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: _getStatusColor(project.status).withOpacity(0.3),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Text(
+                                  _getStatusText(project.status),
+                                  style: TextStyle(
+                                    color: _getStatusColor(project.status),
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    Icon(
+                      Icons.arrow_forward_ios,
+                      color: Colors.white.withOpacity(0.5),
+                      size: 16,
+                    ),
+                  ],
+                ),
+              ),
+            )).toList(),
+        ],
+      ),
+    );
+  }
                     'No projects yet',
                     style: TextStyle(
                       color: Colors.white.withOpacity(0.8),
