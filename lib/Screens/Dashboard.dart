@@ -11,11 +11,9 @@ import '../blocs/member_request_bloc.dart';
 import '../models/project.dart';
 import '../models/task.dart';
 import '../models/user_model.dart';
-import '../models/member_request.dart';
 import '../theme/app_theme.dart';
 import '../services/firebase_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:intl/intl.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -611,7 +609,7 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
         // Create Project Button
         SlideTransition(
           position: _slideAnimation,
-          child: _buildCreateProjectButton(),
+          child: _buildCreateProjectButton(context),
         ),
         SizedBox(height: 25),
       ],
@@ -1245,112 +1243,6 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
   }
 }
 
-  Widget _buildProjectCard(Project project) {
-    return Container(
-      margin: EdgeInsets.only(bottom: 12),
-      padding: EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.2),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white.withOpacity(0.3)),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: project.color != null 
-                  ? Color(int.parse(project.color!.replaceFirst('#', '0xFF')))
-                  : AppTheme.primaryBlue,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Icon(
-              Icons.folder,
-              color: Colors.white,
-              size: 20,
-            ),
-          ),
-          SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  project.name,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                if (project.description.isNotEmpty)
-                  Text(
-                    project.description,
-                    style: TextStyle(
-                      color: Colors.white.withOpacity(0.8),
-                      fontSize: 14,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                SizedBox(height: 4),
-                Row(
-                  children: [
-                    Icon(
-                      Icons.people,
-                      color: Colors.white.withOpacity(0.8),
-                      size: 16,
-                    ),
-                    SizedBox(width: 4),
-                    Text(
-                      '${project.teamMembers.length} members',
-                      style: TextStyle(
-                        color: Colors.white.withOpacity(0.8),
-                        fontSize: 12,
-                      ),
-                    ),
-                    SizedBox(width: 12),
-                    Container(
-                      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: _getStatusColor(project.status),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(
-                        project.status.name.toUpperCase(),
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Color _getStatusColor(ProjectStatus status) {
-    switch (status) {
-      case ProjectStatus.planning:
-        return Colors.orange;
-      case ProjectStatus.active:
-        return Colors.green;
-      case ProjectStatus.completed:
-        return Colors.blue;
-      case ProjectStatus.paused:
-        return Colors.yellow[800]!;
-      case ProjectStatus.cancelled:
-        return Colors.red;
-    }
-  }
-
   Widget _buildUpcomingTasks(BuildContext context, List<Task> tasks) {
     return Container(
       padding: EdgeInsets.all(20),
@@ -1837,7 +1729,7 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildCreateProjectButton() {
+  Widget _buildCreateProjectButton(BuildContext context) {
     return Container(
       padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -1867,7 +1759,7 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
             width: double.infinity,
             height: 50,
             child: ElevatedButton.icon(
-              onPressed: _showCreateProjectDialog,
+              onPressed: () => _showCreateProjectDialog(context),
               icon: Icon(Icons.add, size: 20),
               label: Text(
                 'Create New Project',
@@ -1891,7 +1783,7 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
     );
   }
 
-  void _showCreateProjectDialog() {
+  void _showCreateProjectDialog(BuildContext context) {
     final nameController = TextEditingController();
     final descriptionController = TextEditingController();
     DateTime? selectedDueDate;
@@ -2055,7 +1947,6 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
       ),
     );
   }
-}
 
 // Particle Painter for background animation
 class ParticlePainter extends CustomPainter {
