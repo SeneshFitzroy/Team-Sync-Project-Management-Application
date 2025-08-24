@@ -332,8 +332,11 @@ class _TaskPageState extends State<TaskPage> with TickerProviderStateMixin {
         }
         
         if (state is TasksLoaded) {
-          // For now, show all tasks (can be enhanced to group by project later)
-          final filteredTasks = _filterTasks(state.tasks);
+          // Filter to show only tasks that belong to projects (have projectId)
+          final projectTasks = state.tasks.where((task) => 
+            task.projectId != null && task.projectId!.isNotEmpty
+          ).toList();
+          final filteredTasks = _filterTasks(projectTasks);
           
           if (filteredTasks.isEmpty) {
             return _buildEmptyState('No project tasks found');
