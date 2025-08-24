@@ -565,15 +565,6 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
         
         SizedBox(height: 25),
         
-        // Pending Requests
-        if (state.pendingRequests.isNotEmpty) ...[
-          SlideTransition(
-            position: _slideAnimation,
-            child: _buildPendingRequests(state.pendingRequests),
-          ),
-          SizedBox(height: 25),
-        ],
-        
         // Projects
         SlideTransition(
           position: _slideAnimation,
@@ -585,7 +576,7 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
         // Upcoming Tasks
         SlideTransition(
           position: _slideAnimation,
-          child: _buildUpcomingTasks(state.upcomingTasks),
+          child: _buildUpcomingTasks(context, state.upcomingTasks),
         ),
         
         SizedBox(height: 25),
@@ -997,68 +988,7 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildPendingRequests(List<MemberRequest> requests) {
-    return Container(
-      padding: EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.15),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withOpacity(0.3)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(Icons.notifications_active, color: Colors.white, size: 24),
-              SizedBox(width: 8),
-              Text(
-                'Pending Invitations',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Spacer(),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: Colors.red,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  '${requests.length}',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 16),
-          Text(
-            'You have ${requests.length} pending invitation${requests.length > 1 ? 's' : ''}',
-            style: TextStyle(
-              color: Colors.white.withOpacity(0.9),
-              fontSize: 14,
-            ),
-          ),
-          SizedBox(height: 12),
-          ElevatedButton(
-            onPressed: _showNotifications,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.white.withOpacity(0.2),
-              foregroundColor: Colors.white,
-            ),
-            child: Text('View Invitations'),
-          ),
-        ],
-      ),
-    );
-  }
+
 
   Widget _buildProjectsSection(List<Project> projects) {
     return Container(
@@ -1218,50 +1148,102 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
       ),
     );
   }
-                    'No projects yet',
-                    style: TextStyle(
-                      color: Colors.white.withOpacity(0.8),
-                      fontSize: 16,
-                    ),
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    'Create your first project to get started!',
-                    style: TextStyle(
-                      color: Colors.white.withOpacity(0.6),
-                      fontSize: 14,
-                    ),
-                  ),
-                ],
+
+  void _showProjectDetails(Project project) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(project.name),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Description:', style: TextStyle(fontWeight: FontWeight.bold)),
+            SizedBox(height: 4),
+            Text(project.description.isEmpty ? 'No description' : project.description),
+            SizedBox(height: 16),
+            Text('Status:', style: TextStyle(fontWeight: FontWeight.bold)),
+            SizedBox(height: 4),
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: _getStatusColor(project.status).withOpacity(0.2),
+                borderRadius: BorderRadius.circular(8),
               ),
-            )
-          else
-            ...projects.take(3).map((project) => _buildProjectCard(project)),
-          if (projects.length > 3) ...[
-            SizedBox(height: 12),
-            TextButton(
-              onPressed: () {
-                // Navigate to projects page
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Projects page coming soon!'),
-                    backgroundColor: AppTheme.primaryBlue,
-                  ),
-                );
-              },
               child: Text(
-                'View All Projects (${projects.length})',
+                _getStatusText(project.status),
                 style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
+                  color: _getStatusColor(project.status),
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ),
+            SizedBox(height: 16),
+            Text('Team Members:', style: TextStyle(fontWeight: FontWeight.bold)),
+            SizedBox(height: 4),
+            Text('${project.teamMembers.length} members'),
+            if (project.dueDate != null) ...[
+              SizedBox(height: 16),
+              Text('Due Date:', style: TextStyle(fontWeight: FontWeight.bold)),
+              SizedBox(height: 4),
+              Text('${project.dueDate!.day}/${project.dueDate!.month}/${project.dueDate!.year}'),
+            ],
           ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Close'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context, 
+                MaterialPageRoute(builder: (context) => const ProjectsPage())
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppTheme.primaryBlue,
+              foregroundColor: Colors.white,
+            ),
+            child: Text('View Project'),
+          ),
         ],
       ),
     );
   }
+
+  Color _getStatusColor(ProjectStatus status) {
+    switch (status) {
+      case ProjectStatus.planning:
+        return Colors.orange;
+      case ProjectStatus.active:
+        return Colors.green;
+      case ProjectStatus.completed:
+        return Colors.blue;
+      case ProjectStatus.paused:
+        return Colors.yellow;
+      case ProjectStatus.cancelled:
+        return Colors.red;
+    }
+  }
+
+  String _getStatusText(ProjectStatus status) {
+    switch (status) {
+      case ProjectStatus.planning:
+        return 'Planning';
+      case ProjectStatus.active:
+        return 'Active';
+      case ProjectStatus.completed:
+        return 'Completed';
+      case ProjectStatus.paused:
+        return 'Paused';
+      case ProjectStatus.cancelled:
+        return 'Cancelled';
+    }
+  }
+}
 
   Widget _buildProjectCard(Project project) {
     return Container(
@@ -1369,7 +1351,7 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
     }
   }
 
-  Widget _buildUpcomingTasks(List<Task> tasks) {
+  Widget _buildUpcomingTasks(BuildContext context, List<Task> tasks) {
     return Container(
       padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
