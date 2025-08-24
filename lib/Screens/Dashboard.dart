@@ -36,6 +36,7 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
 
   String userName = 'User';
   final TextEditingController _searchController = TextEditingController();
+  Timer? _searchTimer;
 
   @override
   void initState() {
@@ -98,6 +99,7 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
     _slideController.dispose();
     _particleController.dispose();
     _searchController.dispose();
+    _searchTimer?.cancel();
     super.dispose();
   }
 
@@ -115,11 +117,17 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
   }
 
   void _onSearchChanged(String query) {
-    if (query.isEmpty) {
-      context.read<DashboardBloc>().add(LoadDashboardData());
-    } else {
-      context.read<DashboardBloc>().add(SearchDashboardContent(query));
-    }
+    // Cancel previous timer
+    _searchTimer?.cancel();
+    
+    // Create new timer with 500ms delay
+    _searchTimer = Timer(Duration(milliseconds: 500), () {
+      if (query.isEmpty) {
+        context.read<DashboardBloc>().add(LoadDashboardData());
+      } else {
+        context.read<DashboardBloc>().add(SearchDashboardContent(query));
+      }
+    });
   }
 
   void _refreshData() {
