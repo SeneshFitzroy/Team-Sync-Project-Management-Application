@@ -750,20 +750,8 @@ class _TaskPageState extends State<TaskPage> with TickerProviderStateMixin {
   void _showEditTaskDialog(Task task) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Edit Task'),
-        content: const Text('Task editing dialog would go here.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Save'),
-          ),
-        ],
-      ),
+      barrierDismissible: false,
+      builder: (context) => EditTaskDialog(task: task),
     );
   }
 
