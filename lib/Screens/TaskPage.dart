@@ -776,6 +776,8 @@ class _TaskPageState extends State<TaskPage> with TickerProviderStateMixin {
         return Colors.green;
       case TaskStatus.overdue:
         return Colors.red;
+      case TaskStatus.review:
+        return Colors.purple;
     }
   }
 
