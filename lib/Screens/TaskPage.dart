@@ -339,7 +339,7 @@ class _TaskPageState extends State<TaskPage> with TickerProviderStateMixin {
           final filteredTasks = _filterTasks(projectTasks);
           
           if (filteredTasks.isEmpty) {
-            return _buildEmptyState('No project tasks found');
+            return _buildEmptyState('No project tasks found.\nCreate a project task by selecting "Project Task" when adding a new task.');
           }
           
           return SlideTransition(
@@ -376,7 +376,7 @@ class _TaskPageState extends State<TaskPage> with TickerProviderStateMixin {
           final filteredTasks = _filterTasks(myTasks);
           
           if (filteredTasks.isEmpty) {
-            return _buildEmptyState('No personal tasks found');
+            return _buildEmptyState('No personal tasks found.\nCreate a personal task by selecting "Personal Task" when adding a new task.');
           }
           
           return SlideTransition(
