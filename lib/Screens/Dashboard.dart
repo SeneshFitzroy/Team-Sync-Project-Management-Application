@@ -525,7 +525,7 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
         onChanged: _onSearchChanged,
         style: TextStyle(color: Colors.black, fontSize: 16),
         decoration: InputDecoration(
-          hintText: 'Search projects, tasks, or team members...',
+          hintText: 'Search projects and tasks...',
           hintStyle: TextStyle(color: Colors.grey[600], fontSize: 16),
           prefixIcon: Icon(Icons.search, color: Colors.grey[700], size: 24),
           border: InputBorder.none,
@@ -1038,21 +1038,6 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                   color: Colors.white,
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                ),
-              ),
-              Spacer(),
-              GestureDetector(
-                onTap: () => Navigator.push(
-                  context, 
-                  MaterialPageRoute(builder: (context) => const ProjectsPage())
-                ),
-                child: Text(
-                  'View All',
-                  style: TextStyle(
-                    color: AppTheme.primaryBlue,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                  ),
                 ),
               ),
             ],
