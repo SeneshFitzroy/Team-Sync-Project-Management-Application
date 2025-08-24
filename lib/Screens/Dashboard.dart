@@ -459,18 +459,25 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
   Widget _buildSearchBar() {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.25),
+        color: Colors.white.withOpacity(0.9),
         borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: Colors.white.withOpacity(0.5)),
+        border: Border.all(color: Colors.white, width: 2),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 10,
+            offset: Offset(0, 5),
+          ),
+        ],
       ),
       child: TextField(
         controller: _searchController,
         onChanged: _onSearchChanged,
-        style: TextStyle(color: Colors.white, fontSize: 16),
+        style: TextStyle(color: Colors.black, fontSize: 16),
         decoration: InputDecoration(
           hintText: 'Search projects, tasks, or team members...',
-          hintStyle: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 16),
-          prefixIcon: Icon(Icons.search, color: Colors.white, size: 24),
+          hintStyle: TextStyle(color: Colors.grey[600], fontSize: 16),
+          prefixIcon: Icon(Icons.search, color: Colors.grey[700], size: 24),
           border: InputBorder.none,
           contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
         ),
