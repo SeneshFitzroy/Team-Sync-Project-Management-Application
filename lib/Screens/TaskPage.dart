@@ -1088,7 +1088,12 @@ class _TaskPageState extends State<TaskPage> with TickerProviderStateMixin {
       task.copyWith(status: newStatus),
     ));
   }
-        title: Text(
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFFF8FAFC),
+      appBar: AppBar(
           'Tasks',
           style: AppTheme.headingMedium.copyWith(color: AppTheme.textWhite),
         ),
