@@ -1,6 +1,6 @@
 # ✓ TaskSync - Project Management Application
 
-A clean, professional Flutter application for project management with task tracking, team collaboration, and real-time chat functionality
+A clean, professional Flutter application for project management with task tracking, team collaboration, and real-time chat functionality.
 
 ## 🚀 Features
 
