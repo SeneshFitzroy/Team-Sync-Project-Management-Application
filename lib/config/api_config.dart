@@ -1,13 +1,13 @@
 class ApiConfig {
-  // GreenAPI WhatsApp Configuration - YOUR ACTUAL CREDENTIALS
-  static const String greenApiInstanceId = '7105307387';
-  static const String greenApiAccessToken = '29158cf0aff0400f997dbe5fbe9d604e551b120d46814dcaa4';
+  // GreenAPI WhatsApp Configuration - REPLACE WITH YOUR CREDENTIALS
+  static const String greenApiInstanceId = 'YOUR_GREEN_API_INSTANCE_ID';
+  static const String greenApiAccessToken = 'YOUR_GREEN_API_ACCESS_TOKEN';
   
-  // EmailJS Configuration - YOUR ACTUAL CREDENTIALS  
-  static const String emailJsServiceId = 'service_xtlfp5m'; // Gmail service from your EmailJS
-  static const String emailJsTemplateId = 'template_7vgqa7h'; // YOUR ACTUAL TEMPLATE ID
-  static const String emailJsUserId = 'dz8xtM4ALRHVg9HBj'; // From EmailJS account settings
-  static const String emailJsAccessToken = 'C_XRQslKP7-eO_LUr5MHN'; // From EmailJS account settings
+  // EmailJS Configuration - REPLACE WITH YOUR CREDENTIALS  
+  static const String emailJsServiceId = 'YOUR_EMAILJS_SERVICE_ID'; // Gmail service from your EmailJS
+  static const String emailJsTemplateId = 'YOUR_EMAILJS_TEMPLATE_ID'; // YOUR ACTUAL TEMPLATE ID
+  static const String emailJsUserId = 'YOUR_EMAILJS_USER_ID'; // From EmailJS account settings
+  static const String emailJsAccessToken = 'YOUR_EMAILJS_ACCESS_TOKEN'; // From EmailJS account settings
   
   // App Domain (for password reset links)
   static const String appDomain = 'https://tasksync-app.com';

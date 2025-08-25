@@ -40,10 +40,10 @@ The TaskSync Team
       };
 
       Map<String, dynamic> body = {
-        'service_id': 'service_xtlfp5m',
+        'service_id': 'YOUR_EMAILJS_SERVICE_ID',
         'template_id': 'template_contact', // Default contact template
-        'user_id': 'dz8xtM4ALRHVg9HBj',
-        'accessToken': 'C_XRQslKP7-eO_LUr5MHN',
+        'user_id': 'YOUR_EMAILJS_USER_ID',
+        'accessToken': 'YOUR_EMAILJS_ACCESS_TOKEN',
         'template_params': templateParams,
       };
 
