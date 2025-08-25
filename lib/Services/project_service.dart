@@ -19,14 +19,17 @@ class ProjectService {
           id: docRef.id,
           name: project.name,
           description: project.description,
-          startDate: project.startDate,
-          endDate: project.endDate,
           status: project.status,
-          priority: project.priority,
-          teamMembers: project.teamMembers,
-          createdBy: project.createdBy,
-          createdAt: project.createdAt,
           progress: project.progress,
+          createdAt: project.createdAt,
+          updatedAt: project.updatedAt,
+          dueDate: project.dueDate,
+          teamMembers: project.teamMembers,
+          pendingInviteIds: project.pendingInviteIds,
+          ownerId: project.ownerId,
+          color: project.color,
+          taskCount: project.taskCount,
+          completedTaskCount: project.completedTaskCount,
         );
         await ChatService.createProjectChatRoom(projectWithId);
       } catch (chatError) {
