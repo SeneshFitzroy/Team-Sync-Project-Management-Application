@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'Dashboard.dart';
 import 'TaskPage.dart';
-import 'TeamChat.dart';
+import 'TeamChat.dart' as team_chat;
 import 'Calendar.dart';
 import '../Components/nav_bar.dart';
 import 'login-page.dart';
