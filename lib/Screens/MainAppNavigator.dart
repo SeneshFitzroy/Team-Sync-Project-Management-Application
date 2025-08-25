@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'Dashboard.dart';
 import 'TaskPage.dart';
 import 'ChatApp.dart';
-import 'Calendar.dart';
+import 'CalendarPro.dart';
 import '../Components/nav_bar.dart';
 import 'login-page.dart';
 import '../theme/app_theme.dart';

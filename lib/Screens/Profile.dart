@@ -6,10 +6,8 @@ import '../widgets/TickLogo.dart';
 import 'EditProfileScreen.dart';
 import 'PersonalInformationScreen.dart';
 import 'SecuritySettingsScreen.dart';
-import 'NotificationSettingsScreen.dart';
 import 'HelpSupportScreen.dart';
 import 'AboutScreen.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -397,17 +395,6 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const SecuritySettingsScreen()),
-              );
-            },
-          ),
-          _buildDivider(),
-          _buildProfileOption(
-            'Notifications',
-            Icons.notifications_outlined,
-            () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const NotificationSettingsScreen()),
               );
             },
           ),
