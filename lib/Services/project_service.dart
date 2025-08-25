@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/project.dart';
+import 'chat_service.dart';
 
 class ProjectService {
   static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -11,6 +12,28 @@ class ProjectService {
       DocumentReference docRef = await _firestore
           .collection(_collection)
           .add(project.toMap());
+      
+      // Create project chat room automatically
+      try {
+        final projectWithId = Project(
+          id: docRef.id,
+          name: project.name,
+          description: project.description,
+          startDate: project.startDate,
+          endDate: project.endDate,
+          status: project.status,
+          priority: project.priority,
+          teamMembers: project.teamMembers,
+          createdBy: project.createdBy,
+          createdAt: project.createdAt,
+          progress: project.progress,
+        );
+        await ChatService.createProjectChatRoom(projectWithId);
+      } catch (chatError) {
+        // Log the error but don't fail the project creation
+        print('Warning: Failed to create project chat room: $chatError');
+      }
+      
       return docRef.id;
     } catch (e) {
       throw Exception('Failed to create project: $e');
