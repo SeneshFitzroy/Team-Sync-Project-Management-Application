@@ -1356,11 +1356,8 @@ class _EditTaskDialogState extends State<EditTaskDialog> {
   late TaskPriority _selectedPriority;
   late TaskStatus _selectedStatus;
   late DateTime _selectedDueDate;
-  String? _selectedProjectId;
   String? _selectedProjectName;
-  List<Project> _availableProjects = [];
   bool _isLoading = false;
-  bool _isLoadingProjects = true;
 
   @override
   void initState() {
@@ -1374,9 +1371,8 @@ class _EditTaskDialogState extends State<EditTaskDialog> {
     _selectedPriority = widget.task.priority;
     _selectedStatus = widget.task.status;
     _selectedDueDate = widget.task.dueDate;
-    _selectedProjectId = widget.task.projectId;
     
-    _loadProjects();
+    _loadProjectName();
   }
 
   @override
@@ -1386,42 +1382,22 @@ class _EditTaskDialogState extends State<EditTaskDialog> {
     super.dispose();
   }
 
-  Future<void> _loadProjects() async {
-    try {
-      // Listen to projects stream and get first snapshot
-      ProjectService.getAllProjects().take(1).listen((projects) async {
+  Future<void> _loadProjectName() async {
+    if (widget.task.projectId != null) {
+      try {
+        final project = await ProjectService.getProjectById(widget.task.projectId!);
+        if (mounted && project != null) {
+          setState(() {
+            _selectedProjectName = project.name;
+          });
+        }
+      } catch (e) {
+        // If project loading fails, just use a default name
         if (mounted) {
           setState(() {
-            _availableProjects = projects.where((p) => 
-              p.status == ProjectStatus.active || p.status == ProjectStatus.planning
-            ).toList();
-            _isLoadingProjects = false;
+            _selectedProjectName = 'Project Task';
           });
-          
-          // Find the project name if task has a project
-          if (widget.task.projectId != null) {
-            final project = projects.firstWhere(
-              (p) => p.id == widget.task.projectId,
-              orElse: () => Project(
-                name: 'Unknown Project',
-                description: '',
-                progress: 0,
-                createdAt: DateTime.now(),
-                updatedAt: DateTime.now(),
-                teamMembers: [],
-              ),
-            );
-            setState(() {
-              _selectedProjectName = project.name;
-            });
-          }
         }
-      });
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _isLoadingProjects = false;
-        });
       }
     }
   }
@@ -1470,7 +1446,6 @@ class _EditTaskDialogState extends State<EditTaskDialog> {
         status: _selectedStatus,
         dueDate: _selectedDueDate,
         updatedAt: DateTime.now(),
-        projectId: _selectedProjectId, // Can be null for personal tasks
         completedAt: _selectedStatus == TaskStatus.completed 
           ? DateTime.now() 
           : null,
@@ -1481,14 +1456,10 @@ class _EditTaskDialogState extends State<EditTaskDialog> {
       if (mounted) {
         // Show success message
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              _selectedProjectId != null 
-                ? 'Project task updated successfully!'
-                : 'Personal task updated successfully!',
-            ),
+          const SnackBar(
+            content: Text('Task updated successfully!'),
             backgroundColor: Colors.green,
-            duration: const Duration(seconds: 3),
+            duration: Duration(seconds: 3),
           ),
         );
         
@@ -1711,68 +1682,46 @@ class _EditTaskDialogState extends State<EditTaskDialog> {
                       
                       const SizedBox(height: 16),
                       
-                      // Project Assignment (Show current assignment, allow change)
-                      const Text(
-                        'Project Assignment',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Container(
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey.shade300),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Column(
+                      // Current Project Assignment (Read-only display)
+                      if (widget.task.projectId != null)
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            RadioListTile<String?>(
-                              title: const Text('Personal Task'),
-                              subtitle: const Text('Task will appear in "My Tasks"'),
-                              value: null,
-                              groupValue: _selectedProjectId,
-                              onChanged: (value) {
-                                setState(() {
-                                  _selectedProjectId = null;
-                                  _selectedProjectName = null;
-                                });
-                              },
+                            const Text(
+                              'Project',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
-                            if (!_isLoadingProjects && _availableProjects.isNotEmpty)
-                              RadioListTile<String?>(
-                                title: const Text('Project Task'),
-                                subtitle: Text(
-                                  _selectedProjectName ?? 'Select a project'
-                                ),
-                                value: 'project',
-                                groupValue: _selectedProjectId == null ? null : 'project',
-                                onChanged: (value) {
-                                  if (_availableProjects.isNotEmpty) {
-                                    _showProjectSelectionDialog();
-                                  }
-                                },
+                            const SizedBox(height: 8),
+                            Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: Colors.blue.shade50,
+                                border: Border.all(color: Colors.blue.shade200),
+                                borderRadius: BorderRadius.circular(8),
                               ),
-                            if (_isLoadingProjects)
-                              const Padding(
-                                padding: EdgeInsets.all(16),
-                                child: Row(
-                                  children: [
-                                    SizedBox(
-                                      width: 16,
-                                      height: 16,
-                                      child: CircularProgressIndicator(strokeWidth: 2),
+                              child: Row(
+                                children: [
+                                  Icon(Icons.folder, color: Colors.blue.shade600),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Text(
+                                      _selectedProjectName ?? 'Project Task',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.blue.shade700,
+                                        fontWeight: FontWeight.w500,
+                                      ),
                                     ),
-                                    SizedBox(width: 12),
-                                    Text('Loading projects...'),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
+                            ),
+                            const SizedBox(height: 16),
                           ],
                         ),
-                      ),
-                      
-                      const SizedBox(height: 16),
                       
                       // Priority Selection
                       const Text(
