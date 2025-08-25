@@ -90,6 +90,13 @@ class ProjectService {
           .collection(_collection)
           .doc(projectId)
           .update(project.toMap());
+      
+      // Update project chat room
+      try {
+        await ChatService.updateProjectChatMembers(projectId, project);
+      } catch (chatError) {
+        print('Warning: Failed to update project chat: $chatError');
+      }
     } catch (e) {
       throw Exception('Failed to update project: $e');
     }
@@ -110,6 +117,13 @@ class ProjectService {
   // Delete project
   static Future<void> deleteProject(String projectId) async {
     try {
+      // Delete project chat room first
+      try {
+        await ChatService.deleteProjectChat(projectId);
+      } catch (chatError) {
+        print('Warning: Failed to delete project chat: $chatError');
+      }
+      
       await _firestore
           .collection(_collection)
           .doc(projectId)
@@ -128,6 +142,16 @@ class ProjectService {
           .update({
         'teamMembers': FieldValue.arrayUnion([memberId])
       });
+      
+      // Update project chat with new member
+      try {
+        final project = await getProjectById(projectId);
+        if (project != null) {
+          await ChatService.updateProjectChatMembers(projectId, project);
+        }
+      } catch (chatError) {
+        print('Warning: Failed to update project chat members: $chatError');
+      }
     } catch (e) {
       throw Exception('Failed to add team member: $e');
     }
@@ -142,6 +166,16 @@ class ProjectService {
           .update({
         'teamMembers': FieldValue.arrayRemove([memberId])
       });
+      
+      // Update project chat without removed member
+      try {
+        final project = await getProjectById(projectId);
+        if (project != null) {
+          await ChatService.updateProjectChatMembers(projectId, project);
+        }
+      } catch (chatError) {
+        print('Warning: Failed to update project chat members: $chatError');
+      }
     } catch (e) {
       throw Exception('Failed to remove team member: $e');
     }
