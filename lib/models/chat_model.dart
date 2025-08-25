@@ -201,3 +201,131 @@ class ChatUser {
     };
   }
 }
+
+// Project Chat Models
+class ProjectChatRoom {
+  final String id;
+  final String projectId;
+  final String projectName;
+  final List<String> members;
+  final Map<String, String> memberNames;
+  final String? lastMessage;
+  final DateTime? lastMessageTime;
+  final String? lastSenderId;
+  final Map<String, int> unreadCounts;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+
+  ProjectChatRoom({
+    required this.id,
+    required this.projectId,
+    required this.projectName,
+    required this.members,
+    required this.memberNames,
+    this.lastMessage,
+    this.lastMessageTime,
+    this.lastSenderId,
+    required this.unreadCounts,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'projectId': projectId,
+      'projectName': projectName,
+      'members': members,
+      'memberNames': memberNames,
+      'lastMessage': lastMessage,
+      'lastMessageTime': lastMessageTime != null 
+        ? Timestamp.fromDate(lastMessageTime!) 
+        : null,
+      'lastSenderId': lastSenderId,
+      'unreadCounts': unreadCounts,
+      'createdAt': Timestamp.fromDate(createdAt),
+      'updatedAt': Timestamp.fromDate(updatedAt),
+    };
+  }
+
+  factory ProjectChatRoom.fromMap(Map<String, dynamic> map, String documentId) {
+    return ProjectChatRoom(
+      id: documentId,
+      projectId: map['projectId'] ?? '',
+      projectName: map['projectName'] ?? '',
+      members: List<String>.from(map['members'] ?? []),
+      memberNames: Map<String, String>.from(map['memberNames'] ?? {}),
+      lastMessage: map['lastMessage'],
+      lastMessageTime: map['lastMessageTime'] != null 
+        ? (map['lastMessageTime'] as Timestamp).toDate()
+        : null,
+      lastSenderId: map['lastSenderId'],
+      unreadCounts: Map<String, int>.from(map['unreadCounts'] ?? {}),
+      createdAt: (map['createdAt'] as Timestamp).toDate(),
+      updatedAt: (map['updatedAt'] as Timestamp).toDate(),
+    );
+  }
+
+  // Get unread count for a specific user
+  int getUnreadCount(String userId) {
+    return unreadCounts[userId] ?? 0;
+  }
+}
+
+class ProjectChatMessage {
+  final String id;
+  final String projectChatId;
+  final String senderId;
+  final String senderName;
+  final String senderPhotoURL;
+  final String message;
+  final DateTime timestamp;
+  final Map<String, bool> readBy; // userId -> isRead
+  final String type; // 'text', 'image', 'file', 'system'
+  final Map<String, dynamic>? metadata;
+
+  ProjectChatMessage({
+    required this.id,
+    required this.projectChatId,
+    required this.senderId,
+    required this.senderName,
+    required this.senderPhotoURL,
+    required this.message,
+    required this.timestamp,
+    required this.readBy,
+    this.type = 'text',
+    this.metadata,
+  });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'projectChatId': projectChatId,
+      'senderId': senderId,
+      'senderName': senderName,
+      'senderPhotoURL': senderPhotoURL,
+      'message': message,
+      'timestamp': Timestamp.fromDate(timestamp),
+      'readBy': readBy,
+      'type': type,
+      'metadata': metadata,
+    };
+  }
+
+  factory ProjectChatMessage.fromMap(Map<String, dynamic> map, String documentId) {
+    return ProjectChatMessage(
+      id: documentId,
+      projectChatId: map['projectChatId'] ?? '',
+      senderId: map['senderId'] ?? '',
+      senderName: map['senderName'] ?? '',
+      senderPhotoURL: map['senderPhotoURL'] ?? '',
+      message: map['message'] ?? '',
+      timestamp: (map['timestamp'] as Timestamp).toDate(),
+      readBy: Map<String, bool>.from(map['readBy'] ?? {}),
+      type: map['type'] ?? 'text',
+      metadata: map['metadata'],
+    );
+  }
+
+  bool isReadByUser(String userId) {
+    return readBy[userId] ?? false;
+  }
+}
